@@ -175,6 +175,7 @@ app.get('/favicon.ico', (req, res) => {
   });
 });
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname));
 
 // Error handling middleware
@@ -185,11 +186,15 @@ app.use((req, res, next) => {
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'Endpoint not found' });
   }
-  const indexPath = path.join(__dirname, 'index.html');
-  res.sendFile(indexPath, (err) => {
+  const publicIndexPath = path.join(__dirname, 'public', 'index.html');
+  const rootIndexPath = path.join(__dirname, 'index.html');
+  res.sendFile(publicIndexPath, (err) => {
     if (err) {
-      // In serverless without bundled static files, redirect cleanly to root
-      res.status(200).send('<!doctype html><html><head><meta charset="utf-8"/><title>EcoCycle</title></head><body><script>window.location.replace("/");</script></body></html>');
+      res.sendFile(rootIndexPath, (err2) => {
+        if (err2) {
+          res.status(404).json({ error: 'Page not found' });
+        }
+      });
     }
   });
 });
