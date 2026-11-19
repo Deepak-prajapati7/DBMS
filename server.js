@@ -19,9 +19,25 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/ecocyc
 // 1. Database Connection (MongoDB via Mongoose)
 // ---------------------------------------------------------------------
 let isMongoConnected = false;
+let isConnecting = false;
 
 async function connectMongoDB() {
-  console.log(`[MongoDB] Attempting connection to: ${MONGODB_URI}`);
+  if (mongoose.connection.readyState === 1) {
+    isMongoConnected = true;
+    return;
+  }
+  if (isConnecting) return;
+
+  const isLocalDefault = !process.env.MONGODB_URI || MONGODB_URI.includes('127.0.0.1') || MONGODB_URI.includes('localhost');
+  if (process.env.VERCEL && isLocalDefault) {
+    isMongoConnected = false;
+    console.log('ℹ️ [MongoDB] Vercel serverless environment detected without a remote MONGODB_URI. Operating with high-performance in-memory fallback.');
+    console.log('💡 [MongoDB Tip] To connect MongoDB Atlas on Vercel: set MONGODB_URI in your Vercel Project Settings > Environment Variables.');
+    return;
+  }
+
+  isConnecting = true;
+  console.log(`[MongoDB] Attempting connection to: ${MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@')}`);
   try {
     await mongoose.connect(MONGODB_URI, {
       serverSelectionTimeoutMS: 3000,
@@ -31,12 +47,14 @@ async function connectMongoDB() {
     console.log('✅ [MongoDB] Successfully connected to database.');
 
     // Auto-seed initial demo accounts and categories if empty
-    autoSeedIfEmpty();
+    await autoSeedIfEmpty();
   } catch (err) {
     isMongoConnected = false;
     console.warn(`⚠️ [MongoDB] Connection note: ${err.message}`);
     console.warn('💡 [MongoDB Tip] If MongoDB is running on Docker, Homebrew, or Atlas:');
     console.warn('   Update MONGODB_URI in .env (e.g., mongodb+srv://... or mongodb://localhost:27017/ecocycle).');
+  } finally {
+    isConnecting = false;
   }
 }
 
@@ -69,13 +87,24 @@ async function autoSeedIfEmpty() {
   }
 }
 
-connectMongoDB();
+// Connect on startup (if not Vercel without Atlas)
+if (!process.env.VERCEL || (process.env.MONGODB_URI && !MONGODB_URI.includes('127.0.0.1'))) {
+  connectMongoDB();
+}
 
 // ---------------------------------------------------------------------
 // 2. Middleware & CORS Configuration
 // ---------------------------------------------------------------------
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Lazy connection trigger for serverless invocations if remote URI provided
+app.use(async (req, res, next) => {
+  if (process.env.MONGODB_URI && mongoose.connection.readyState === 0 && !isConnecting) {
+    connectMongoDB().catch(() => {});
+  }
+  next();
+});
 
 // Enable CORS for API consumers
 app.use((req, res, next) => {
@@ -108,10 +137,12 @@ app.get('/api/health', (req, res) => {
   const states = ['Disconnected', 'Connected', 'Connecting', 'Disconnecting'];
   res.json({
     status: 'healthy',
+    platform: process.env.VERCEL ? 'Vercel Serverless' : 'Node.js standalone',
     database: {
       type: 'MongoDB (Mongoose)',
       status: states[mongoState] || 'Unknown',
       connected: mongoState === 1,
+      mode: mongoState === 1 ? 'Live MongoDB' : 'In-Memory Resilient Fallback',
       uri: MONGODB_URI.replace(/\/\/([^:]+):([^@]+)@/, '//***:***@'),
     },
     uptime: Math.round(process.uptime()),
@@ -129,8 +160,21 @@ app.use('/api/centers', centerRoutes);
 app.use('/api/stats', statsRoutes);
 
 // ---------------------------------------------------------------------
-// 5. Static Frontend Serving
+// 5. Static Frontend Serving & Favicon
 // ---------------------------------------------------------------------
+// Favicon handling: serves favicon.ico or logo.jpeg with 200, or 204 if missing (never 500)
+app.get('/favicon.ico', (req, res) => {
+  const icoPath = path.join(__dirname, 'favicon.ico');
+  const fallbackPath = path.join(__dirname, 'Assest', 'logo.jpeg');
+  res.sendFile(icoPath, (err) => {
+    if (err) {
+      res.sendFile(fallbackPath, (err2) => {
+        if (err2) res.status(204).end();
+      });
+    }
+  });
+});
+
 app.use(express.static(__dirname));
 
 // Error handling middleware
@@ -141,7 +185,13 @@ app.use((req, res, next) => {
   if (req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'Endpoint not found' });
   }
-  res.sendFile(path.join(__dirname, 'index.html'));
+  const indexPath = path.join(__dirname, 'index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      // In serverless without bundled static files, redirect cleanly to root
+      res.status(200).send('<!doctype html><html><head><meta charset="utf-8"/><title>EcoCycle</title></head><body><script>window.location.replace("/");</script></body></html>');
+    }
+  });
 });
 
 // ---------------------------------------------------------------------
@@ -175,4 +225,10 @@ if (require.main === module) {
   startServer(Number(PORT));
 }
 
-module.exports = { app, server, startServer, connectMongoDB };
+// Export app directly for Vercel Serverless Function, while preserving properties for tests
+app.app = app;
+app.server = server;
+app.startServer = startServer;
+app.connectMongoDB = connectMongoDB;
+
+module.exports = app;
