@@ -23,7 +23,7 @@
     />
     <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <link rel="stylesheet" href="styles.css?v=18" />
+    <link rel="stylesheet" href="styles.css?v=19" />
   </head>
   <body data-theme="light">
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -180,40 +180,60 @@
           <span class="brand-logo"><img src="Assest/logo.jpeg" alt="" fetchpriority="high" decoding="async" /></span>
           <span class="brand-text">
             <strong>EcoCycle</strong>
-            <small>E-Waste Operations</small>
+            <small>Circular E-Waste Network</small>
           </span>
+          <span class="brand-badge-pill">INR · Live</span>
         </div>
         <div class="auth-brand-body">
+          <div class="hero-badge">
+            <span class="hero-badge-dot rb-pulse-dot"></span>
+            <span>Smart E-Waste & Circular Parts Platform</span>
+          </div>
           <h1 class="hero-headline">
-            Collection requests, from doorstep to recovery.
+            Collection requests, <span class="rb-shiny-text">from doorstep to recovery.</span>
           </h1>
           <p class="hero-subtext">
-            Schedule e-waste pickups, locate authorized recycling centers across India, and trade usable electronic parts.
+            Schedule e-waste pickups, locate authorized recycling centers across India, and trade usable electronic components with Razorpay.
           </p>
 
           <ul class="auth-points">
-            <li>
+            <li class="rb-spotlight">
               <div class="auth-point-icon"><svg class="i"><use href="#i-truck" /></svg></div>
               <div>
                 <strong>Doorstep Pickup Scheduling</strong>
                 <span>Book home collections across 14 accepted e-waste categories</span>
               </div>
             </li>
-            <li>
+            <li class="rb-spotlight">
               <div class="auth-point-icon"><svg class="i"><use href="#i-pin" /></svg></div>
               <div>
                 <strong>Pan-India Drop-Off Map</strong>
-                <span>Search verified recycling hubs, repair shops, and scrap yards</span>
+                <span>Search 110+ recycling hubs, repair shops, and scrap yards</span>
               </div>
             </li>
-            <li>
+            <li class="rb-spotlight">
               <div class="auth-point-icon"><svg class="i"><use href="#i-tag" /></svg></div>
               <div>
                 <strong>Parts Marketplace with Razorpay</strong>
-                <span>List working components and accept verified INR payments</span>
+                <span>List working components and accept verified INR card & UPI payments</span>
               </div>
             </li>
           </ul>
+
+          <div class="impact-strip" aria-label="Platform highlights">
+            <div class="impact-chip">
+              <strong>113+</strong>
+              <span>India Hubs & Shops</span>
+            </div>
+            <div class="impact-chip">
+              <strong>14</strong>
+              <span>E-Waste Streams</span>
+            </div>
+            <div class="impact-chip">
+              <strong>INR</strong>
+              <span>Razorpay Checkout</span>
+            </div>
+          </div>
         </div>
 
         <div class="auth-trust-strip">
@@ -421,20 +441,27 @@
                 <time id="todayLabel"></time>
               </div>
             </div>
-            <div class="overview-intro">
+            <div class="overview-intro rb-aurora">
+              <div class="overview-intro-icon" aria-hidden="true">
+                <svg class="i" style="width:28px;height:28px;"><use href="#i-recycle" /></svg>
+              </div>
               <div class="overview-intro-copy">
-                <h2 id="overviewWelcomeGreeting">Welcome back</h2>
+                <div class="overview-pill">
+                  <span class="overview-pill-dot rb-pulse-dot"></span>
+                  <span>Live Operations Portal</span>
+                </div>
+                <h2 id="overviewWelcomeGreeting" class="rb-shiny-text">Welcome back</h2>
                 <p id="overviewWelcomeSub">Summary of active e-waste collections and recovery progress.</p>
               </div>
               <div class="overview-intro-actions">
-                <a class="btn btn-primary" href="#/new"><svg class="i" style="width:14px;height:14px;"><use href="#i-plus" /></svg>Book pickup</a>
+                <a class="btn btn-primary rb-btn-sheen" href="#/new"><svg class="i" style="width:14px;height:14px;"><use href="#i-plus" /></svg>Book pickup</a>
                 <a class="btn" href="#/parts"><svg class="i" style="width:14px;height:14px;"><use href="#i-tag" /></svg>Sell parts</a>
                 <a class="btn" href="#/requests">All requests</a>
               </div>
             </div>
 
             <div class="overview-quick-actions" aria-label="Quick actions">
-              <article class="action-card">
+              <article class="action-card rb-spotlight">
                 <div class="action-card-icon" aria-hidden="true">
                   <svg class="i"><use href="#i-plus" /></svg>
                 </div>
@@ -445,7 +472,7 @@
                 <a href="#/new" aria-label="Create a new request">Open</a>
               </article>
 
-              <article class="action-card">
+              <article class="action-card rb-spotlight">
                 <div class="action-card-icon" aria-hidden="true">
                   <svg class="i"><use href="#i-pin" /></svg>
                 </div>
@@ -456,7 +483,7 @@
                 <a href="#/map" aria-label="Find drop-off locations">Explore</a>
               </article>
 
-              <article class="action-card">
+              <article class="action-card rb-spotlight">
                 <div class="action-card-icon" aria-hidden="true">
                   <svg class="i"><use href="#i-tag" /></svg>
                 </div>
@@ -467,7 +494,7 @@
                 <a href="#/parts" aria-label="Open parts marketplace">Sell</a>
               </article>
 
-              <article class="action-card">
+              <article class="action-card rb-spotlight">
                 <div class="action-card-icon" aria-hidden="true">
                   <svg class="i"><use href="#i-book" /></svg>
                 </div>
@@ -482,42 +509,43 @@
             <div class="kpis" id="kpis"></div>
 
             <!-- Environmental Impact Summary -->
-            <section class="impact-hero" id="impactHero" aria-label="Environmental impact metrics">
+            <section class="impact-hero rb-spotlight" id="impactHero" aria-label="Environmental impact metrics">
               <div class="impact-hero-head">
                 <div class="impact-hero-title">
+                  <span class="impact-badge">Sustainability Ledger</span>
                   <h2>Environmental Impact</h2>
                 </div>
                 <span class="fine" id="sustainabilityPill">Calculated from completed collections</span>
               </div>
               <div class="impact-grid" id="impactGrid">
-                <div class="impact-card">
+                <div class="impact-card rb-spotlight">
                   <div class="impact-card-top">
                     <span class="impact-card-tag">E-waste Diverted</span>
-                    <svg class="i impact-card-svg"><use href="#i-recycle" /></svg>
+                    <span class="impact-icon-well"><svg class="i impact-card-svg"><use href="#i-recycle" /></svg></span>
                   </div>
                   <div class="impact-card-num" id="statEwaste">0<small>kg</small></div>
                   <div class="impact-card-sub" id="statEwasteSub">Across active requests</div>
                 </div>
-                <div class="impact-card">
+                <div class="impact-card rb-spotlight">
                   <div class="impact-card-top">
                     <span class="impact-card-tag">CO₂ Offset</span>
-                    <svg class="i impact-card-svg"><use href="#i-leaf" /></svg>
+                    <span class="impact-icon-well"><svg class="i impact-card-svg"><use href="#i-leaf" /></svg></span>
                   </div>
                   <div class="impact-card-num" id="statCo2">0<small>kg</small></div>
                   <div class="impact-card-sub" id="statCo2Sub">1.44 kg saved per kg completed</div>
                 </div>
-                <div class="impact-card">
+                <div class="impact-card rb-spotlight">
                   <div class="impact-card-top">
                     <span class="impact-card-tag">Metals Recovered</span>
-                    <svg class="i impact-card-svg"><use href="#i-box" /></svg>
+                    <span class="impact-icon-well"><svg class="i impact-card-svg"><use href="#i-box" /></svg></span>
                   </div>
                   <div class="impact-card-num" id="statMetals">0<small>g</small></div>
                   <div class="impact-card-sub">Estimated copper, aluminum & gold</div>
                 </div>
-                <div class="impact-card">
+                <div class="impact-card rb-spotlight">
                   <div class="impact-card-top">
                     <span class="impact-card-tag">Completion Rate</span>
-                    <svg class="i impact-card-svg"><use href="#i-check" /></svg>
+                    <span class="impact-icon-well"><svg class="i impact-card-svg"><use href="#i-check" /></svg></span>
                   </div>
                   <div class="impact-card-num" id="statRate">0<small>%</small></div>
                   <div class="impact-card-sub" id="statRateSub">Completed requests</div>
@@ -526,7 +554,8 @@
               <div class="impact-progress-wrap">
                 <div class="impact-progress-header">
                   <div class="impact-progress-title">
-                    <span><strong>Recovery Completion</strong></span>
+                    <span class="impact-progress-dot rb-pulse-dot"></span>
+                    <span><strong>Recovery Completion</strong> · Verified landfill diversion</span>
                   </div>
                   <span class="impact-progress-badge" id="impactProgressPercent">0%</span>
                 </div>
@@ -993,6 +1022,6 @@
       }
     </script>
     <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
-    <script defer src="app.js?v=18"></script>
+    <script defer src="app.js?v=19"></script>
   </body>
 </html>

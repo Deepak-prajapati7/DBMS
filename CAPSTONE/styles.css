@@ -1193,11 +1193,19 @@ select {
   width: 100%;
 }
 .view:not([hidden]) {
-  animation: view-enter .22s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: rbBlurIn .34s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
-@keyframes view-enter {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes rbBlurIn {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(10px) scale(0.995);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
 }
 
 .dashboard-heading {
@@ -3267,5 +3275,293 @@ select {
   .status-content { grid-template-columns: 1fr; }
   .bars li.category-bar {
     grid-template-columns: 28px minmax(80px, 1fr) minmax(50px, 1fr) 20px 28px;
+  }
+}
+
+/* -------------------------------------------------------------------
+ * React Bits & UI/UX Pro Max Motion Layer
+ * ------------------------------------------------------------------- */
+.rb-aurora {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(60% 120% at 10% 0%, rgba(16, 185, 129, 0.14) 0%, transparent 65%),
+    radial-gradient(50% 110% at 95% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 60%),
+    var(--surface);
+  border-color: rgba(16, 185, 129, 0.22);
+  box-shadow: 0 8px 30px -8px rgba(16, 185, 129, 0.14);
+}
+[data-theme="dark"] .rb-aurora {
+  background:
+    radial-gradient(60% 120% at 10% 0%, rgba(16, 185, 129, 0.18) 0%, transparent 65%),
+    radial-gradient(50% 110% at 95% 15%, rgba(6, 182, 212, 0.14) 0%, transparent 60%),
+    var(--surface);
+  border-color: rgba(16, 185, 129, 0.25);
+}
+.rb-aurora::before {
+  content: "";
+  position: absolute;
+  inset: -40% -20%;
+  background: conic-gradient(from 90deg at 50% 50%, rgba(16, 185, 129, 0.08), rgba(6, 182, 212, 0.06), transparent 55%, rgba(16, 185, 129, 0.08));
+  animation: rbAuroraSpin 18s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+.rb-aurora > * {
+  position: relative;
+  z-index: 1;
+}
+@keyframes rbAuroraSpin {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.06); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.rb-shiny-text {
+  background: linear-gradient(110deg, var(--text) 25%, #10b981 48%, #06b6d4 54%, var(--text) 78%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rbShinySweep 5.5s ease-in-out infinite;
+}
+.auth-brand .rb-shiny-text {
+  background: linear-gradient(110deg, #ecfdf5 22%, #34d399 48%, #67e8f9 56%, #ecfdf5 80%);
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+@keyframes rbShinySweep {
+  0%, 100% { background-position: 100% 0; }
+  50% { background-position: 0% 0; }
+}
+
+.rb-spotlight {
+  position: relative;
+  overflow: hidden;
+  --mx: 50%;
+  --my: 50%;
+}
+.rb-spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(260px circle at var(--mx) var(--my), rgba(16, 185, 129, 0.14), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+.rb-spotlight:hover::after {
+  opacity: 1;
+}
+.rb-spotlight > * {
+  position: relative;
+  z-index: 1;
+}
+
+.rb-pulse-dot {
+  position: relative;
+}
+.rb-pulse-dot::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 999px;
+  border: 1.5px solid currentColor;
+  background: inherit;
+  opacity: 0.45;
+  animation: rbPulseRing 2.2s cubic-bezier(0.24, 0, 0.38, 1) infinite;
+}
+@keyframes rbPulseRing {
+  0% { transform: scale(0.9); opacity: 0.65; }
+  75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+
+.rb-btn-sheen {
+  position: relative;
+  overflow: hidden;
+}
+.rb-btn-sheen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 65%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+  transition: transform 0.55s ease;
+  transform: translateX(0);
+  pointer-events: none;
+}
+.rb-btn-sheen:hover::after {
+  transform: translateX(280%);
+}
+
+.impact-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid rgba(16, 185, 129, 0.22);
+}
+
+.impact-icon-well {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.impact-progress-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent);
+}
+
+.impact-progress-bar {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #059669, #10b981, #06b6d4);
+}
+.impact-progress-bar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  animation: rbProgressSheen 2.8s ease-in-out infinite;
+}
+@keyframes rbProgressSheen {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Staggered card & chart entrance animations */
+.overview-quick-actions .action-card,
+.kpis .kpi,
+.impact-grid .impact-card,
+.pipeline-track .pipeline-step,
+.parts-stats .parts-stat-card,
+.parts-grid .part-card {
+  animation: rbCardRise 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.overview-quick-actions .action-card:hover,
+.kpis .kpi:hover,
+.impact-grid .impact-card:hover,
+.pipeline-track .pipeline-step:hover,
+.parts-grid .part-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 10px 26px -8px rgba(15, 31, 24, 0.14);
+}
+.overview-quick-actions .action-card:nth-child(1),
+.kpis .kpi:nth-child(1),
+.impact-grid .impact-card:nth-child(1),
+.pipeline-track .pipeline-step:nth-child(1),
+.parts-stats .parts-stat-card:nth-child(1),
+.parts-grid .part-card:nth-child(1) { animation-delay: 0.03s; }
+.overview-quick-actions .action-card:nth-child(2),
+.kpis .kpi:nth-child(2),
+.impact-grid .impact-card:nth-child(2),
+.pipeline-track .pipeline-step:nth-child(2),
+.parts-stats .parts-stat-card:nth-child(2),
+.parts-grid .part-card:nth-child(2) { animation-delay: 0.08s; }
+.overview-quick-actions .action-card:nth-child(3),
+.kpis .kpi:nth-child(3),
+.impact-grid .impact-card:nth-child(3),
+.pipeline-track .pipeline-step:nth-child(3),
+.parts-stats .parts-stat-card:nth-child(3),
+.parts-grid .part-card:nth-child(3) { animation-delay: 0.13s; }
+.overview-quick-actions .action-card:nth-child(4),
+.kpis .kpi:nth-child(4),
+.impact-grid .impact-card:nth-child(4),
+.pipeline-track .pipeline-step:nth-child(4),
+.parts-stats .parts-stat-card:nth-child(4),
+.parts-grid .part-card:nth-child(4) { animation-delay: 0.18s; }
+.kpis .kpi:nth-child(5),
+.pipeline-track .pipeline-step:nth-child(5),
+.parts-grid .part-card:nth-child(5) { animation-delay: 0.23s; }
+.pipeline-track .pipeline-step:nth-child(6),
+.parts-grid .part-card:nth-child(6) { animation-delay: 0.28s; }
+
+@keyframes rbCardRise {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(12px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bars li.category-bar .bar-fill {
+  transform-origin: left center;
+  animation: rbGrowX 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes rbGrowX {
+  from { transform: scaleX(0); opacity: 0.4; }
+  to { transform: scaleX(1); opacity: 1; }
+}
+
+.week-column span {
+  transform-origin: bottom center;
+  animation: rbGrowY 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes rbGrowY {
+  from { transform: scaleY(0); opacity: 0.4; }
+  to { transform: scaleY(1); opacity: 1; }
+}
+
+.status-donut {
+  animation: rbDonutIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes rbDonutIn {
+  from { transform: scale(0.88) rotate(-28deg); opacity: 0; }
+  to { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.modal-scrim:not([hidden]) .modal {
+  animation: rbModalPop 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes rbModalPop {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rb-aurora::before,
+  .rb-shiny-text,
+  .rb-pulse-dot::after,
+  .impact-progress-bar::after,
+  .view:not([hidden]),
+  .overview-quick-actions .action-card,
+  .kpis .kpi,
+  .impact-grid .impact-card,
+  .pipeline-track .pipeline-step,
+  .parts-stats .parts-stat-card,
+  .parts-grid .part-card,
+  .bars li.category-bar .bar-fill,
+  .week-column span,
+  .status-donut,
+  .modal-scrim:not([hidden]) .modal {
+    animation: none !important;
+    transition: none !important;
   }
 }

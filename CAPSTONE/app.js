@@ -1317,11 +1317,42 @@
       "Rejected or cancelled": ["x", "rose"],
     };
     const [glyph, tone] = details[label] || ["box", "blue"];
-    return `<article class="kpi kpi-${tone}">
+    const numericVal = Number(value);
+    const countAttr = Number.isFinite(numericVal) ? ` data-countup="${numericVal}"` : "";
+    return `<article class="kpi kpi-${tone} rb-spotlight">
       <div class="kpi-heading"><span class="kpi-icon">${icon(glyph)}</span><span class="kpi-label">${esc(label)}</span></div>
-      <div class="kpi-value">${esc(value)}</div>
+      <div class="kpi-value"${countAttr}>${esc(value)}</div>
       <div class="kpi-note">${esc(note)}</div>
     </article>`;
+  }
+
+  function animateCountUp(el, target, unitHtml = "", decimals = 0, duration = 620) {
+    if (!el) return;
+    const end = Number(target) || 0;
+    const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || end === 0) {
+      const formatted = decimals > 0 ? (Math.round(end * 10 ** decimals) / 10 ** decimals) : Math.round(end);
+      el.innerHTML = `${formatted}${unitHtml}`;
+      return;
+    }
+    const startTime = performance.now();
+    const factor = 10 ** decimals;
+    const step = (now) => {
+      const t = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      const val = end * eased;
+      const display = decimals > 0 ? Math.round(val * factor) / factor : Math.round(val);
+      el.innerHTML = `${display}${unitHtml}`;
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  function runKpiCountUps(root = document) {
+    root.querySelectorAll("[data-countup]").forEach((el) => {
+      const target = Number(el.dataset.countup);
+      if (Number.isFinite(target)) animateCountUp(el, target);
+    });
   }
 
   function weekBuckets(requests, weeks = 8) {
@@ -1359,12 +1390,12 @@
     const metalsGrams = Math.round(completedWeight * 135);
     const recoveryRate = mine.length ? Math.round((done / mine.length) * 100) : 100;
 
-    if ($("statEwaste")) $("statEwaste").innerHTML = `${Math.round(totalWeight * 10) / 10}<small>kg</small>`;
+    animateCountUp($("statEwaste"), Math.round(totalWeight * 10) / 10, "<small>kg</small>", 1);
     if ($("statEwasteSub")) $("statEwasteSub").textContent = `${mine.length} ${mine.length === 1 ? "request" : "requests"} tracked`;
-    if ($("statCo2")) $("statCo2").innerHTML = `${co2Saved}<small>kg</small>`;
+    animateCountUp($("statCo2"), co2Saved, "<small>kg</small>", 0);
     if ($("statCo2Sub")) $("statCo2Sub").textContent = `${Math.round(completedWeight * 10) / 10} kg completed × 1.44`;
-    if ($("statMetals")) $("statMetals").innerHTML = `${metalsGrams}<small>g</small>`;
-    if ($("statRate")) $("statRate").innerHTML = `${recoveryRate}<small>%</small>`;
+    animateCountUp($("statMetals"), metalsGrams, "<small>g</small>", 0);
+    animateCountUp($("statRate"), recoveryRate, "<small>%</small>", 0);
     if ($("statRateSub")) $("statRateSub").textContent = `${done} of ${mine.length} completed`;
     if ($("impactProgressBar")) $("impactProgressBar").style.width = `${recoveryRate}%`;
     if ($("impactProgressPercent")) $("impactProgressPercent").textContent = `${recoveryRate}%`;
@@ -1590,6 +1621,7 @@
           </ul>
         </section>`;
     }
+    runKpiCountUps($("kpis"));
   }
 
   /* ------------------------------------------------------------------
@@ -2390,7 +2422,7 @@
     const canRemove = isAdmin() || (isSeller && isAvailable);
 
     return `
-      <article class="part-card" data-part-id="${esc(p.id)}">
+      <article class="part-card rb-spotlight" data-part-id="${esc(p.id)}">
         <div>
           <div class="part-card-top">
             <span class="part-cat-pill">${esc(p.partCategory)}</span>
@@ -2411,7 +2443,7 @@
             <small>${p.razorpayPaymentId ? `Paid · ${esc(p.razorpayPaymentId)}` : p.sellerUpi ? `UPI: ${esc(p.sellerUpi)}` : "Razorpay protected"}</small>
           </div>
           <div class="part-actions">
-            ${canBuy ? `<button class="btn btn-sm btn-rzp" type="button" data-buy-part="${esc(p.id)}">Buy with Razorpay</button>` : ""}
+            ${canBuy ? `<button class="btn btn-sm btn-rzp rb-btn-sheen" type="button" data-buy-part="${esc(p.id)}">Buy with Razorpay</button>` : ""}
             ${p.razorpayPaymentId ? `<button class="btn btn-sm" type="button" data-receipt-part="${esc(p.id)}">Receipt</button>` : ""}
             ${canSettlePayout ? `<button class="btn btn-sm btn-primary" type="button" data-payout-part="${esc(p.id)}">${p.status === "Sold" ? "Settle Payout" : "Hub Buyback"}</button>` : ""}
             ${canRemove ? `<button class="btn btn-sm btn-ghost-danger" type="button" data-delete-part="${esc(p.id)}">Remove</button>` : ""}
@@ -2457,13 +2489,13 @@
     });
 
     host.innerHTML = `
-      <div class="parts-hero">
+      <div class="parts-hero rb-aurora">
         <div>
-          <h2>Parts Marketplace</h2>
+          <h2 class="rb-shiny-text">Parts Marketplace</h2>
           <p>List tested electronic components for sale or purchase available parts via Razorpay checkout.</p>
         </div>
         <div>
-          <button class="btn btn-primary btn-sm" type="button" id="partsQuickSellBtn">
+          <button class="btn btn-primary btn-sm rb-btn-sheen" type="button" id="partsQuickSellBtn">
             <svg class="i"><use href="#i-plus"/></svg>
             <span>List a Part</span>
           </button>
@@ -2471,22 +2503,22 @@
       </div>
 
       <div class="parts-stats">
-        <div class="parts-stat-card">
+        <div class="parts-stat-card rb-spotlight">
           <small>Marketplace</small>
           <strong>${availableParts.length} Available</strong>
           <span>${allParts.length} total parts listed</span>
         </div>
-        <div class="parts-stat-card">
+        <div class="parts-stat-card rb-spotlight">
           <small>My Activity</small>
           <strong>${myListings.length} Listings</strong>
           <span>Selling & purchased parts</span>
         </div>
-        <div class="parts-stat-card">
+        <div class="parts-stat-card rb-spotlight">
           <small>My Razorpay Earnings</small>
           <strong>${fmtInr(myEarnings)}</strong>
           <span>From sold & settled parts</span>
         </div>
-        <div class="parts-stat-card">
+        <div class="parts-stat-card rb-spotlight">
           <small>Payment Gateway</small>
           <strong>${esc(rzpModeLabel)}</strong>
           <span>INR (₹) · HMAC-SHA256 verified</span>
@@ -5126,6 +5158,19 @@
   /* ------------------------------------------------------------------
    * Init
    * ------------------------------------------------------------------ */
+  let spotlightRaf = 0;
+  document.addEventListener("pointermove", (e) => {
+    if (!(e.target instanceof Element)) return;
+    const card = e.target.closest(".rb-spotlight");
+    if (!card || spotlightRaf) return;
+    spotlightRaf = requestAnimationFrame(() => {
+      spotlightRaf = 0;
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+      card.style.setProperty("--my", `${e.clientY - rect.top}px`);
+    });
+  }, { passive: true });
+
   setTheme(store.get(STORE.theme) === "dark" ? "dark" : "light");
   wire();
   setAuthMode("login");
