@@ -7,8 +7,41 @@
   const STORE = {
     theme: "ecocycle-theme",
     requests: "ecocycle.v2.requests",
+    parts: "ecocycle.v2.parts",
     session: "ecocycle.v2.session",
     accounts: "ecocycle.v2.accounts",
+  };
+
+  const PART_CATEGORIES = [
+    "RAM & Memory",
+    "Storage (SSD/HDD)",
+    "Processors (CPU)",
+    "Graphics Cards (GPU)",
+    "Motherboards & PCBs",
+    "Displays & Screens",
+    "Power Supplies & Adapters",
+    "Battery Packs",
+    "Cooling & Fans",
+    "Other Salvage Parts",
+  ];
+
+  const PART_CONDITIONS = [
+    "Working / Tested",
+    "Refurbishable",
+    "For Parts / Scrap",
+  ];
+
+  const PART_SUGGESTED_PRICES = {
+    "RAM & Memory": 1200,
+    "Storage (SSD/HDD)": 2200,
+    "Processors (CPU)": 3500,
+    "Graphics Cards (GPU)": 6500,
+    "Motherboards & PCBs": 1600,
+    "Displays & Screens": 3200,
+    "Power Supplies & Adapters": 950,
+    "Battery Packs": 750,
+    "Cooling & Fans": 450,
+    "Other Salvage Parts": 600,
   };
 
   const CATEGORIES = [
@@ -161,27 +194,27 @@
       { id: "overview", label: "Overview", icon: "grid" },
       { id: "new", label: "New request", icon: "plus" },
       { id: "requests", label: "My requests", icon: "list" },
+      { id: "parts", label: "Sell parts", icon: "tag" },
       { id: "map", label: "Find a point", icon: "pin" },
       { id: "categories", label: "Categories", icon: "box" },
       { id: "guide", label: "Safety guide", icon: "book" },
-      { id: "docs", label: "Project & DB", icon: "db" },
     ],
     admin: [
       { id: "overview", label: "Overview", icon: "grid" },
       { id: "requests", label: "All requests", icon: "list" },
+      { id: "parts", label: "Parts & Razorpay", icon: "tag" },
       { id: "map", label: "Recycling points", icon: "pin" },
       { id: "guide", label: "Safety guide", icon: "book" },
-      { id: "docs", label: "Project & DB", icon: "db" },
     ],
   };
   const TITLES = {
     overview: "Overview",
     new: "New request",
     requests: { user: "My requests", admin: "All requests" },
+    parts: { user: "Sell & buy parts", admin: "Parts & Razorpay" },
     map: { user: "Find a drop-off point", admin: "Recycling points" },
     categories: "Accepted categories",
     guide: "Safety guide",
-    docs: "Project & DB Documentation",
   };
 
   const QUICK_CITIES = [
@@ -491,6 +524,109 @@
     },
   ];
 
+  const DEFAULT_OFFLINE_PARTS = [
+    {
+      id: 2730000001,
+      title: "Crucial 8GB DDR4-3200 Laptop RAM Stick",
+      partCategory: "RAM & Memory",
+      condition: "Working / Tested",
+      qty: 2,
+      priceInr: 1350,
+      location: "Malviya Nagar, Jaipur, Rajasthan",
+      description: "Pulled from upgraded corporate ThinkPad laptops. MemTest86 verified.",
+      sellerName: "Rahul Sharma",
+      sellerEmail: "rahul@example.com",
+      sellerUpi: "rahul.sharma@okaxis",
+      status: "Available",
+      createdAt: atDaysAgo(5),
+    },
+    {
+      id: 2730000002,
+      title: "Samsung 512GB NVMe M.2 PCIe Gen3 SSD",
+      partCategory: "Storage (SSD/HDD)",
+      condition: "Working / Tested",
+      qty: 1,
+      priceInr: 2450,
+      location: "Dwarka Sector 12, New Delhi",
+      description: "94% SMART health remaining, securely wiped and formatted.",
+      sellerName: "Priya Verma",
+      sellerEmail: "priya@example.com",
+      sellerUpi: "priya.verma@okicici",
+      status: "Available",
+      createdAt: atDaysAgo(4),
+    },
+    {
+      id: 2730000003,
+      title: "Dell 65W USB-C Original Power Adapters",
+      partCategory: "Power Supplies & Adapters",
+      condition: "Refurbishable",
+      qty: 3,
+      priceInr: 1100,
+      location: "Vaishali Nagar, Jaipur, Rajasthan",
+      description: "OEM Dell chargers with intact Type-C cables and surge protection.",
+      sellerName: "Rahul Sharma",
+      sellerEmail: "rahul@example.com",
+      sellerUpi: "rahul.sharma@okaxis",
+      status: "Sold",
+      buyerName: "Priya Verma",
+      buyerEmail: "priya@example.com",
+      razorpayOrderId: "order_EcoRzp91a4f21c",
+      razorpayPaymentId: "pay_EcoRzp88c7b104",
+      paymentMethod: "UPI",
+      paidAmountInr: 1100,
+      paidAt: atDaysAgo(2),
+      createdAt: atDaysAgo(6),
+    },
+    {
+      id: 2730000004,
+      title: "iPhone 13 OLED Display & Digitizer Assembly",
+      partCategory: "Displays & Screens",
+      condition: "Refurbishable",
+      qty: 1,
+      priceInr: 3800,
+      location: "Okhla Phase II, New Delhi",
+      description: "Genuine OLED panel salvaged from water-damaged logic board unit.",
+      sellerName: "Priya Verma",
+      sellerEmail: "priya@example.com",
+      sellerUpi: "priya.verma@okicici",
+      status: "Payout Settled",
+      buyerName: "EcoCycle Buyback Hub",
+      buyerEmail: "admin@example.com",
+      razorpayOrderId: "order_EcoRzp72d910ab",
+      razorpayPaymentId: "pay_EcoRzp72d999fe",
+      paymentMethod: "Razorpay Hub Buyback",
+      paidAmountInr: 3800,
+      paidAt: atDaysAgo(8),
+      payoutId: "pout_EcoRzp441098bc",
+      payoutAt: atDaysAgo(7),
+      createdAt: atDaysAgo(10),
+    },
+    {
+      id: 2730000005,
+      title: "High-Grade Gold-Plated Telecom & Server PCBs (2 kg)",
+      partCategory: "Motherboards & PCBs",
+      condition: "For Parts / Scrap",
+      qty: 4,
+      priceInr: 1850,
+      location: "C-Scheme, Jaipur, Rajasthan",
+      description: "Clean router and server boards ready for precious metal recovery.",
+      sellerName: "Rahul Sharma",
+      sellerEmail: "rahul@example.com",
+      sellerUpi: "rahul.sharma@okaxis",
+      status: "Available",
+      createdAt: atDaysAgo(1),
+    },
+  ];
+
+  function ensureOfflineParts() {
+    const existing = readStoredJson(STORE.parts, null);
+    if (!Array.isArray(existing)) {
+      writeStoredJson(STORE.parts, DEFAULT_OFFLINE_PARTS);
+      return [...DEFAULT_OFFLINE_PARTS];
+    }
+    return existing;
+  }
+
   function ensureOfflineRequests() {
     const existing = readStoredJson(STORE.requests, null);
     if (existing === null) {
@@ -507,12 +643,12 @@
     if (!pill || !text) return;
     if (online) {
       pill.classList.remove("is-offline");
-      text.textContent = "MongoDB Active";
-      pill.title = "Connected to Node.js & MongoDB Server";
+      text.textContent = "Service Active";
+      pill.title = "Connected to EcoCycle Server";
     } else {
       pill.classList.add("is-offline");
       text.textContent = "Offline Preview";
-      pill.title = "Server offline - run 'npm start' to connect to MongoDB";
+      pill.title = "Offline preview mode - changes saved locally in browser";
     }
   }
 
@@ -690,6 +826,109 @@
       writeStoredJson(STORE.requests, remaining);
       return { ok: true };
     }
+    if (method === "GET" && path === "/api/parts/razorpay-config") {
+      return {
+        keyId: "rzp_test_EcoCycleDemo",
+        mode: "razorpay_test_sim",
+        hasLiveKeys: false,
+        currency: "INR",
+        merchantName: "EcoCycle Circular Parts",
+      };
+    }
+    if (method === "GET" && path === "/api/parts") {
+      return ensureOfflineParts();
+    }
+    if (method === "POST" && path === "/api/parts") {
+      const parts = ensureOfflineParts();
+      const priceNum = Math.round(Number(body.priceInr));
+      if (!String(body.title || "").trim()) throw new Error("Please enter the part name.");
+      if (!Number.isFinite(priceNum) || priceNum < 10) throw new Error("Minimum asking price is ₹10.");
+      if (!String(body.location || "").trim()) throw new Error("Please enter pickup location.");
+      const part = {
+        id: Date.now(),
+        title: String(body.title).trim(),
+        partCategory: String(body.partCategory || "Other Salvage Parts"),
+        condition: String(body.condition || "Working / Tested"),
+        qty: Math.max(1, Math.min(99, parseInt(body.qty, 10) || 1)),
+        priceInr: priceNum,
+        location: String(body.location).trim(),
+        description: String(body.description || "").trim(),
+        sellerName: profile.name,
+        sellerEmail: profile.email,
+        sellerUpi: String(body.sellerUpi || "").trim(),
+        status: "Available",
+        createdAt: new Date().toISOString(),
+      };
+      writeStoredJson(STORE.parts, [part, ...parts]);
+      return part;
+    }
+    const partOrderMatch = path.match(/^\/api\/parts\/([^/]+)\/razorpay\/order$/);
+    if (partOrderMatch && method === "POST") {
+      const parts = ensureOfflineParts();
+      const part = parts.find((p) => String(p.id) === partOrderMatch[1]);
+      if (!part) throw new Error("Part listing not found.");
+      if (part.status !== "Available") throw new Error(`This part is already ${part.status.toLowerCase()}.`);
+      const orderId = `order_sim_${Math.random().toString(36).slice(2, 12)}`;
+      return {
+        orderId,
+        amount: Math.round(part.priceInr * 100),
+        currency: "INR",
+        keyId: "rzp_test_EcoCycleDemo",
+        mode: "razorpay_test_sim",
+        part,
+      };
+    }
+    const partVerifyMatch = path.match(/^\/api\/parts\/([^/]+)\/razorpay\/verify$/);
+    if (partVerifyMatch && method === "POST") {
+      const parts = ensureOfflineParts();
+      const part = parts.find((p) => String(p.id) === partVerifyMatch[1]);
+      if (!part) throw new Error("Part listing not found.");
+      if (part.status !== "Available") throw new Error(`This part is already ${part.status.toLowerCase()}.`);
+      part.status = "Sold";
+      part.buyerName = profile.name;
+      part.buyerEmail = profile.email;
+      part.razorpayOrderId = body.razorpay_order_id;
+      part.razorpayPaymentId = body.razorpay_payment_id || `pay_sim_${Math.random().toString(36).slice(2, 12)}`;
+      part.paymentMethod = body.paymentMethod || "UPI";
+      part.paidAmountInr = part.priceInr;
+      part.paidAt = new Date().toISOString();
+      writeStoredJson(STORE.parts, parts);
+      return part;
+    }
+    const partPayoutMatch = path.match(/^\/api\/parts\/([^/]+)\/payout$/);
+    if (partPayoutMatch && method === "POST") {
+      if (profile.role !== "admin") throw new Error("Administrator access is required.");
+      const parts = ensureOfflineParts();
+      const part = parts.find((p) => String(p.id) === partPayoutMatch[1]);
+      if (!part) throw new Error("Part listing not found.");
+      const now = new Date().toISOString();
+      part.status = "Payout Settled";
+      part.payoutId = `pout_sim_${Math.random().toString(36).slice(2, 12)}`;
+      part.payoutAt = now;
+      if (!part.razorpayPaymentId) {
+        part.buyerName = "EcoCycle Buyback Hub";
+        part.buyerEmail = profile.email;
+        part.razorpayOrderId = `order_sim_${Math.random().toString(36).slice(2, 10)}`;
+        part.razorpayPaymentId = `pay_sim_${Math.random().toString(36).slice(2, 10)}`;
+        part.paymentMethod = "Razorpay Hub Buyback";
+        part.paidAmountInr = part.priceInr;
+        part.paidAt = now;
+      }
+      writeStoredJson(STORE.parts, parts);
+      return part;
+    }
+    const partDeleteMatch = path.match(/^\/api\/parts\/([^/]+)$/);
+    if (partDeleteMatch && method === "DELETE") {
+      const parts = ensureOfflineParts();
+      const part = parts.find((p) => String(p.id) === partDeleteMatch[1]);
+      if (!part) throw new Error("Part listing not found.");
+      const isOwner = String(part.sellerEmail || "").toLowerCase() === profile.email.toLowerCase();
+      if (profile.role !== "admin" && (!isOwner || part.status !== "Available")) {
+        throw new Error("You can only remove your own available part listings.");
+      }
+      writeStoredJson(STORE.parts, parts.filter((p) => String(p.id) !== partDeleteMatch[1]));
+      return { ok: true };
+    }
     throw new Error("This action is not available.");
   }
 
@@ -704,6 +943,26 @@
       r.id = r.id || r.numericId || r._id;
       return r;
     });
+  }
+
+  async function loadParts() {
+    try {
+      const [parts, rzpConfig] = await Promise.all([
+        localApi("/api/parts"),
+        localApi("/api/parts/razorpay-config"),
+      ]);
+      if (Array.isArray(parts)) {
+        state.parts = parts.map((p) => {
+          p.id = p.id || p.numericId || p._id;
+          return p;
+        });
+      }
+      if (rzpConfig && typeof rzpConfig === "object") {
+        state.razorpayConfig = rzpConfig;
+      }
+    } catch (_) {
+      state.parts = ensureOfflineParts();
+    }
   }
 
   function isRequest(r) {
@@ -740,6 +999,12 @@
   const state = {
     user: null,
     requests: [],
+    parts: [],
+    partsTab: "market",
+    partsFilterCat: "all",
+    partsFilterStatus: "all",
+    partsSearch: "",
+    razorpayConfig: null,
     view: "overview",
     openRequestId: null,
   };
@@ -843,7 +1108,7 @@
   }
 
   async function startSession(profile) {
-    await loadRequests();
+    await Promise.all([loadRequests(), loadParts()]);
     state.user = profile;
     $("auth").hidden = true;
     $("app").hidden = false;
@@ -875,6 +1140,7 @@
     }
     state.user = null;
     state.requests = [];
+    state.parts = [];
     closeDrawer();
     $("toasts").replaceChildren();
     $("app").hidden = true;
@@ -996,7 +1262,7 @@
     if (view === "requests") renderRequests();
     if (view === "new") prepareForm();
     if (view === "categories") renderCategories();
-    if (view === "docs") renderDocs();
+    if (view === "parts") renderParts();
     if (view === "map") showMap();
     const main = $("main-content");
     if (main) main.setAttribute("tabindex", "-1");
@@ -1792,152 +2058,590 @@
   }
 
   /* ------------------------------------------------------------------
-   * Project Documentation & Database Architecture (#/docs)
+   * Sell Parts & Razorpay Marketplace (#/parts)
    * ------------------------------------------------------------------ */
-  function renderDocs() {
-    const host = $("docsContainer");
+  const fmtInr = (val) => `₹${Number(val || 0).toLocaleString("en-IN")}`;
+
+  function partStatusClass(status) {
+    if (status === "Available") return "is-available";
+    if (status === "Sold") return "is-sold";
+    if (status === "Payout Settled") return "is-settled";
+    return "";
+  }
+
+  function closeRzpModal() {
+    const m = $("rzpModal");
+    if (m) m.hidden = true;
+  }
+
+  function openPartReceipt(part) {
+    const modal = $("rzpModal");
+    const body = $("rzpModalBody");
+    const title = $("rzpModalTitle");
+    const meta = $("rzpOrderMeta");
+    const modePill = $("rzpModePill");
+    if (!modal || !body) return;
+
+    title.textContent = "Razorpay Payment Receipt";
+    meta.textContent = `Part #${part.id}`;
+    modePill.textContent = part.status.toUpperCase();
+
+    body.innerHTML = `
+      <div class="rzp-summary">
+        <div>
+          <div style="font-size:12px;color:var(--muted);">${esc(part.title)}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px;">Seller: ${esc(part.sellerName)}${part.sellerUpi ? ` (${esc(part.sellerUpi)})` : ""}</div>
+        </div>
+        <strong>${fmtInr(part.paidAmountInr || part.priceInr)}</strong>
+      </div>
+      <div class="rzp-receipt-box">
+        <div class="rzp-receipt-row"><span>Status</span><strong>${esc(part.status)}</strong></div>
+        <div class="rzp-receipt-row"><span>Razorpay Order ID</span><code>${esc(part.razorpayOrderId || "—")}</code></div>
+        <div class="rzp-receipt-row"><span>Razorpay Payment ID</span><code>${esc(part.razorpayPaymentId || "—")}</code></div>
+        ${part.payoutId ? `<div class="rzp-receipt-row"><span>Payout ID</span><code>${esc(part.payoutId)}</code></div>` : ""}
+        <div class="rzp-receipt-row"><span>Payment Method</span><strong>${esc(part.paymentMethod || "UPI")}</strong></div>
+        <div class="rzp-receipt-row"><span>Buyer</span><strong>${esc(part.buyerName || "—")}</strong></div>
+        <div class="rzp-receipt-row"><span>Paid At</span><span>${esc(fmtDateTime(part.paidAt) || "—")}</span></div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" type="button" id="rzpDoneBtn">Close Receipt</button>
+      </div>
+    `;
+    modal.hidden = false;
+    $("rzpDoneBtn")?.addEventListener("click", closeRzpModal);
+  }
+
+  async function finalizeRazorpayPayment(partId, payload) {
+    const updated = await localApi(`/api/parts/${encodeURIComponent(partId)}/razorpay/verify`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    updated.id = updated.id || updated.numericId || updated._id;
+    const idx = state.parts.findIndex((p) => String(p.id) === String(updated.id));
+    if (idx === -1) state.parts.unshift(updated);
+    else state.parts[idx] = updated;
+    renderParts();
+    toast(`Payment verified via Razorpay (${updated.razorpayPaymentId})`);
+    openPartReceipt(updated);
+  }
+
+  async function openRazorpayCheckout(partId) {
+    const part = state.parts.find((p) => String(p.id) === String(partId));
+    if (!part) return;
+    try {
+      const order = await localApi(`/api/parts/${encodeURIComponent(part.id)}/razorpay/order`, {
+        method: "POST",
+        body: JSON.stringify({}),
+      });
+
+      // Use official Razorpay Checkout popup when live/test Razorpay keys are configured
+      if (order.mode === "razorpay_api" && typeof window.Razorpay === "function") {
+        const rzp = new window.Razorpay({
+          key: order.keyId,
+          amount: order.amount,
+          currency: order.currency || "INR",
+          name: "EcoCycle Circular Parts",
+          description: part.title,
+          order_id: order.orderId,
+          prefill: {
+            name: state.user?.name || "",
+            email: state.user?.email || "",
+          },
+          theme: { color: "#0f8a6a" },
+          handler: async (response) => {
+            try {
+              await finalizeRazorpayPayment(part.id, {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                paymentMethod: "Razorpay Checkout",
+              });
+            } catch (err) {
+              toast(`Payment verification failed: ${err.message}`, "error");
+            }
+          },
+        });
+        rzp.open();
+        return;
+      }
+
+      // Built-in Razorpay Test Checkout Modal
+      const modal = $("rzpModal");
+      const body = $("rzpModalBody");
+      $("rzpModalTitle").textContent = "Razorpay Checkout";
+      $("rzpOrderMeta").textContent = `Order ${order.orderId}`;
+      $("rzpModePill").textContent = "TEST MODE";
+
+      let selectedPayMethod = "UPI";
+      body.innerHTML = `
+        <div class="rzp-summary">
+          <div>
+            <strong style="font-size:14.5px;display:block;">${esc(part.title)}</strong>
+            <small style="color:var(--muted);">Qty: ${esc(part.qty)} · Seller: ${esc(part.sellerName)}</small>
+          </div>
+          <strong>${fmtInr(part.priceInr)}</strong>
+        </div>
+
+        <div>
+          <label style="display:block;font-size:12px;font-weight:650;margin-bottom:8px;color:var(--muted);">Choose Payment Method</label>
+          <div class="rzp-methods" id="rzpMethods">
+            <button type="button" class="rzp-method-btn is-active" data-rzp-method="UPI">
+              <strong>UPI / QR</strong>
+              <small>GPay, PhonePe, Paytm</small>
+            </button>
+            <button type="button" class="rzp-method-btn" data-rzp-method="Card">
+              <strong>Card</strong>
+              <small>Visa, Mastercard, RuPay</small>
+            </button>
+            <button type="button" class="rzp-method-btn" data-rzp-method="Netbanking">
+              <strong>Netbanking</strong>
+              <small>HDFC, SBI, ICICI, Axis</small>
+            </button>
+            <button type="button" class="rzp-method-btn" data-rzp-method="Wallet">
+              <strong>Wallet</strong>
+              <small>Amazon Pay, Mobikwik</small>
+            </button>
+          </div>
+        </div>
+
+        <div class="field" id="rzpInputField">
+          <label for="rzpPayInput" id="rzpPayInputLabel">UPI ID</label>
+          <input id="rzpPayInput" type="text" value="deepak@okaxis" placeholder="name@okbank" />
+        </div>
+
+        <p class="form-error" id="rzpErr" role="alert"></p>
+
+        <div class="modal-actions">
+          <button class="btn" type="button" id="rzpCancelBtn">Cancel</button>
+          <button class="btn btn-rzp" type="button" id="rzpPayNowBtn">Pay ${fmtInr(part.priceInr)}</button>
+        </div>
+      `;
+
+      modal.hidden = false;
+
+      body.querySelectorAll("[data-rzp-method]").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          selectedPayMethod = btn.dataset.rzpMethod;
+          body.querySelectorAll("[data-rzp-method]").forEach((b) =>
+            b.classList.toggle("is-active", b === btn),
+          );
+          const lbl = $("rzpPayInputLabel");
+          const inp = $("rzpPayInput");
+          if (selectedPayMethod === "UPI") {
+            lbl.textContent = "UPI ID";
+            inp.value = "deepak@okaxis";
+            inp.placeholder = "name@okbank";
+          } else if (selectedPayMethod === "Card") {
+            lbl.textContent = "Test Card Number";
+            inp.value = "4111 1111 1111 1111";
+            inp.placeholder = "Card number";
+          } else if (selectedPayMethod === "Netbanking") {
+            lbl.textContent = "Bank Name";
+            inp.value = "HDFC Bank Retail";
+            inp.placeholder = "Bank name";
+          } else {
+            lbl.textContent = "Wallet Mobile";
+            inp.value = "+91 98765 43210";
+            inp.placeholder = "Mobile number";
+          }
+        });
+      });
+
+      $("rzpCancelBtn").addEventListener("click", closeRzpModal);
+      $("rzpPayNowBtn").addEventListener("click", async () => {
+        const payBtn = $("rzpPayNowBtn");
+        const errEl = $("rzpErr");
+        payBtn.disabled = true;
+        payBtn.textContent = "Verifying with Razorpay…";
+        errEl.textContent = "";
+        try {
+          await new Promise((r) => setTimeout(r, 450));
+          await finalizeRazorpayPayment(part.id, {
+            razorpay_order_id: order.orderId,
+            simulatedPayment: true,
+            paymentMethod: selectedPayMethod,
+          });
+        } catch (err) {
+          errEl.textContent = err.message;
+          payBtn.disabled = false;
+          payBtn.textContent = `Pay ${fmtInr(part.priceInr)}`;
+        }
+      });
+    } catch (err) {
+      toast(`Could not start Razorpay checkout: ${err.message}`, "error");
+    }
+  }
+
+  function renderPartCard(p) {
+    const me = (state.user?.email || "").toLowerCase();
+    const isSeller = String(p.sellerEmail || "").toLowerCase() === me;
+    const isAvailable = p.status === "Available";
+    const canBuy = isAvailable;
+    const canSettlePayout = isAdmin() && (p.status === "Sold" || p.status === "Available");
+    const canRemove = isAdmin() || (isSeller && isAvailable);
+
+    return `
+      <article class="part-card" data-part-id="${esc(p.id)}">
+        <div>
+          <div class="part-card-top">
+            <span class="part-cat-pill">${esc(p.partCategory)}</span>
+            <span class="part-status-pill ${partStatusClass(p.status)}">${esc(p.status)}</span>
+          </div>
+          <h3>${esc(p.title)}</h3>
+          <p class="part-desc">${esc(p.description || "Verified salvaged electronic component ready for reuse or recovery.")}</p>
+          <div class="part-meta">
+            <span>Condition: <strong>${esc(p.condition)}</strong></span>
+            <span>Qty: <strong>${esc(p.qty)}</strong></span>
+            <span>📍 ${esc(p.location)}</span>
+            <span>Seller: ${esc(p.sellerName)}${isSeller ? " (You)" : ""}</span>
+          </div>
+        </div>
+        <div class="part-card-foot">
+          <div class="part-price">
+            <strong>${fmtInr(p.priceInr)}</strong>
+            <small>${p.razorpayPaymentId ? `Paid · ${esc(p.razorpayPaymentId)}` : p.sellerUpi ? `UPI: ${esc(p.sellerUpi)}` : "Razorpay protected"}</small>
+          </div>
+          <div class="part-actions">
+            ${canBuy ? `<button class="btn btn-sm btn-rzp" type="button" data-buy-part="${esc(p.id)}">Buy with Razorpay</button>` : ""}
+            ${p.razorpayPaymentId ? `<button class="btn btn-sm" type="button" data-receipt-part="${esc(p.id)}">Receipt</button>` : ""}
+            ${canSettlePayout ? `<button class="btn btn-sm btn-primary" type="button" data-payout-part="${esc(p.id)}">${p.status === "Sold" ? "Settle Payout" : "Hub Buyback"}</button>` : ""}
+            ${canRemove ? `<button class="btn btn-sm btn-ghost-danger" type="button" data-delete-part="${esc(p.id)}">Remove</button>` : ""}
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function renderParts() {
+    const host = $("partsContainer");
     if (!host) return;
-    const totalReq = state.requests.length;
-    const totalCenters = FALLBACK_CERTIFIED_CENTERS.length;
-    const dbBadge = backendStatusOnline
-      ? `<span class="docs-badge">● Live MongoDB Connected (ecocycle)</span>`
-      : `<span class="docs-badge is-warn">● Offline Browser Storage Preview (localStorage)</span>`;
+    const me = (state.user?.email || "").toLowerCase();
+    const allParts = state.parts || [];
+    const availableParts = allParts.filter((p) => p.status === "Available");
+    const myListings = allParts.filter(
+      (p) => String(p.sellerEmail || "").toLowerCase() === me || String(p.buyerEmail || "").toLowerCase() === me,
+    );
+    const myEarnings = allParts
+      .filter(
+        (p) =>
+          String(p.sellerEmail || "").toLowerCase() === me &&
+          ["Sold", "Payout Settled"].includes(p.status),
+      )
+      .reduce((acc, p) => acc + Number(p.paidAmountInr || p.priceInr || 0), 0);
+    const rzpModeLabel = state.razorpayConfig?.hasLiveKeys
+      ? "Razorpay Live API"
+      : "Razorpay Test Checkout";
+
+    const q = state.partsSearch.trim().toLowerCase();
+    const baseList = state.partsTab === "mine" ? myListings : allParts;
+    const filtered = baseList.filter((p) => {
+      if (state.partsFilterCat !== "all" && p.partCategory !== state.partsFilterCat) return false;
+      if (state.partsFilterStatus !== "all" && p.status !== state.partsFilterStatus) return false;
+      if (
+        q &&
+        ![p.title, p.partCategory, p.location, p.sellerName, p.description, p.condition]
+          .some((f) => String(f || "").toLowerCase().includes(q))
+      ) {
+        return false;
+      }
+      return true;
+    });
 
     host.innerHTML = `
-      <div class="docs-hero">
+      <div class="parts-hero">
         <div>
-          ${dbBadge}
-          <h2>EcoCycle Project Architecture, Database & Technical Docs</h2>
-          <p>Full-stack E-Waste Collection & Circularity Platform (<code>v1.0.0</code> · UI <code>v2.4 Pro</code>) powered by Node.js, Express 5, MongoDB + Mongoose 8, JWT RBAC, and local Leaflet v1.9.4 GIS mapping.</p>
+          <span class="parts-hero-badge">⚡ Razorpay Enabled · Circular Parts Exchange</span>
+          <h2>Sell & Buy Salvaged Electronic Parts</h2>
+          <p>Monetize working RAM, SSDs, displays, chargers, and PCBs directly on EcoCycle. Buyers pay securely via Razorpay Checkout and sellers receive verified UPI payout receipts.</p>
         </div>
         <div class="docs-hero-actions">
-          <a class="btn btn-primary btn-sm" href="EcoCycle_Project_Documentation.pdf" target="_blank" rel="noopener">
-            <svg class="i"><use href="#i-download"/></svg>
-            <span>Open Full PDF Spec</span>
-          </a>
-          <button class="btn btn-sm" type="button" id="docsResetDemoBtn" title="Restore the 8 pre-seeded sample requests in offline storage">
-            <svg class="i"><use href="#i-recycle"/></svg>
-            <span>Restore Sample Data</span>
+          <button class="btn btn-primary btn-sm" type="button" id="partsQuickSellBtn">
+            <svg class="i"><use href="#i-plus"/></svg>
+            <span>List a Part to Sell</span>
           </button>
         </div>
       </div>
 
-      <div class="docs-stat-row">
-        <div class="docs-stat-card">
-          <small>Primary Live Database</small>
-          <strong>MongoDB + Mongoose 8</strong>
-          <span>mongodb://127.0.0.1:27017/ecocycle (5 ODM models)</span>
+      <div class="parts-stats">
+        <div class="parts-stat-card">
+          <small>Marketplace</small>
+          <strong>${availableParts.length} Available</strong>
+          <span>${allParts.length} total parts listed</span>
         </div>
-        <div class="docs-stat-card">
-          <small>Relational SQL Reference</small>
-          <strong>MySQL (DATABASE.sql)</strong>
-          <span>10 normalized tables + foreign keys + ER MODEL.png</span>
+        <div class="parts-stat-card">
+          <small>My Activity</small>
+          <strong>${myListings.length} Listings</strong>
+          <span>Selling & purchased parts</span>
         </div>
-        <div class="docs-stat-card">
-          <small>Fallback Resilience</small>
-          <strong>Memory + localStorage</strong>
-          <span>Zero-downtime offline mode (${totalReq} loaded requests)</span>
+        <div class="parts-stat-card">
+          <small>My Razorpay Earnings</small>
+          <strong>${fmtInr(myEarnings)}</strong>
+          <span>From sold & settled parts</span>
         </div>
-        <div class="docs-stat-card">
-          <small>Catalog & GIS Hubs</small>
-          <strong>${CATEGORIES.length} Categories · ${totalCenters} Hubs</strong>
-          <span>42 Indian city coordinates in bundled Leaflet GIS</span>
+        <div class="parts-stat-card">
+          <small>Payment Gateway</small>
+          <strong>${esc(rzpModeLabel)}</strong>
+          <span>INR (₹) · HMAC-SHA256 verified</span>
         </div>
       </div>
 
-      <div class="docs-grid">
-        <div class="panel">
-          <div class="panel-head"><h2>Active Database Stack & Collections</h2></div>
-          <p style="margin:0 0 12px;font-size:13px;color:var(--muted);line-height:1.55;">
-            <strong>Which DB is used?</strong> The live application uses <strong>MongoDB</strong> via Mongoose ODM (configured by <code>MONGODB_URI</code> in <code>.env</code>). If MongoDB is unavailable, the backend falls back to in-memory arrays; if the Node server is offline, the frontend uses browser <code>localStorage</code>.
-          </p>
-          <ul class="docs-list">
-            <li><div><strong>User</strong><div style="font-size:12px;color:var(--muted);">Accounts, roles (<code>user</code>/<code>admin</code>), bcryptjs 10-round password hash</div></div><span class="docs-code">models/User.js</span></li>
-            <li><div><strong>CollectionRequest</strong><div style="font-size:12px;color:var(--muted);"><code>numericId</code>, 8-state enum lifecycle, <code>estimatedWeight</code>, audit <code>history[]</code></div></div><span class="docs-code">models/CollectionRequest.js</span></li>
-            <li><div><strong>WasteCategory</strong><div style="font-size:12px;color:var(--muted);">14 categories, unit weights (kg), carbon offset factors, precious metals</div></div><span class="docs-code">models/WasteCategory.js</span></li>
-            <li><div><strong>RecyclingCenter</strong><div style="font-size:12px;color:var(--muted);">16 verified Indian drop-off hubs with lat/lng & opening hours</div></div><span class="docs-code">models/RecyclingCenter.js</span></li>
-            <li><div><strong>RecyclingRecord</strong><div style="font-size:12px;color:var(--muted);">Post-collection recycled/disposed kg & recovered material logs</div></div><span class="docs-code">models/RecyclingRecord.js</span></li>
-          </ul>
-        </div>
+      <div class="filter-tabs" role="tablist" aria-label="Parts sections">
+        <button class="filter-tab ${state.partsTab === "market" ? "is-active" : ""}" data-parts-tab="market" type="button">
+          Marketplace <span class="tab-badge">${allParts.length}</span>
+        </button>
+        <button class="filter-tab ${state.partsTab === "sell" ? "is-active" : ""}" data-parts-tab="sell" type="button">
+          + Sell a Part
+        </button>
+        <button class="filter-tab ${state.partsTab === "mine" ? "is-active" : ""}" data-parts-tab="mine" type="button">
+          My Listings & Purchases <span class="tab-badge">${myListings.length}</span>
+        </button>
+      </div>
 
-        <div class="panel">
-          <div class="panel-head"><h2>Entity-Relationship Diagram (MySQL Reference)</h2></div>
-          <p style="margin:0 0 12px;font-size:13px;color:var(--muted);line-height:1.55;">
-            <code>DATABASE.sql</code> defines the 10-table normalized MySQL schema (<code>Users</code>, <code>Admins</code>, <code>Waste_Categories</code>, <code>Recycling_Centers</code>, <code>Collection_Requests</code>, <code>Request_Status_History</code>, <code>Request_Items</code>, <code>Collections</code>, <code>Recycling_Records</code>, <code>Recovered_Materials</code>).
-          </p>
-          <div class="docs-er-wrap">
-            <img src="ER MODEL.png" alt="EcoCycle E-Waste Management Entity-Relationship Diagram" loading="lazy" />
+      ${
+        state.partsTab === "sell"
+          ? `
+        <div class="split">
+          <div class="panel">
+            <div class="panel-head"><h2>List a part for sale</h2></div>
+            <form class="form form-grid" id="sellPartForm" novalidate>
+              <div class="field span-2">
+                <label for="pTitle">Part name & model</label>
+                <input id="pTitle" type="text" placeholder="e.g. Samsung 8GB DDR4 Laptop RAM" required />
+              </div>
+              <div class="field">
+                <label for="pCategory">Part category</label>
+                <select id="pCategory">
+                  ${PART_CATEGORIES.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label for="pCondition">Condition</label>
+                <select id="pCondition">
+                  ${PART_CONDITIONS.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("")}
+                </select>
+              </div>
+              <div class="field">
+                <label for="pQty">Quantity</label>
+                <input id="pQty" type="number" min="1" max="99" value="1" />
+              </div>
+              <div class="field">
+                <label for="pPrice">Asking price (INR ₹)</label>
+                <input id="pPrice" type="number" min="10" max="500000" value="1200" />
+                <small class="hint" id="pSuggestedHint">Suggested estimate: ₹1,200</small>
+              </div>
+              <div class="field">
+                <label for="pUpi">Your UPI ID (for Razorpay payout)</label>
+                <input id="pUpi" type="text" placeholder="e.g. deepak@okaxis" />
+              </div>
+              <div class="field">
+                <label for="pLocation">Pickup city / area</label>
+                <input id="pLocation" type="text" placeholder="e.g. Malviya Nagar, Jaipur" />
+              </div>
+              <div class="field span-2">
+                <label for="pDesc">Specs & notes (optional)</label>
+                <textarea id="pDesc" rows="2" placeholder="Test status, compatibility, warranty or salvage notes"></textarea>
+              </div>
+              <p class="form-error span-2" id="sellPartError" role="alert"></p>
+              <div class="form-actions span-2">
+                <button class="btn btn-primary" type="submit">Publish Part Listing</button>
+                <button class="btn" type="button" id="sellPartCancelBtn">Back to Marketplace</button>
+              </div>
+            </form>
           </div>
+          <aside class="panel aside-note">
+            <div class="panel-head"><h2>How Razorpay Selling Works</h2></div>
+            <ul class="check-list">
+              <li>Enter your part details, tested condition, asking price in ₹, and your UPI ID.</li>
+              <li>Buyers or EcoCycle Buyback Hubs pay securely using <strong>Razorpay Checkout</strong> (UPI, Card, Netbanking).</li>
+              <li>Every purchase creates a verified <code>order_...</code> and <code>pay_...</code> receipt, and payouts settle directly to your UPI.</li>
+            </ul>
+          </aside>
+        </div>`
+          : `
+        <div class="toolbar">
+          <div class="search">
+            <svg class="i"><use href="#i-search" /></svg>
+            <input id="partsSearchInput" type="search" value="${esc(state.partsSearch)}" placeholder="Search parts, specs, seller or city..." aria-label="Search parts" />
+          </div>
+          <select id="partsCatFilter" aria-label="Filter by part category">
+            <option value="all">All part categories</option>
+            ${PART_CATEGORIES.map((c) => `<option value="${esc(c)}" ${state.partsFilterCat === c ? "selected" : ""}>${esc(c)}</option>`).join("")}
+          </select>
+          <select id="partsStatusFilter" aria-label="Filter by listing status">
+            <option value="all">All statuses</option>
+            ${["Available", "Sold", "Payout Settled"].map((s) => `<option value="${esc(s)}" ${state.partsFilterStatus === s ? "selected" : ""}>${esc(s)}</option>`).join("")}
+          </select>
+          <span class="toolbar-count">${filtered.length} ${filtered.length === 1 ? "part" : "parts"}</span>
         </div>
-      </div>
-
-      <div class="panel flush">
-        <div class="panel-head" style="padding:18px 20px 10px;"><h2>REST API Endpoints Reference (Express 5.3.0)</h2></div>
-        <div class="table-wrap">
-          <table class="tbl">
-            <thead>
-              <tr>
-                <th scope="col">Method</th>
-                <th scope="col">Endpoint</th>
-                <th scope="col">Auth / Role</th>
-                <th scope="col">Behavior</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td><span class="docs-code">GET</span></td><td><code>/api/health</code></td><td>Public</td><td>Service health, MongoDB readyState, masked URI & uptime</td></tr>
-              <tr><td><span class="docs-code">POST</span></td><td><code>/api/auth/register</code></td><td>Public</td><td>Registers citizen account (always enforces <code>role: 'user'</code>) & issues 7d JWT</td></tr>
-              <tr><td><span class="docs-code">POST</span></td><td><code>/api/auth/login</code></td><td>Public</td><td>Authenticates email, password & role against MongoDB or demo users</td></tr>
-              <tr><td><span class="docs-code">GET</span></td><td><code>/api/auth/session</code></td><td>Bearer JWT</td><td>Validates JWT and returns current user profile</td></tr>
-              <tr><td><span class="docs-code">GET / POST</span></td><td><code>/api/requests</code></td><td>Bearer JWT</td><td>Lists requests (RBAC scoped) or submits new request with category weight calc</td></tr>
-              <tr><td><span class="docs-code">PATCH</span></td><td><code>/api/requests/:id/status</code></td><td>Bearer JWT</td><td>Transitions 8-stage status & appends history (users can cancel own Pending)</td></tr>
-              <tr><td><span class="docs-code">DELETE</span></td><td><code>/api/requests/:id</code></td><td>Admin Only</td><td>Permanently removes request from MongoDB & fallback store</td></tr>
-              <tr><td><span class="docs-code">GET</span></td><td><code>/api/categories</code></td><td>Public</td><td>Lists 14 e-waste categories (auto-seeds MongoDB if empty)</td></tr>
-              <tr><td><span class="docs-code">GET</span></td><td><code>/api/centers</code></td><td>Public</td><td>Lists 16 verified Indian recycling hubs with geospatial coordinates</td></tr>
-              <tr><td><span class="docs-code">GET</span></td><td><code>/api/stats</code></td><td>Bearer JWT</td><td>Computes status counts, completed weight, CO₂ avoided, Copper, Aluminum & Gold</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="docs-grid">
-        <div class="panel">
-          <div class="panel-head"><h2>Impact Calculation & Security Safeguards</h2></div>
-          <ul class="docs-list">
-            <li><div><strong>CO₂ Emissions Avoided</strong><div style="font-size:12px;color:var(--muted);">Calculated at <code>completedWeightKg × 1.44 kg</code> CO₂ prevented per kg</div></div><span class="docs-code">1.44×</span></li>
-            <li><div><strong>Metal Recovery Formula</strong><div style="font-size:12px;color:var(--muted);">Backend: Copper ~120 g/kg, Aluminum ~140 g/kg, Gold ~35 mg/kg; UI summary ~135 g/kg</div></div><span class="docs-code">Cu/Al/Au</span></li>
-            <li><div><strong>CSV Formula-Injection Guard</strong><div style="font-size:12px;color:var(--muted);">Prefixes cells starting with <code>= + - @ \\t \\r</code> with single quote before RFC-4180 export</div></div><span class="docs-code">exportCsv()</span></li>
-            <li><div><strong>XSS & Token Protection</strong><div style="font-size:12px;color:var(--muted);">HTML output escaped via <code>esc()</code>; JWT <code>7d</code> expiry + <code>bcryptjs</code> salt(10)</div></div><span class="docs-code">JWT + Hash</span></li>
-          </ul>
-        </div>
-
-        <div class="panel">
-          <div class="panel-head"><h2>Pre-Seeded Demo Accounts & Startup</h2></div>
-          <ul class="docs-list">
-            <li><div><strong>Rahul Sharma</strong> (<code>rahul@example.com</code>)<div style="font-size:12px;color:var(--muted);">Role: Citizen User · Password: <code>demo1234</code></div></div><span class="docs-code">User</span></li>
-            <li><div><strong>Priya Verma</strong> (<code>priya@example.com</code>)<div style="font-size:12px;color:var(--muted);">Role: Citizen User · Password: <code>demo1234</code></div></div><span class="docs-code">User</span></li>
-            <li><div><strong>System Admin</strong> (<code>admin@example.com</code>)<div style="font-size:12px;color:var(--muted);">Role: Operations Admin · Password: <code>demo1234</code></div></div><span class="docs-code">Admin</span></li>
-            <li><div><strong>Run Commands</strong><div style="font-size:12px;color:var(--muted);"><code>npm install</code> · <code>npm run seed</code> · <code>npm start</code> (auto-falls back port 5000 → 5001)</div></div><span class="docs-code">CLI</span></li>
-          </ul>
-        </div>
-      </div>
+        ${
+          filtered.length
+            ? `<div class="parts-grid">${filtered.map(renderPartCard).join("")}</div>`
+            : `<div class="panel"><div class="empty"><strong>No matching parts found</strong>Try clearing your filters or list a new part to sell.<br /><button class="btn btn-primary" type="button" id="emptySellBtn" style="margin-top:12px;">+ Sell a Part</button></div></div>`
+        }`
+      }
     `;
 
-    const resetBtn = $("docsResetDemoBtn");
-    if (resetBtn) {
-      resetBtn.addEventListener("click", async () => {
-        if (backendStatusOnline) {
-          await loadRequests();
-          renderDocs();
-          toast("Refreshed live MongoDB / server dataset");
-          return;
+    // Wire interactive controls inside #view-parts
+    $("partsQuickSellBtn")?.addEventListener("click", () => {
+      state.partsTab = "sell";
+      renderParts();
+    });
+    $("emptySellBtn")?.addEventListener("click", () => {
+      state.partsTab = "sell";
+      renderParts();
+    });
+    $("sellPartCancelBtn")?.addEventListener("click", () => {
+      state.partsTab = "market";
+      renderParts();
+    });
+    host.querySelectorAll("[data-parts-tab]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.partsTab = btn.dataset.partsTab;
+        renderParts();
+      });
+    });
+
+    const searchInp = $("partsSearchInput");
+    if (searchInp) {
+      searchInp.addEventListener("input", () => {
+        state.partsSearch = searchInp.value;
+        renderParts();
+        const nextInp = $("partsSearchInput");
+        if (nextInp) {
+          nextInp.focus();
+          nextInp.setSelectionRange(nextInp.value.length, nextInp.value.length);
         }
-        writeStoredJson(STORE.requests, DEFAULT_OFFLINE_REQUESTS);
-        await loadRequests();
-        updateBadges();
-        renderDocs();
-        toast("Restored 8 pre-seeded sample requests in offline storage");
       });
     }
+    $("partsCatFilter")?.addEventListener("change", (e) => {
+      state.partsFilterCat = e.target.value;
+      renderParts();
+    });
+    $("partsStatusFilter")?.addEventListener("change", (e) => {
+      state.partsFilterStatus = e.target.value;
+      renderParts();
+    });
+
+    const pCat = $("pCategory");
+    const pCond = $("pCondition");
+    const pQty = $("pQty");
+    const updateSuggestedPrice = () => {
+      if (!pCat || !$("pPrice")) return;
+      const base = PART_SUGGESTED_PRICES[pCat.value] || 800;
+      const mult =
+        pCond.value === "Working / Tested"
+          ? 1
+          : pCond.value === "Refurbishable"
+            ? 0.65
+            : 0.35;
+      const qtyNum = Math.max(1, parseInt(pQty?.value, 10) || 1);
+      const suggested = Math.round(base * mult * qtyNum);
+      $("pPrice").value = suggested;
+      if ($("pSuggestedHint")) {
+        $("pSuggestedHint").textContent = `Suggested estimate: ${fmtInr(suggested)}`;
+      }
+    };
+    pCat?.addEventListener("change", updateSuggestedPrice);
+    pCond?.addEventListener("change", updateSuggestedPrice);
+    pQty?.addEventListener("input", updateSuggestedPrice);
+
+    $("sellPartForm")?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const err = $("sellPartError");
+      const title = $("pTitle").value.trim();
+      const priceInr = Number($("pPrice").value);
+      const location = $("pLocation").value.trim();
+      if (!title) {
+        err.textContent = "Please enter the part name or model.";
+        $("pTitle").focus();
+        return;
+      }
+      if (!Number.isFinite(priceInr) || priceInr < 10) {
+        err.textContent = "Enter a valid asking price (minimum ₹10).";
+        $("pPrice").focus();
+        return;
+      }
+      if (!location) {
+        err.textContent = "Enter your city or pickup location.";
+        $("pLocation").focus();
+        return;
+      }
+      err.textContent = "";
+      const btn = e.target.querySelector('[type="submit"]');
+      btn.disabled = true;
+      try {
+        const created = await localApi("/api/parts", {
+          method: "POST",
+          body: JSON.stringify({
+            title,
+            partCategory: $("pCategory").value,
+            condition: $("pCondition").value,
+            qty: Math.max(1, parseInt($("pQty").value, 10) || 1),
+            priceInr,
+            sellerUpi: $("pUpi").value.trim(),
+            location,
+            description: $("pDesc").value.trim(),
+          }),
+        });
+        created.id = created.id || created.numericId || created._id;
+        state.parts.unshift(created);
+        state.partsTab = "market";
+        renderParts();
+        toast(`Part "${created.title}" listed for ${fmtInr(created.priceInr)}`);
+      } catch (error) {
+        err.textContent = error.message;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+
+    host.querySelectorAll("[data-buy-part]").forEach((btn) => {
+      btn.addEventListener("click", () => openRazorpayCheckout(btn.dataset.buyPart));
+    });
+    host.querySelectorAll("[data-receipt-part]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const p = state.parts.find((x) => String(x.id) === String(btn.dataset.receiptPart));
+        if (p) openPartReceipt(p);
+      });
+    });
+    host.querySelectorAll("[data-payout-part]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.payoutPart;
+        try {
+          const updated = await localApi(`/api/parts/${encodeURIComponent(id)}/payout`, {
+            method: "POST",
+            body: JSON.stringify({}),
+          });
+          updated.id = updated.id || updated.numericId || updated._id;
+          const idx = state.parts.findIndex((p) => String(p.id) === String(updated.id));
+          if (idx !== -1) state.parts[idx] = updated;
+          renderParts();
+          toast(`Razorpay payout settled (${updated.payoutId})`);
+          openPartReceipt(updated);
+        } catch (err) {
+          toast(`Could not settle payout: ${err.message}`, "error");
+        }
+      });
+    });
+    host.querySelectorAll("[data-delete-part]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.deletePart;
+        const ok = await confirmDialog({
+          title: "Remove part listing?",
+          text: "This listing will be removed from the marketplace.",
+          confirmLabel: "Remove",
+        });
+        if (!ok) return;
+        try {
+          await localApi(`/api/parts/${encodeURIComponent(id)}`, { method: "DELETE" });
+          state.parts = state.parts.filter((p) => String(p.id) !== String(id));
+          renderParts();
+          toast("Part listing removed");
+        } catch (err) {
+          toast(`Could not remove listing: ${err.message}`, "error");
+        }
+      });
+    });
   }
 
   /* ------------------------------------------------------------------
@@ -3175,6 +3879,15 @@
     });
     $("drawerClose").addEventListener("click", closeDrawer);
     $("drawerScrim").addEventListener("click", closeDrawer);
+    $("rzpCloseBtn")?.addEventListener("click", closeRzpModal);
+    $("rzpModal")?.addEventListener("click", (e) => {
+      if (e.target === $("rzpModal")) closeRzpModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && $("rzpModal") && !$("rzpModal").hidden) {
+        closeRzpModal();
+      }
+    });
     $("drawerBody").addEventListener("click", async (e) => {
       const r = findRequest(state.openRequestId);
       if (!r) return;
