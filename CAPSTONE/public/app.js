@@ -218,6 +218,7 @@
   };
 
   const QUICK_CITIES = [
+    "All India",
     "Delhi",
     "Mumbai",
     "Bengaluru",
@@ -226,8 +227,9 @@
     "Hyderabad",
     "Pune",
     "Jaipur",
-    "Lucknow",
     "Ahmedabad",
+    "Guwahati",
+    "Kochi",
   ];
 
   /* ------------------------------------------------------------------
@@ -2189,17 +2191,21 @@
               <strong>UPI / QR</strong>
               <small>GPay, PhonePe, Paytm</small>
             </button>
-            <button type="button" class="rzp-method-btn" data-rzp-method="Card">
-              <strong>Card</strong>
+            <button type="button" class="rzp-method-btn" data-rzp-method="Debit Card">
+              <strong>Debit Card</strong>
               <small>Visa, Mastercard, RuPay</small>
+            </button>
+            <button type="button" class="rzp-method-btn" data-rzp-method="Credit Card">
+              <strong>Credit Card</strong>
+              <small>Visa, Mastercard, Amex</small>
             </button>
             <button type="button" class="rzp-method-btn" data-rzp-method="Netbanking">
               <strong>Netbanking</strong>
               <small>HDFC, SBI, ICICI, Axis</small>
             </button>
-            <button type="button" class="rzp-method-btn" data-rzp-method="Wallet">
+            <button type="button" class="rzp-method-btn" data-rzp-method="Wallet" style="grid-column: span 2;">
               <strong>Wallet</strong>
-              <small>Amazon Pay, Mobikwik</small>
+              <small>Amazon Pay, Mobikwik, Freecharge</small>
             </button>
           </div>
         </div>
@@ -2207,6 +2213,27 @@
         <div class="field" id="rzpInputField">
           <label for="rzpPayInput" id="rzpPayInputLabel">UPI ID</label>
           <input id="rzpPayInput" type="text" value="deepak@okaxis" placeholder="name@okbank" />
+        </div>
+
+        <div id="rzpCardFields" hidden style="display:flex;flex-direction:column;gap:10px;">
+          <div class="field">
+            <label for="rzpCardNumber" id="rzpCardNumberLabel">Debit Card Number</label>
+            <input id="rzpCardNumber" type="text" inputmode="numeric" maxlength="19" value="4111 1111 1111 1111" placeholder="XXXX XXXX XXXX XXXX" />
+          </div>
+          <div class="rzp-card-grid">
+            <div class="field">
+              <label for="rzpCardExpiry">Expiry (MM/YY)</label>
+              <input id="rzpCardExpiry" type="text" maxlength="5" value="12/28" placeholder="MM/YY" />
+            </div>
+            <div class="field">
+              <label for="rzpCardCvv">CVV</label>
+              <input id="rzpCardCvv" type="password" inputmode="numeric" maxlength="4" value="123" placeholder="123" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="rzpCardHolder">Cardholder Name</label>
+            <input id="rzpCardHolder" type="text" value="${esc(state.user?.name || "Deepak")}" placeholder="Name on card" />
+          </div>
         </div>
 
         <p class="form-error" id="rzpErr" role="alert"></p>
@@ -2219,31 +2246,52 @@
 
       modal.hidden = false;
 
+      const syncMethodFields = () => {
+        const isCard = selectedPayMethod === "Debit Card" || selectedPayMethod === "Credit Card";
+        const singleField = $("rzpInputField");
+        const cardFields = $("rzpCardFields");
+        if (singleField) singleField.hidden = isCard;
+        if (cardFields) cardFields.hidden = !isCard;
+
+        if (isCard) {
+          const cardLbl = $("rzpCardNumberLabel");
+          const cardInp = $("rzpCardNumber");
+          if (cardLbl) cardLbl.textContent = `${selectedPayMethod} Number`;
+          if (cardInp && !cardInp.value.trim()) {
+            cardInp.value = selectedPayMethod === "Credit Card" ? "5555 5555 5555 4444" : "4111 1111 1111 1111";
+          } else if (cardInp && (cardInp.value === "4111 1111 1111 1111" || cardInp.value === "5555 5555 5555 4444")) {
+            cardInp.value = selectedPayMethod === "Credit Card" ? "5555 5555 5555 4444" : "4111 1111 1111 1111";
+          }
+          return;
+        }
+
+        const lbl = $("rzpPayInputLabel");
+        const inp = $("rzpPayInput");
+        if (selectedPayMethod === "UPI") {
+          lbl.textContent = "UPI ID";
+          inp.value = "deepak@okaxis";
+          inp.placeholder = "name@okbank";
+        } else if (selectedPayMethod === "Netbanking") {
+          lbl.textContent = "Bank Name";
+          inp.value = "HDFC Bank Retail";
+          inp.placeholder = "Bank name";
+        } else {
+          lbl.textContent = "Wallet Mobile";
+          inp.value = "+91 98765 43210";
+          inp.placeholder = "Mobile number";
+        }
+      };
+
+      syncMethodFields();
+
       body.querySelectorAll("[data-rzp-method]").forEach((btn) => {
         btn.addEventListener("click", () => {
           selectedPayMethod = btn.dataset.rzpMethod;
           body.querySelectorAll("[data-rzp-method]").forEach((b) =>
             b.classList.toggle("is-active", b === btn),
           );
-          const lbl = $("rzpPayInputLabel");
-          const inp = $("rzpPayInput");
-          if (selectedPayMethod === "UPI") {
-            lbl.textContent = "UPI ID";
-            inp.value = "deepak@okaxis";
-            inp.placeholder = "name@okbank";
-          } else if (selectedPayMethod === "Card") {
-            lbl.textContent = "Test Card Number";
-            inp.value = "4111 1111 1111 1111";
-            inp.placeholder = "Card number";
-          } else if (selectedPayMethod === "Netbanking") {
-            lbl.textContent = "Bank Name";
-            inp.value = "HDFC Bank Retail";
-            inp.placeholder = "Bank name";
-          } else {
-            lbl.textContent = "Wallet Mobile";
-            inp.value = "+91 98765 43210";
-            inp.placeholder = "Mobile number";
-          }
+          $("rzpErr").textContent = "";
+          syncMethodFields();
         });
       });
 
@@ -2251,6 +2299,36 @@
       $("rzpPayNowBtn").addEventListener("click", async () => {
         const payBtn = $("rzpPayNowBtn");
         const errEl = $("rzpErr");
+        const isCard = selectedPayMethod === "Debit Card" || selectedPayMethod === "Credit Card";
+        let methodSummary = selectedPayMethod;
+
+        if (isCard) {
+          const digits = ($("rzpCardNumber")?.value || "").replace(/\D/g, "");
+          const expiry = ($("rzpCardExpiry")?.value || "").trim();
+          const cvv = ($("rzpCardCvv")?.value || "").replace(/\D/g, "");
+          const holder = ($("rzpCardHolder")?.value || "").trim();
+          if (digits.length < 12 || digits.length > 19) {
+            errEl.textContent = `Enter a valid ${selectedPayMethod.toLowerCase()} number.`;
+            return;
+          }
+          if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) {
+            errEl.textContent = "Enter card expiry in MM/YY format.";
+            return;
+          }
+          if (cvv.length < 3 || cvv.length > 4) {
+            errEl.textContent = "Enter a valid 3 or 4 digit CVV.";
+            return;
+          }
+          if (!holder) {
+            errEl.textContent = "Enter the cardholder name.";
+            return;
+          }
+          methodSummary = `${selectedPayMethod} (•••• ${digits.slice(-4)})`;
+        } else if (!($("rzpPayInput")?.value || "").trim()) {
+          errEl.textContent = `Enter your ${selectedPayMethod} details to continue.`;
+          return;
+        }
+
         payBtn.disabled = true;
         payBtn.textContent = "Verifying with Razorpay…";
         errEl.textContent = "";
@@ -2259,7 +2337,7 @@
           await finalizeRazorpayPayment(part.id, {
             razorpay_order_id: order.orderId,
             simulatedPayment: true,
-            paymentMethod: selectedPayMethod,
+            paymentMethod: methodSummary,
           });
         } catch (err) {
           errEl.textContent = err.message;
@@ -2659,7 +2737,12 @@
 
   // 100% Client-side coordinate index for Indian cities & regions
   const CITY_COORDS = {
+    allindia: { latitude: 22.5, longitude: 79.0, label: "All India", zoom: 5, allIndia: true },
+    india: { latitude: 22.5, longitude: 79.0, label: "All India", zoom: 5, allIndia: true },
     jaipur: { latitude: 26.9124, longitude: 75.7873, label: "Jaipur, Rajasthan" },
+    jodhpur: { latitude: 26.2389, longitude: 73.0243, label: "Jodhpur, Rajasthan" },
+    udaipur: { latitude: 24.5854, longitude: 73.7125, label: "Udaipur, Rajasthan" },
+    kota: { latitude: 25.2138, longitude: 75.8648, label: "Kota, Rajasthan" },
     delhi: { latitude: 28.6139, longitude: 77.2090, label: "Delhi NCR" },
     newdelhi: { latitude: 28.6139, longitude: 77.2090, label: "New Delhi" },
     ncr: { latitude: 28.6139, longitude: 77.2090, label: "Delhi NCR" },
@@ -2674,28 +2757,103 @@
     thane: { latitude: 19.2183, longitude: 72.9781, label: "Thane, Maharashtra" },
     bengaluru: { latitude: 12.9716, longitude: 77.5946, label: "Bengaluru, Karnataka" },
     bangalore: { latitude: 12.9716, longitude: 77.5946, label: "Bengaluru, Karnataka" },
+    mysuru: { latitude: 12.2958, longitude: 76.6394, label: "Mysuru, Karnataka" },
+    mysore: { latitude: 12.2958, longitude: 76.6394, label: "Mysuru, Karnataka" },
+    mangaluru: { latitude: 12.9141, longitude: 74.8560, label: "Mangaluru, Karnataka" },
+    mangalore: { latitude: 12.9141, longitude: 74.8560, label: "Mangaluru, Karnataka" },
+    hubballi: { latitude: 15.3647, longitude: 75.1240, label: "Hubballi, Karnataka" },
     chennai: { latitude: 13.0827, longitude: 80.2707, label: "Chennai, Tamil Nadu" },
     madras: { latitude: 13.0827, longitude: 80.2707, label: "Chennai, Tamil Nadu" },
+    madurai: { latitude: 9.9252, longitude: 78.1198, label: "Madurai, Tamil Nadu" },
+    trichy: { latitude: 10.7905, longitude: 78.7047, label: "Tiruchirappalli, Tamil Nadu" },
+    tiruchirappalli: { latitude: 10.7905, longitude: 78.7047, label: "Tiruchirappalli, Tamil Nadu" },
     kolkata: { latitude: 22.5726, longitude: 88.3639, label: "Kolkata, West Bengal" },
     calcutta: { latitude: 22.5726, longitude: 88.3639, label: "Kolkata, West Bengal" },
+    siliguri: { latitude: 26.7271, longitude: 88.3953, label: "Siliguri, West Bengal" },
     hyderabad: { latitude: 17.3850, longitude: 78.4867, label: "Hyderabad, Telangana" },
-    secunderabad: { latitude: 17.4399, longitude: 78.4983, label: "Secunderabad" },
+    secunderabad: { latitude: 17.4399, longitude: 78.4983, label: "Secunderabad, Telangana" },
+    warangal: { latitude: 17.9689, longitude: 79.5941, label: "Warangal, Telangana" },
     pune: { latitude: 18.5204, longitude: 73.8567, label: "Pune, Maharashtra" },
+    nashik: { latitude: 19.9975, longitude: 73.7898, label: "Nashik, Maharashtra" },
+    aurangabad: { latitude: 19.8762, longitude: 75.3433, label: "Chhatrapati Sambhajinagar, Maharashtra" },
     lucknow: { latitude: 26.8467, longitude: 80.9462, label: "Lucknow, Uttar Pradesh" },
+    prayagraj: { latitude: 25.4358, longitude: 81.8463, label: "Prayagraj, UP" },
+    allahabad: { latitude: 25.4358, longitude: 81.8463, label: "Prayagraj, UP" },
     ahmedabad: { latitude: 23.0225, longitude: 72.5714, label: "Ahmedabad, Gujarat" },
+    vadodara: { latitude: 22.3072, longitude: 73.1812, label: "Vadodara, Gujarat" },
+    baroda: { latitude: 22.3072, longitude: 73.1812, label: "Vadodara, Gujarat" },
+    rajkot: { latitude: 22.3039, longitude: 70.8022, label: "Rajkot, Gujarat" },
     chandigarh: { latitude: 30.7333, longitude: 76.7794, label: "Chandigarh" },
+    amritsar: { latitude: 31.6340, longitude: 74.8723, label: "Amritsar, Punjab" },
+    ludhiana: { latitude: 30.9010, longitude: 75.8573, label: "Ludhiana, Punjab" },
+    dehradun: { latitude: 30.3165, longitude: 78.0322, label: "Dehradun, Uttarakhand" },
+    shimla: { latitude: 31.1048, longitude: 77.1734, label: "Shimla, Himachal Pradesh" },
+    jammu: { latitude: 32.7266, longitude: 74.8570, label: "Jammu, J&K" },
+    srinagar: { latitude: 34.0837, longitude: 74.7973, label: "Srinagar, J&K" },
     indore: { latitude: 22.7196, longitude: 75.8577, label: "Indore, Madhya Pradesh" },
     bhopal: { latitude: 23.2599, longitude: 77.4126, label: "Bhopal, Madhya Pradesh" },
+    jabalpur: { latitude: 23.1815, longitude: 79.9864, label: "Jabalpur, Madhya Pradesh" },
     surat: { latitude: 21.1702, longitude: 72.8311, label: "Surat, Gujarat" },
     nagpur: { latitude: 21.1458, longitude: 79.0882, label: "Nagpur, Maharashtra" },
     patna: { latitude: 25.5941, longitude: 85.1376, label: "Patna, Bihar" },
+    ranchi: { latitude: 23.3441, longitude: 85.3096, label: "Ranchi, Jharkhand" },
+    jamshedpur: { latitude: 22.8046, longitude: 86.2029, label: "Jamshedpur, Jharkhand" },
+    bhubaneswar: { latitude: 20.2961, longitude: 85.8245, label: "Bhubaneswar, Odisha" },
+    raipur: { latitude: 21.2514, longitude: 81.6296, label: "Raipur, Chhattisgarh" },
+    guwahati: { latitude: 26.1445, longitude: 91.7362, label: "Guwahati, Assam" },
+    shillong: { latitude: 25.5788, longitude: 91.8933, label: "Shillong, Meghalaya" },
+    agartala: { latitude: 23.8315, longitude: 91.2868, label: "Agartala, Tripura" },
+    imphal: { latitude: 24.8170, longitude: 93.9368, label: "Imphal, Manipur" },
+    gangtok: { latitude: 27.3314, longitude: 88.6138, label: "Gangtok, Sikkim" },
+    goa: { latitude: 15.4909, longitude: 73.8278, label: "Panaji, Goa" },
+    panaji: { latitude: 15.4909, longitude: 73.8278, label: "Panaji, Goa" },
     kochi: { latitude: 9.9312, longitude: 76.2673, label: "Kochi, Kerala" },
+    trivandrum: { latitude: 8.5241, longitude: 76.9366, label: "Thiruvananthapuram, Kerala" },
+    thiruvananthapuram: { latitude: 8.5241, longitude: 76.9366, label: "Thiruvananthapuram, Kerala" },
+    kozhikode: { latitude: 11.2588, longitude: 75.7804, label: "Kozhikode, Kerala" },
     coimbatore: { latitude: 11.0168, longitude: 76.9558, label: "Coimbatore, Tamil Nadu" },
     visakhapatnam: { latitude: 17.6868, longitude: 83.2185, label: "Visakhapatnam, Andhra Pradesh" },
     vizag: { latitude: 17.6868, longitude: 83.2185, label: "Visakhapatnam, Andhra Pradesh" },
+    vijayawada: { latitude: 16.5062, longitude: 80.6480, label: "Vijayawada, Andhra Pradesh" },
+    tirupati: { latitude: 13.6288, longitude: 79.4192, label: "Tirupati, Andhra Pradesh" },
     varanasi: { latitude: 25.3176, longitude: 82.9739, label: "Varanasi, UP" },
     kanpur: { latitude: 26.4499, longitude: 80.3319, label: "Kanpur, UP" },
     agra: { latitude: 27.1767, longitude: 78.0081, label: "Agra, UP" },
+  };
+
+  const PIN_3_CITY = {
+    "110": "delhi", "122": "gurugram", "141": "ludhiana", "143": "amritsar",
+    "160": "chandigarh", "171": "shimla", "180": "jammu", "190": "srinagar",
+    "201": "noida", "208": "kanpur", "211": "prayagraj", "221": "varanasi",
+    "226": "lucknow", "248": "dehradun", "282": "agra", "302": "jaipur",
+    "303": "jaipur", "313": "udaipur", "324": "kota", "342": "jodhpur",
+    "360": "rajkot", "380": "ahmedabad", "382": "ahmedabad", "390": "vadodara",
+    "394": "surat", "395": "surat", "400": "mumbai", "401": "mumbai",
+    "403": "goa", "411": "pune", "422": "nashik", "431": "aurangabad",
+    "440": "nagpur", "452": "indore", "462": "bhopal", "482": "jabalpur",
+    "492": "raipur", "500": "hyderabad", "506": "warangal", "517": "tirupati",
+    "520": "vijayawada", "530": "visakhapatnam", "560": "bengaluru", "570": "mysuru",
+    "575": "mangaluru", "580": "hubballi", "600": "chennai", "620": "trichy",
+    "625": "madurai", "641": "coimbatore", "673": "kozhikode", "682": "kochi",
+    "683": "kochi", "695": "trivandrum", "700": "kolkata", "711": "kolkata",
+    "734": "siliguri", "737": "gangtok", "751": "bhubaneswar", "781": "guwahati",
+    "793": "shillong", "795": "imphal", "799": "agartala", "800": "patna",
+    "831": "jamshedpur", "834": "ranchi",
+  };
+  const PIN_2_CITY = {
+    "11": "delhi", "12": "gurugram", "13": "chandigarh", "14": "ludhiana",
+    "16": "chandigarh", "17": "shimla", "18": "jammu", "19": "srinagar",
+    "20": "noida", "21": "prayagraj", "22": "lucknow", "24": "dehradun",
+    "28": "agra", "30": "jaipur", "31": "udaipur", "32": "kota", "34": "jodhpur",
+    "36": "rajkot", "38": "ahmedabad", "39": "surat", "40": "mumbai",
+    "41": "pune", "42": "nashik", "43": "aurangabad", "44": "nagpur",
+    "45": "indore", "46": "bhopal", "48": "jabalpur", "49": "raipur",
+    "50": "hyderabad", "51": "tirupati", "52": "vijayawada", "53": "visakhapatnam",
+    "56": "bengaluru", "57": "mysuru", "58": "hubballi", "60": "chennai",
+    "62": "madurai", "64": "coimbatore", "67": "kozhikode", "68": "kochi",
+    "69": "trivandrum", "70": "kolkata", "71": "kolkata", "73": "siliguri",
+    "75": "bhubaneswar", "78": "guwahati", "79": "shillong", "80": "patna",
+    "83": "ranchi",
   };
 
   // Pure client-side database of drop-off points, recycling hubs & scrap yards
@@ -3230,7 +3388,984 @@
       verified: true,
       osm: "https://www.google.com/maps/search/?api=1&query=27.2045,78.0489",
     },
+
+    // --- PAN-INDIA SHOPS & REGIONAL HUBS ---
+    // North India Shops & Hubs
+    {
+      key: "del_shop_2",
+      name: "Lajpat Rai Market Electronics & Parts Exchange",
+      address: "Chandni Chowk, Old Delhi 110006",
+      city: "delhi",
+      kind: "shop",
+      lat: 28.6562,
+      lon: 77.2356,
+      phone: "+91 11 2386 4411",
+      hours: "Mon - Sat: 10:30 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=28.6562,77.2356",
+    },
+    {
+      key: "ggn_shop_1",
+      name: "CyberHub Tech Care & E-Waste Drop Shop",
+      address: "MG Road, DLF Phase II, Gurugram 122002",
+      city: "gurugram",
+      kind: "shop",
+      lat: 28.4812,
+      lon: 77.0801,
+      phone: "+91 124 410 5522",
+      hours: "Everyday: 10:30 AM - 9:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=28.4812,77.0801",
+    },
+    {
+      key: "noida_shop_1",
+      name: "Atta Market Electronics Repair & Buyback Shop",
+      address: "Sector 18, Noida, Uttar Pradesh 201301",
+      city: "noida",
+      kind: "shop",
+      lat: 28.5706,
+      lon: 77.3261,
+      phone: "+91 120 431 6677",
+      hours: "Tue - Sun: 10:30 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=28.5706,77.3261",
+    },
+    {
+      key: "chd_shop_1",
+      name: "Sector 22 Electronics & Laptop Parts Store",
+      address: "SCO 118, Sector 22-B, Chandigarh 160022",
+      city: "chandigarh",
+      kind: "shop",
+      lat: 30.7318,
+      lon: 76.7712,
+      phone: "+91 172 270 4488",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=30.7318,76.7712",
+    },
+    {
+      key: "lko_shop_1",
+      name: "Naza Computer & Electronics Exchange Market",
+      address: "Lalbagh, Hazratganj, Lucknow 226001",
+      city: "lucknow",
+      kind: "shop",
+      lat: 26.8489,
+      lon: 80.9395,
+      phone: "+91 522 261 7788",
+      hours: "Mon - Sat: 10:30 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=26.8489,80.9395",
+    },
+    {
+      key: "knp_shop_1",
+      name: "Gumti No. 5 Electronics & E-Scrap Shop",
+      address: "Gumti No. 5, Kaushalpuri, Kanpur 208012",
+      city: "kanpur",
+      kind: "shop",
+      lat: 26.4735,
+      lon: 80.3121,
+      phone: "+91 512 254 2211",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=26.4735,80.3121",
+    },
+    {
+      key: "vns_shop_1",
+      name: "Sigra Digital Repair & E-Waste Exchange",
+      address: "Mahmoorganj Road, Sigra, Varanasi 221010",
+      city: "varanasi",
+      kind: "shop",
+      lat: 25.3118,
+      lon: 82.9862,
+      phone: "+91 542 222 9900",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=25.3118,82.9862",
+    },
+    {
+      key: "agr_shop_1",
+      name: "Sanjay Place Electronics & IT Parts Shop",
+      address: "Block 42, Sanjay Place, Agra 282002",
+      city: "agra",
+      kind: "shop",
+      lat: 27.2004,
+      lon: 78.0068,
+      phone: "+91 562 400 5511",
+      hours: "Mon - Sat: 10:30 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=27.2004,78.0068",
+    },
+    {
+      key: "pry_shop_1",
+      name: "Civil Lines Electronics & Battery Drop Shop",
+      address: "MG Marg, Civil Lines, Prayagraj 211001",
+      city: "prayagraj",
+      kind: "shop",
+      lat: 25.4484,
+      lon: 81.8346,
+      phone: "+91 532 242 3311",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=25.4484,81.8346",
+    },
+    {
+      key: "jdh_shop_1",
+      name: "Sardarpura Electronics Care & Trade-In Shop",
+      address: "C-Road, Sardarpura, Jodhpur 342003",
+      city: "jodhpur",
+      kind: "shop",
+      lat: 26.2775,
+      lon: 73.0086,
+      phone: "+91 291 263 4455",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=26.2775,73.0086",
+    },
+    {
+      key: "jdh_cert_1",
+      name: "Marwar CleanTech E-Waste Hub - Basni",
+      address: "Phase II, Basni Industrial Area, Jodhpur 342005",
+      city: "jodhpur",
+      kind: "recycling",
+      lat: 26.2241,
+      lon: 72.9992,
+      phone: "+91 291 274 8811",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=26.2241,72.9992",
+    },
+    {
+      key: "udr_shop_1",
+      name: "Bapu Bazar Electronics & Parts Hub",
+      address: "Bapu Bazar Main Road, Udaipur 313001",
+      city: "udaipur",
+      kind: "shop",
+      lat: 24.5812,
+      lon: 73.6914,
+      phone: "+91 294 242 7788",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=24.5812,73.6914",
+    },
+    {
+      key: "udr_cert_1",
+      name: "Mewar E-Waste Recycling Centre - Madri",
+      address: "MIA Madri Industrial Area, Udaipur 313003",
+      city: "udaipur",
+      kind: "recycling",
+      lat: 24.5698,
+      lon: 73.7485,
+      phone: "+91 294 249 1122",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=24.5698,73.7485",
+    },
+    {
+      key: "kota_shop_1",
+      name: "Talwandi IT & Electronic Recycling Shop",
+      address: "Sector 2, Talwandi, Kota 324005",
+      city: "kota",
+      kind: "shop",
+      lat: 25.1544,
+      lon: 75.8472,
+      phone: "+91 744 242 6611",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=25.1544,75.8472",
+    },
+    {
+      key: "ddn_shop_1",
+      name: "Paltan Bazar Electronics & Recycle Shop",
+      address: "Capri Trade Centre, Connaught Place, Dehradun 248001",
+      city: "dehradun",
+      kind: "shop",
+      lat: 30.3245,
+      lon: 78.0365,
+      phone: "+91 135 265 4433",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=30.3245,78.0365",
+    },
+    {
+      key: "ddn_cert_1",
+      name: "Doon Valley CleanTech Recovery Unit",
+      address: "SIDCUL Industrial Park, Selaqui, Dehradun 248197",
+      city: "dehradun",
+      kind: "recycling",
+      lat: 30.3652,
+      lon: 77.8548,
+      phone: "+91 135 269 8877",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=30.3652,77.8548",
+    },
+    {
+      key: "amr_shop_1",
+      name: "Hall Bazar Electronics & Mobile Parts Exchange",
+      address: "Hall Bazar, Town Hall Road, Amritsar 143001",
+      city: "amritsar",
+      kind: "shop",
+      lat: 31.6265,
+      lon: 74.8758,
+      phone: "+91 183 255 3344",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=31.6265,74.8758",
+    },
+    {
+      key: "ldh_shop_1",
+      name: "Gill Road Electronics & Computer Scrap Shop",
+      address: "Gill Road, Miller Ganj, Ludhiana 141003",
+      city: "ludhiana",
+      kind: "shop",
+      lat: 30.8921,
+      lon: 75.8624,
+      phone: "+91 161 253 7799",
+      hours: "Mon - Sat: 9:30 AM - 7:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=30.8921,75.8624",
+    },
+    {
+      key: "ldh_cert_1",
+      name: "Punjab Circular E-Waste Hub - Focal Point",
+      address: "Phase V, Focal Point, Ludhiana 141010",
+      city: "ludhiana",
+      kind: "recycling",
+      lat: 30.8825,
+      lon: 75.9212,
+      phone: "+91 161 267 4411",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=30.8825,75.9212",
+    },
+    {
+      key: "shm_shop_1",
+      name: "Lower Bazar Electronics & Device Drop Shop",
+      address: "Lower Bazar, The Mall, Shimla 171001",
+      city: "shimla",
+      kind: "shop",
+      lat: 31.1041,
+      lon: 77.1712,
+      phone: "+91 177 265 2299",
+      hours: "Mon - Sat: 10:00 AM - 7:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=31.1041,77.1712",
+    },
+    {
+      key: "jammu_shop_1",
+      name: "Residency Road IT & E-Waste Drop Shop",
+      address: "Residency Road, Jammu 180001",
+      city: "jammu",
+      kind: "shop",
+      lat: 32.7312,
+      lon: 74.8648,
+      phone: "+91 191 254 6677",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=32.7312,74.8648",
+    },
+    {
+      key: "sgr_shop_1",
+      name: "Lal Chowk Electronics Repair & Buyback Shop",
+      address: "Residency Road, Lal Chowk, Srinagar 190001",
+      city: "srinagar",
+      kind: "shop",
+      lat: 34.0725,
+      lon: 74.8124,
+      phone: "+91 194 247 5533",
+      hours: "Mon - Sat: 10:00 AM - 7:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=34.0725,74.8124",
+    },
+
+    // West India Shops & Hubs
+    {
+      key: "mum_shop_2",
+      name: "Lamington Road IT & Electronic Parts Exchange",
+      address: "Grant Road East, Lamington Road, Mumbai 400007",
+      city: "mumbai",
+      kind: "shop",
+      lat: 18.9619,
+      lon: 72.8168,
+      phone: "+91 22 2388 9944",
+      hours: "Mon - Sat: 10:30 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=18.9619,72.8168",
+    },
+    {
+      key: "pune_shop_1",
+      name: "Tilak Road Electronics & Spare Parts Hub",
+      address: "Sadashiv Peth, Tilak Road, Pune 411030",
+      city: "pune",
+      kind: "shop",
+      lat: 18.5089,
+      lon: 73.8482,
+      phone: "+91 20 2447 5566",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=18.5089,73.8482",
+    },
+    {
+      key: "pune_shop_2",
+      name: "Kothrud Electronic Exchange & Drop Point",
+      address: "Paud Road, Kothrud, Pune 411038",
+      city: "pune",
+      kind: "shop",
+      lat: 18.5074,
+      lon: 73.8077,
+      phone: "+91 20 2543 1122",
+      hours: "Everyday: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=18.5074,73.8077",
+    },
+    {
+      key: "ngp_shop_1",
+      name: "Sitabuldi Electronics & Component Exchange",
+      address: "Variety Square, Sitabuldi, Nagpur 440012",
+      city: "nagpur",
+      kind: "shop",
+      lat: 21.1432,
+      lon: 79.0805,
+      phone: "+91 712 252 3344",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=21.1432,79.0805",
+    },
+    {
+      key: "nsk_shop_1",
+      name: "MG Road Nashik Electronics & E-Recycle Shop",
+      address: "MG Road, Shalimar, Nashik 422001",
+      city: "nashik",
+      kind: "shop",
+      lat: 20.0012,
+      lon: 73.7869,
+      phone: "+91 253 257 8899",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=20.0012,73.7869",
+    },
+    {
+      key: "nsk_cert_1",
+      name: "Satpur MIDC E-Waste Processing Plant",
+      address: "MIDC Satpur Industrial Estate, Nashik 422007",
+      city: "nashik",
+      kind: "recycling",
+      lat: 19.9921,
+      lon: 73.7321,
+      phone: "+91 253 235 4411",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=19.9921,73.7321",
+    },
+    {
+      key: "aur_shop_1",
+      name: "Paithan Gate Electronics & Buyback Shop",
+      address: "Nirala Bazar, Chhatrapati Sambhajinagar 431001",
+      city: "aurangabad",
+      kind: "shop",
+      lat: 19.8781,
+      lon: 75.3248,
+      phone: "+91 240 233 5511",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=19.8781,75.3248",
+    },
+    {
+      key: "ahm_shop_1",
+      name: "Relief Road & CG Road Electronics Exchange",
+      address: "Relief Road, Kalupur, Ahmedabad 380001",
+      city: "ahmedabad",
+      kind: "shop",
+      lat: 23.0274,
+      lon: 72.5892,
+      phone: "+91 79 2535 6677",
+      hours: "Mon - Sat: 10:30 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=23.0274,72.5892",
+    },
+    {
+      key: "sur_shop_1",
+      name: "Ghod Dod Electronics & Laptop Spare Shop",
+      address: "Ghod Dod Road, Athwa, Surat 395007",
+      city: "surat",
+      kind: "shop",
+      lat: 21.1765,
+      lon: 72.8062,
+      phone: "+91 261 223 4455",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=21.1765,72.8062",
+    },
+    {
+      key: "vad_shop_1",
+      name: "Alkapuri Digital Parts & Recycle Store",
+      address: "RC Dutt Road, Alkapuri, Vadodara 390007",
+      city: "vadodara",
+      kind: "shop",
+      lat: 22.3119,
+      lon: 73.1723,
+      phone: "+91 265 234 5566",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=22.3119,73.1723",
+    },
+    {
+      key: "vad_cert_1",
+      name: "Makarpura GIDC CleanTech Recycling Hub",
+      address: "GIDC Industrial Estate, Makarpura, Vadodara 390010",
+      city: "vadodara",
+      kind: "recycling",
+      lat: 22.2535,
+      lon: 73.1924,
+      phone: "+91 265 264 7788",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=22.2535,73.1924",
+    },
+    {
+      key: "rjk_shop_1",
+      name: "Yagnik Road Electronics & E-Waste Shop",
+      address: "Dr Yagnik Road, Rajkot 360001",
+      city: "rajkot",
+      kind: "shop",
+      lat: 22.2921,
+      lon: 70.7932,
+      phone: "+91 281 246 3344",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=22.2921,70.7932",
+    },
+    {
+      key: "goa_shop_1",
+      name: "Panaji 18th June Road Electronics Shop",
+      address: "18th June Road, Panaji, Goa 403001",
+      city: "goa",
+      kind: "shop",
+      lat: 15.4958,
+      lon: 73.8256,
+      phone: "+91 832 222 7788",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=15.4958,73.8256",
+    },
+    {
+      key: "goa_cert_1",
+      name: "Verna EcoCycle Coastal E-Waste Hub",
+      address: "Verna Industrial Estate, Phase III, Goa 403722",
+      city: "goa",
+      kind: "recycling",
+      lat: 15.3621,
+      lon: 73.9384,
+      phone: "+91 832 278 4411",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=15.3621,73.9384",
+    },
+
+    // South India Shops & Hubs
+    {
+      key: "blr_shop_2",
+      name: "Koramangala Gadget Care & Refurbish Shop",
+      address: "80 Feet Road, 4th Block, Koramangala, Bengaluru 560034",
+      city: "bengaluru",
+      kind: "shop",
+      lat: 12.9352,
+      lon: 77.6245,
+      phone: "+91 80 4123 7788",
+      hours: "Everyday: 10:30 AM - 9:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=12.9352,77.6245",
+    },
+    {
+      key: "mys_shop_1",
+      name: "Devaraja Urs Road Electronics Exchange",
+      address: "D. Devaraja Urs Road, Mysuru 570001",
+      city: "mysuru",
+      kind: "shop",
+      lat: 12.3095,
+      lon: 76.6476,
+      phone: "+91 821 242 5566",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=12.3095,76.6476",
+    },
+    {
+      key: "mng_shop_1",
+      name: "Hampankatta Electronics & Laptop Parts Store",
+      address: "KS Rao Road, Hampankatta, Mangaluru 575001",
+      city: "mangaluru",
+      kind: "shop",
+      lat: 12.8712,
+      lon: 74.8432,
+      phone: "+91 824 244 2211",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=12.8712,74.8432",
+    },
+    {
+      key: "hbl_shop_1",
+      name: "Lamington Hubballi Electronic Spare Shop",
+      address: "Lamington Road, Hubballi, Karnataka 580020",
+      city: "hubballi",
+      kind: "shop",
+      lat: 15.3512,
+      lon: 75.1384,
+      phone: "+91 836 225 6677",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=15.3512,75.1384",
+    },
+    {
+      key: "chn_shop_2",
+      name: "T. Nagar Digital Return & Parts Shop",
+      address: "Usman Road, T. Nagar, Chennai 600017",
+      city: "chennai",
+      kind: "shop",
+      lat: 13.0405,
+      lon: 80.2337,
+      phone: "+91 44 2434 7788",
+      hours: "Everyday: 10:00 AM - 9:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=13.0405,80.2337",
+    },
+    {
+      key: "cbe_shop_1",
+      name: "Cross Cut Road Electronics & PC Parts Shop",
+      address: "Cross Cut Road, Gandhipuram, Coimbatore 641012",
+      city: "coimbatore",
+      kind: "shop",
+      lat: 11.0183,
+      lon: 76.9661,
+      phone: "+91 422 249 5566",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=11.0183,76.9661",
+    },
+    {
+      key: "mdu_shop_1",
+      name: "Town Hall Road Electronics & E-Scrap Shop",
+      address: "Town Hall Road, Madurai 625001",
+      city: "madurai",
+      kind: "shop",
+      lat: 9.9195,
+      lon: 78.1162,
+      phone: "+91 452 234 7788",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=9.9195,78.1162",
+    },
+    {
+      key: "trichy_shop_1",
+      name: "Thillai Nagar Tech Repair & Buyback Shop",
+      address: "Main Road, Thillai Nagar, Tiruchirappalli 620018",
+      city: "trichy",
+      kind: "shop",
+      lat: 10.8245,
+      lon: 78.6852,
+      phone: "+91 431 274 2211",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=10.8245,78.6852",
+    },
+    {
+      key: "hyd_shop_1",
+      name: "CTC Parklane Electronics & Parts Exchange",
+      address: "Chenoy Trade Centre, Parklane, Secunderabad 500003",
+      city: "hyderabad",
+      kind: "shop",
+      lat: 17.4418,
+      lon: 78.4932,
+      phone: "+91 40 2784 6677",
+      hours: "Mon - Sat: 10:30 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=17.4418,78.4932",
+    },
+    {
+      key: "hyd_shop_2",
+      name: "Ameerpet IT Spares & E-Waste Drop Point",
+      address: "Maitrivanam Complex, Ameerpet, Hyderabad 500016",
+      city: "hyderabad",
+      kind: "shop",
+      lat: 17.4375,
+      lon: 78.4483,
+      phone: "+91 40 2373 1122",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=17.4375,78.4483",
+    },
+    {
+      key: "wgl_shop_1",
+      name: "Hanamkonda Digital Care & E-Recycle Shop",
+      address: "Chowrastha Road, Hanamkonda, Warangal 506001",
+      city: "warangal",
+      kind: "shop",
+      lat: 18.0042,
+      lon: 79.5582,
+      phone: "+91 870 257 3344",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=18.0042,79.5582",
+    },
+    {
+      key: "vzg_shop_1",
+      name: "Dwaraka Nagar Electronics & Parts Store",
+      address: "Diamond Park Road, Dwaraka Nagar, Visakhapatnam 530016",
+      city: "visakhapatnam",
+      kind: "shop",
+      lat: 17.7285,
+      lon: 83.3065,
+      phone: "+91 891 274 5566",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=17.7285,83.3065",
+    },
+    {
+      key: "vjw_shop_1",
+      name: "Benz Circle Electronics & Buyback Hub",
+      address: "MG Road, Benz Circle, Vijayawada 520010",
+      city: "vijayawada",
+      kind: "shop",
+      lat: 16.4995,
+      lon: 80.6548,
+      phone: "+91 866 247 7788",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=16.4995,80.6548",
+    },
+    {
+      key: "tpt_shop_1",
+      name: "Tirupati Central Electronics Exchange Shop",
+      address: "Tilak Road, Tirupati 517501",
+      city: "tirupati",
+      kind: "shop",
+      lat: 13.6355,
+      lon: 79.4241,
+      phone: "+91 877 224 3311",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=13.6355,79.4241",
+    },
+    {
+      key: "koc_shop_1",
+      name: "Penta Menaka Electronics & Parts Market",
+      address: "Shanmugham Road, Marine Drive, Kochi 682031",
+      city: "kochi",
+      kind: "shop",
+      lat: 9.9781,
+      lon: 76.2768,
+      phone: "+91 484 236 4455",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=9.9781,76.2768",
+    },
+    {
+      key: "tvm_shop_1",
+      name: "MG Road Trivandrum IT & Recycle Shop",
+      address: "Statue Junction, MG Road, Thiruvananthapuram 695001",
+      city: "trivandrum",
+      kind: "shop",
+      lat: 8.4995,
+      lon: 76.9491,
+      phone: "+91 471 247 8899",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=8.4995,76.9491",
+    },
+    {
+      key: "tvm_cert_1",
+      name: "Technopark Clean Kerala E-Waste Hub",
+      address: "Kazhakkoottam Industrial Estate, Thiruvananthapuram 695582",
+      city: "trivandrum",
+      kind: "recycling",
+      lat: 8.5568,
+      lon: 76.8814,
+      phone: "+91 471 270 4411",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=8.5568,76.8814",
+    },
+    {
+      key: "ccj_shop_1",
+      name: "Mavoor Road Kozhikode Electronics Shop",
+      address: "Mavoor Road, Kozhikode 673004",
+      city: "kozhikode",
+      kind: "shop",
+      lat: 11.2591,
+      lon: 75.7885,
+      phone: "+91 495 272 3344",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=11.2591,75.7885",
+    },
+
+    // East, Central & North-East India Shops & Hubs
+    {
+      key: "kol_shop_1",
+      name: "Chandni Chowk Kolkata Electronics & Parts Market",
+      address: "Chittaranjan Avenue, Chandni Chowk, Kolkata 700072",
+      city: "kolkata",
+      kind: "shop",
+      lat: 22.5675,
+      lon: 88.3534,
+      phone: "+91 33 2212 6677",
+      hours: "Mon - Sat: 10:30 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=22.5675,88.3534",
+    },
+    {
+      key: "kol_shop_2",
+      name: "Gariahat Digital Repair & Exchange Store",
+      address: "Rash Behari Avenue, Gariahat, Kolkata 700029",
+      city: "kolkata",
+      kind: "shop",
+      lat: 22.5179,
+      lon: 88.3652,
+      phone: "+91 33 2464 8811",
+      hours: "Tue - Sun: 10:30 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=22.5179,88.3652",
+    },
+    {
+      key: "slg_shop_1",
+      name: "Bidhan Market Siliguri Electronics Shop",
+      address: "Bidhan Road, Siliguri, West Bengal 734001",
+      city: "siliguri",
+      kind: "shop",
+      lat: 26.7124,
+      lon: 88.4285,
+      phone: "+91 353 243 4455",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=26.7124,88.4285",
+    },
+    {
+      key: "bbsr_shop_1",
+      name: "Saheed Nagar IT & Electronics Exchange Shop",
+      address: "Janpath, Saheed Nagar, Bhubaneswar 751007",
+      city: "bhubaneswar",
+      kind: "shop",
+      lat: 20.2912,
+      lon: 85.8442,
+      phone: "+91 674 254 6677",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=20.2912,85.8442",
+    },
+    {
+      key: "bbsr_cert_1",
+      name: "Kalinga CleanTech E-Waste Hub - Mancheswar",
+      address: "Mancheswar Industrial Estate, Bhubaneswar 751010",
+      city: "bhubaneswar",
+      kind: "recycling",
+      lat: 20.3075,
+      lon: 85.8584,
+      phone: "+91 674 258 9900",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=20.3075,85.8584",
+    },
+    {
+      key: "pat_shop_1",
+      name: "SP Verma Road Electronics & Spare Parts Shop",
+      address: "SP Verma Road, Frazer Road Area, Patna 800001",
+      city: "patna",
+      kind: "shop",
+      lat: 25.6114,
+      lon: 85.1389,
+      phone: "+91 612 220 4455",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=25.6114,85.1389",
+    },
+    {
+      key: "rnc_shop_1",
+      name: "Main Road Ranchi Electronics & Parts Store",
+      address: "Gel Church Complex, Main Road, Ranchi 834001",
+      city: "ranchi",
+      kind: "shop",
+      lat: 23.3568,
+      lon: 85.3248,
+      phone: "+91 651 233 4455",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=23.3568,85.3248",
+    },
+    {
+      key: "rnc_cert_1",
+      name: "Chotanagpur E-Waste Recovery Centre",
+      address: "Kokar Industrial Area, Ranchi 834009",
+      city: "ranchi",
+      kind: "recycling",
+      lat: 23.3765,
+      lon: 85.3621,
+      phone: "+91 651 254 7788",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=23.3765,85.3621",
+    },
+    {
+      key: "jsr_shop_1",
+      name: "Bistupur Electronics & Metal Recovery Shop",
+      address: "Main Road, Bistupur, Jamshedpur 831001",
+      city: "jamshedpur",
+      kind: "shop",
+      lat: 22.7925,
+      lon: 86.1842,
+      phone: "+91 657 242 5566",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=22.7925,86.1842",
+    },
+    {
+      key: "rpr_shop_1",
+      name: "Ravi Bhawan Raipur Electronics & Spare Shop",
+      address: "Jaistambh Chowk, MG Road, Raipur 492001",
+      city: "raipur",
+      kind: "shop",
+      lat: 21.2465,
+      lon: 81.6334,
+      phone: "+91 771 253 4455",
+      hours: "Mon - Sat: 10:00 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=21.2465,81.6334",
+    },
+    {
+      key: "rpr_cert_1",
+      name: "Chhattisgarh Green E-Waste Hub - Urla",
+      address: "Urla Industrial Complex, Raipur 493221",
+      city: "raipur",
+      kind: "recycling",
+      lat: 21.3185,
+      lon: 81.6224,
+      phone: "+91 771 232 6677",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=21.3185,81.6224",
+    },
+    {
+      key: "ind_shop_1",
+      name: "Silver Mall Jail Road Electronics Shop",
+      address: "RNT Marg, Jail Road, Indore 452007",
+      city: "indore",
+      kind: "shop",
+      lat: 22.7212,
+      lon: 75.8712,
+      phone: "+91 731 252 6677",
+      hours: "Mon - Sat: 10:30 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=22.7212,75.8712",
+    },
+    {
+      key: "bhp_shop_1",
+      name: "MP Nagar Zone-1 Electronics & Parts Shop",
+      address: "Zone I, Maharana Pratap Nagar, Bhopal 462011",
+      city: "bhopal",
+      kind: "shop",
+      lat: 23.2332,
+      lon: 77.4343,
+      phone: "+91 755 255 3344",
+      hours: "Mon - Sat: 10:30 AM - 8:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=23.2332,77.4343",
+    },
+    {
+      key: "jbp_shop_1",
+      name: "Russell Chowk Electronics Care & Buyback",
+      address: "Napier Town, Russell Chowk, Jabalpur 482001",
+      city: "jabalpur",
+      kind: "shop",
+      lat: 23.1642,
+      lon: 79.9355,
+      phone: "+91 761 240 5566",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=23.1642,79.9355",
+    },
+    {
+      key: "ghy_shop_1",
+      name: "Fancy Bazar Electronics & Parts Exchange",
+      address: "MG Road, Fancy Bazar, Guwahati, Assam 781001",
+      city: "guwahati",
+      kind: "shop",
+      lat: 26.1856,
+      lon: 91.7412,
+      phone: "+91 361 254 6677",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=26.1856,91.7412",
+    },
+    {
+      key: "ghy_cert_1",
+      name: "North-East EcoCycle Hub - Bamunimaidam",
+      address: "Industrial Estate, Bamunimaidam, Guwahati 781021",
+      city: "guwahati",
+      kind: "recycling",
+      lat: 26.1875,
+      lon: 91.7892,
+      phone: "+91 361 265 8899",
+      hours: "Mon - Sat: 9:00 AM - 6:00 PM",
+      verified: true,
+      osm: "https://www.google.com/maps/search/?api=1&query=26.1875,91.7892",
+    },
+    {
+      key: "shl_shop_1",
+      name: "Police Bazar Electronics & E-Recycle Shop",
+      address: "GS Road, Police Bazar, Shillong 793001",
+      city: "shillong",
+      kind: "shop",
+      lat: 25.5762,
+      lon: 91.8832,
+      phone: "+91 364 222 4455",
+      hours: "Mon - Sat: 9:30 AM - 7:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=25.5762,91.8832",
+    },
+    {
+      key: "agt_shop_1",
+      name: "Battala Agartala Electronics & Parts Shop",
+      address: "HG Basak Road, Battala, Agartala 799001",
+      city: "agartala",
+      kind: "shop",
+      lat: 23.8295,
+      lon: 91.2731,
+      phone: "+91 381 232 5566",
+      hours: "Mon - Sat: 10:00 AM - 8:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=23.8295,91.2731",
+    },
+    {
+      key: "imp_shop_1",
+      name: "Paona Bazar Imphal Electronics Exchange",
+      address: "Paona Bazar, Imphal, Manipur 795001",
+      city: "imphal",
+      kind: "shop",
+      lat: 24.8081,
+      lon: 93.9362,
+      phone: "+91 385 244 3344",
+      hours: "Mon - Sat: 9:30 AM - 7:00 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=24.8081,93.9362",
+    },
+    {
+      key: "gtk_shop_1",
+      name: "MG Marg Gangtok Tech Care & Drop Shop",
+      address: "MG Marg, Gangtok, Sikkim 737101",
+      city: "gangtok",
+      kind: "shop",
+      lat: 27.3289,
+      lon: 88.6122,
+      phone: "+91 3592 204 556",
+      hours: "Mon - Sat: 9:30 AM - 7:30 PM",
+      verified: false,
+      osm: "https://www.google.com/maps/search/?api=1&query=27.3289,88.6122",
+    },
   ];
+
+  // Pre-indexed search metadata for instant sub-millisecond lookup
+  const INDEXED_PLACES = LOCAL_PLACES.map((p) => ({
+    ...p,
+    _blob: `${p.name} ${p.address} ${p.city} ${p.kind}`.toLowerCase(),
+  }));
 
   const M = {
     map: null,
@@ -3263,44 +4398,45 @@
   const fmtDist = (km) =>
     km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
 
-  // 100% Client-side geocoding (Zero external HTTP APIs)
+  // 100% Client-side fast geocoding (Zero external HTTP APIs)
   function geocodeLocal(query) {
     const raw = String(query || "").trim();
     const norm = raw.toLowerCase().replace(/[^a-z0-9]/g, "");
     if (!norm) return CITY_COORDS.jaipur;
 
-    // Check pincode prefixes
-    if (/^\d{6}$/.test(norm)) {
-      if (norm.startsWith("302") || norm.startsWith("303")) return CITY_COORDS.jaipur;
-      if (norm.startsWith("110")) return CITY_COORDS.delhi;
-      if (norm.startsWith("122")) return CITY_COORDS.gurugram;
-      if (norm.startsWith("201")) return CITY_COORDS.noida;
-      if (norm.startsWith("400") || norm.startsWith("401")) return CITY_COORDS.mumbai;
-      if (norm.startsWith("560")) return CITY_COORDS.bengaluru;
-      if (norm.startsWith("600")) return CITY_COORDS.chennai;
-      if (norm.startsWith("700")) return CITY_COORDS.kolkata;
-      if (norm.startsWith("500")) return CITY_COORDS.hyderabad;
-      if (norm.startsWith("411")) return CITY_COORDS.pune;
-      if (norm.startsWith("380") || norm.startsWith("382")) return CITY_COORDS.ahmedabad;
-      if (norm.startsWith("160")) return CITY_COORDS.chandigarh;
-      if (norm.startsWith("226")) return CITY_COORDS.lucknow;
-      if (norm.startsWith("452")) return CITY_COORDS.indore;
-      if (norm.startsWith("462")) return CITY_COORDS.bhopal;
-      if (norm.startsWith("394") || norm.startsWith("395")) return CITY_COORDS.surat;
-      if (norm.startsWith("440")) return CITY_COORDS.nagpur;
-      if (norm.startsWith("800")) return CITY_COORDS.patna;
-      if (norm.startsWith("682") || norm.startsWith("683")) return CITY_COORDS.kochi;
-      if (norm.startsWith("641")) return CITY_COORDS.coimbatore;
-      if (norm.startsWith("530")) return CITY_COORDS.visakhapatnam;
-      if (norm.startsWith("221")) return CITY_COORDS.varanasi;
-      if (norm.startsWith("208")) return CITY_COORDS.kanpur;
-      if (norm.startsWith("282")) return CITY_COORDS.agra;
-    }
-
     if (CITY_COORDS[norm]) return CITY_COORDS[norm];
 
+    // Fast O(1) Indian PIN code prefix lookup (3-digit then 2-digit zone)
+    if (/^\d{4,6}$/.test(norm)) {
+      const c3 = PIN_3_CITY[norm.slice(0, 3)];
+      if (c3 && CITY_COORDS[c3]) return CITY_COORDS[c3];
+      const c2 = PIN_2_CITY[norm.slice(0, 2)];
+      if (c2 && CITY_COORDS[c2]) return CITY_COORDS[c2];
+    }
+
+    // Prefix match first, then substring match against Indian cities
     for (const [k, v] of Object.entries(CITY_COORDS)) {
-      if (norm.includes(k) || k.includes(norm)) return v;
+      if (k !== "india" && k !== "allindia" && k.startsWith(norm)) {
+        return v;
+      }
+    }
+    for (const [k, v] of Object.entries(CITY_COORDS)) {
+      if (k !== "india" && k !== "allindia" && (norm.includes(k) || k.includes(norm))) {
+        return v;
+      }
+    }
+
+    // Fast pre-indexed search across shop names, localities, and addresses
+    const tokens = raw.toLowerCase().split(/\s+/).filter(Boolean);
+    const directHit = INDEXED_PLACES.find((p) =>
+      tokens.every((tok) => p._blob.includes(tok)),
+    );
+    if (directHit) {
+      return {
+        latitude: directHit.lat,
+        longitude: directHit.lon,
+        label: directHit.name,
+      };
     }
 
     return {
@@ -3362,21 +4498,24 @@
       L.Icon.Default.imagePath = "vendor/leaflet/images/";
     }
 
-    // Initialize Leaflet map
+    // Initialize Leaflet map with Canvas renderer for instant marker rendering
     const map = L.map(mapEl, {
+      preferCanvas: true,
       zoomControl: true,
       minZoom: 3,
       maxZoom: 18,
-      fadeAnimation: true,
+      fadeAnimation: false,
       zoomAnimation: true,
-      markerZoomAnimation: true,
+      markerZoomAnimation: false,
     }).setView([26.9124, 75.7873], 12);
     M.map = map;
 
-    // Standard OpenStreetMap tiles (free, public, universal)
+    // Standard OpenStreetMap tiles (optimized idle loading for fast panning/searching)
     const osm = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
-      keepBuffer: 6,
+      keepBuffer: 2,
+      updateWhenIdle: true,
+      updateWhenZooming: false,
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors',
     });
@@ -3423,7 +4562,6 @@
   function runSearch(input) {
     if (!M.map) initMap();
     if (!M.map) return;
-    setBusy(true);
 
     const radiusKm = Number($("mapRadius").value) || 10;
     let origin = null;
@@ -3443,17 +4581,20 @@
     M.origin = origin;
     placeOrigin(origin, radiusKm);
 
-    // Calculate distance to all local places with local Haversine formula (0ms)
-    const scored = LOCAL_PLACES.map((p) => ({
+    // Calculate distance across pre-indexed pan-India places (< 1ms)
+    const scored = INDEXED_PLACES.map((p) => ({
       ...p,
       distance: haversine(origin.latitude, origin.longitude, p.lat, p.lon),
     }));
 
-    // Filter locations within radius
-    let nearby = scored.filter((p) => p.distance <= radiusKm * 1.25);
-    if (!nearby.length) {
-      // If outside radius, show the 6 nearest drop-off points
-      nearby = [...scored].sort((a, b) => a.distance - b.distance).slice(0, 6);
+    let nearby;
+    if (origin.allIndia) {
+      nearby = scored;
+    } else {
+      nearby = scored.filter((p) => p.distance <= radiusKm * 1.25);
+      if (!nearby.length) {
+        nearby = [...scored].sort((a, b) => a.distance - b.distance).slice(0, 6);
+      }
     }
 
     // Sort verified partner hubs first, then closest distance
@@ -3468,12 +4609,12 @@
 
     const n = M.items.length;
     mapMessage(
-      n
-        ? `${n} ${n === 1 ? "point" : "points"} found near ${origin.label}. Ready for drop-off.`
-        : `No mapped places near ${origin.label}. Try a larger radius or a nearby city.`,
+      origin.allIndia
+        ? `Showing all ${n} verified recycling hubs, electronics shops & scrap yards across India.`
+        : n
+          ? `${n} ${n === 1 ? "point" : "points"} found near ${origin.label}. Ready for drop-off.`
+          : `No mapped places near ${origin.label}. Try a larger radius or a nearby city.`,
     );
-
-    setBusy(false);
   }
 
   function placeOrigin(origin, radiusKm) {
@@ -3481,6 +4622,14 @@
     const ll = [origin.latitude, origin.longitude];
     if (M.originMarker) M.map.removeLayer(M.originMarker);
     if (M.circle) M.map.removeLayer(M.circle);
+
+    if (origin.allIndia) {
+      M.originMarker = null;
+      M.circle = null;
+      M.map.setView(ll, origin.zoom || 5, { animate: false });
+      return;
+    }
+
     M.originMarker = L.marker(ll, {
       icon: L.divIcon({
         className: "",
@@ -3505,19 +4654,19 @@
     const sz = M.map.getSize();
     if (sz.x > 80 && sz.y > 80) {
       try {
-        M.map.fitBounds(M.circle.getBounds(), { padding: [20, 20], maxZoom: 14 });
+        M.map.fitBounds(M.circle.getBounds(), { padding: [20, 20], maxZoom: 14, animate: false });
       } catch (_) {
-        M.map.setView(ll, 12);
+        M.map.setView(ll, 12, { animate: false });
       }
     } else {
-      M.map.setView(ll, 12);
+      M.map.setView(ll, 12, { animate: false });
       setTimeout(() => {
         if (M.map && M.circle) {
           try {
-            M.map.fitBounds(M.circle.getBounds(), { padding: [20, 20], maxZoom: 14 });
+            M.map.fitBounds(M.circle.getBounds(), { padding: [20, 20], maxZoom: 14, animate: false });
           } catch (_) {}
         }
-      }, 120);
+      }, 60);
     }
   }
 
@@ -3629,11 +4778,11 @@
       marker.bringToFront();
       if (fly) {
         try {
-          M.map.flyTo(marker.getLatLng(), Math.max(M.map.getZoom(), 15), {
-            duration: 0.6,
+          M.map.flyTo(marker.getLatLng(), Math.max(M.map.getZoom(), 14), {
+            duration: 0.25,
           });
         } catch (_) {
-          M.map.setView(marker.getLatLng(), 15);
+          M.map.setView(marker.getLatLng(), 14);
         }
       }
       marker.openPopup();
@@ -3767,11 +4916,20 @@
       e.preventDefault();
       const q = $("mapQuery").value.trim();
       if (!q) {
-        mapMessage("Enter a city or PIN code.", true);
+        mapMessage("Enter a city, shop, or PIN code.", true);
         $("mapQuery").focus();
         return;
       }
       runSearch({ query: q });
+    });
+    let mapSearchTimer = null;
+    $("mapQuery").addEventListener("input", () => {
+      clearTimeout(mapSearchTimer);
+      const q = $("mapQuery").value.trim();
+      if (q.length < 2) return;
+      mapSearchTimer = setTimeout(() => {
+        runSearch({ query: q });
+      }, 120);
     });
     $("mapLocateBtn").addEventListener("click", locate);
     $("mapRadius").addEventListener("change", () => {

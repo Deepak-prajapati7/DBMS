@@ -1,5 +1,7 @@
 # EcoCycle — E-waste Collection, Circular Recycling & Sustainability Platform
 
+**Live Deployment:** [https://e-waste-collection-and-recycling-ma.vercel.app/](https://e-waste-collection-and-recycling-ma.vercel.app/)
+
 EcoCycle is an end-to-end full-stack web application for managing household and enterprise e-waste collection, circular recycling, and environmental impact recovery.
 
 ![EcoCycle preview](ui.jpeg)

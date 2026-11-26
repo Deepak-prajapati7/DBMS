@@ -3171,6 +3171,12 @@ body[data-theme="dark"] .part-status-pill.is-settled { color: #c4b5fd; }
   gap: 8px;
 }
 
+.rzp-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
 .rzp-method-btn {
   display: flex;
   flex-direction: column;
