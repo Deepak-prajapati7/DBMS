@@ -10,6 +10,7 @@ const requestRoutes = require('./routes/requests');
 const categoryRoutes = require('./routes/categories');
 const centerRoutes = require('./routes/centers');
 const statsRoutes = require('./routes/stats');
+const partRoutes = require('./routes/parts');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -158,6 +159,7 @@ app.use('/api/requests', requestRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/centers', centerRoutes);
 app.use('/api/stats', statsRoutes);
+app.use('/api/parts', partRoutes);
 
 // ---------------------------------------------------------------------
 // 5. Static Frontend Serving & Favicon
