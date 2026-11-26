@@ -23,7 +23,7 @@
     />
     <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <link rel="stylesheet" href="styles.css?v=17" />
+    <link rel="stylesheet" href="styles.css?v=18" />
   </head>
   <body data-theme="light">
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -180,65 +180,45 @@
           <span class="brand-logo"><img src="Assest/logo.jpeg" alt="" fetchpriority="high" decoding="async" /></span>
           <span class="brand-text">
             <strong>EcoCycle</strong>
-            <small>Circular E-Waste Network</small>
+            <small>E-Waste Operations</small>
           </span>
-          <span class="brand-badge-pill">v2.4 Pro</span>
         </div>
         <div class="auth-brand-body">
-          <div class="hero-badge">
-            <span class="hero-badge-dot"></span>
-            <span>Zero-Landfill Circular Economy Platform</span>
-          </div>
           <h1 class="hero-headline">
-            Collection requests, <span class="text-gradient">from doorstep to recovery.</span>
+            Collection requests, from doorstep to recovery.
           </h1>
           <p class="hero-subtext">
-            Enterprise-grade electronic waste reclamation. Turn discarded tech into verified carbon offsets and precious secondary raw materials.
+            Schedule e-waste pickups, locate authorized recycling centers across India, and trade usable electronic parts.
           </p>
 
           <ul class="auth-points">
             <li>
               <div class="auth-point-icon"><svg class="i"><use href="#i-truck" /></svg></div>
               <div>
-                <strong>Express Home Pickup</strong>
-                <span>Door-to-door verified electronic collection in under 60 seconds</span>
+                <strong>Doorstep Pickup Scheduling</strong>
+                <span>Book home collections across 14 accepted e-waste categories</span>
               </div>
             </li>
             <li>
               <div class="auth-point-icon"><svg class="i"><use href="#i-pin" /></svg></div>
               <div>
-                <strong>100+ Authorized Recycling Hubs</strong>
-                <span>Locate certified processing plants and authorized drop points</span>
+                <strong>Pan-India Drop-Off Map</strong>
+                <span>Search verified recycling hubs, repair shops, and scrap yards</span>
               </div>
             </li>
             <li>
-              <div class="auth-point-icon"><svg class="i"><use href="#i-leaf" /></svg></div>
+              <div class="auth-point-icon"><svg class="i"><use href="#i-tag" /></svg></div>
               <div>
-                <strong>Verified Eco-Impact Accounting</strong>
-                <span>Audit lifecycle status, CO₂ emissions averted, and precious metals</span>
+                <strong>Parts Marketplace with Razorpay</strong>
+                <span>List working components and accept verified INR payments</span>
               </div>
             </li>
           </ul>
-
-          <div class="impact-strip" aria-label="E-waste programme stats">
-            <div class="impact-chip">
-              <strong>4.2k+</strong>
-              <span>Collections</span>
-            </div>
-            <div class="impact-chip">
-              <strong>94.8%</strong>
-              <span>Recovery Rate</span>
-            </div>
-            <div class="impact-chip">
-              <strong>18+</strong>
-              <span>Metro Clusters</span>
-            </div>
-          </div>
         </div>
 
         <div class="auth-trust-strip">
           <svg class="i"><use href="#i-shield" /></svg>
-          <span>CPCB Certified & ISO 14001 Compliant Recycling Ecosystem</span>
+          <span>CPCB & ISO 14001 Compliant E-Waste Tracking</span>
         </div>
       </section>
 
@@ -326,21 +306,18 @@
 
           <div class="demo-box">
             <div class="demo-box-head">
-              <span class="demo-sparkle">✨</span>
-              <strong>Instant Demo Access (One-Click)</strong>
+              <strong>Quick Demo Access</strong>
             </div>
             <div class="demo-actions">
               <button type="button" class="btn btn-sm btn-demo" data-demo="user" title="Sign in as Rahul (User)">
-                <span>👤</span>
-                <span class="demo-btn-text"><strong>Rahul</strong><small>User</small></span>
+                <span class="demo-btn-text"><strong>Rahul</strong><small>Citizen</small></span>
               </button>
               <button type="button" class="btn btn-sm btn-demo" data-demo="admin" title="Sign in as Admin (Ops)">
-                <span>🛡️</span>
-                <span class="demo-btn-text"><strong>Admin</strong><small>Ops Hub</small></span>
+                <span class="demo-btn-text"><strong>Admin</strong><small>Operations</small></span>
               </button>
               <button type="button" class="btn btn-sm btn-demo btn-demo-explore" id="exploreMapGuestBtn">
-                <span>🗺️</span>
-                <span>Explore Interactive Map as Guest</span>
+                <svg class="i" style="width:14px;height:14px;"><use href="#i-pin" /></svg>
+                <span>Open Recycling Map</span>
               </button>
             </div>
           </div>
@@ -445,21 +422,14 @@
               </div>
             </div>
             <div class="overview-intro">
-              <div class="overview-intro-glow"></div>
-              <div class="overview-intro-icon" aria-hidden="true">
-                <svg class="i" style="width:32px;height:32px;"><use href="#i-recycle" /></svg>
-              </div>
               <div class="overview-intro-copy">
-                <div class="overview-pill">
-                  <span class="overview-pill-dot"></span>
-                  <span>Verified Circular Portal</span>
-                </div>
-                <h2 id="overviewWelcomeGreeting">Welcome to EcoCycle Operations</h2>
-                <p id="overviewWelcomeSub">Keep track of pickup requests, locate authorized recycling centers, and review verified material recovery metrics in real time.</p>
+                <h2 id="overviewWelcomeGreeting">Welcome back</h2>
+                <p id="overviewWelcomeSub">Summary of active e-waste collections and recovery progress.</p>
               </div>
               <div class="overview-intro-actions">
                 <a class="btn btn-primary" href="#/new"><svg class="i" style="width:14px;height:14px;"><use href="#i-plus" /></svg>Book pickup</a>
-                <a class="btn btn-secondary" href="#/requests">All requests <span aria-hidden="true">→</span></a>
+                <a class="btn" href="#/parts"><svg class="i" style="width:14px;height:14px;"><use href="#i-tag" /></svg>Sell parts</a>
+                <a class="btn" href="#/requests">All requests</a>
               </div>
             </div>
 
@@ -511,63 +481,57 @@
 
             <div class="kpis" id="kpis"></div>
 
-            <!-- Sustainability Eco-Impact Tracker -->
+            <!-- Environmental Impact Summary -->
             <section class="impact-hero" id="impactHero" aria-label="Environmental impact metrics">
               <div class="impact-hero-head">
                 <div class="impact-hero-title">
-                  <span class="impact-badge">🌿 Sustainability</span>
-                  <h2>Circular Environmental Impact</h2>
+                  <h2>Environmental Impact</h2>
                 </div>
-                <div class="impact-badge" id="sustainabilityPill">Verified Circularity</div>
+                <span class="fine" id="sustainabilityPill">Calculated from completed collections</span>
               </div>
               <div class="impact-grid" id="impactGrid">
                 <div class="impact-card">
                   <div class="impact-card-top">
-                    <span class="impact-card-icon">⚡</span>
-                    <span class="impact-card-tag">Diverted</span>
+                    <span class="impact-card-tag">E-waste Diverted</span>
+                    <svg class="i impact-card-svg"><use href="#i-recycle" /></svg>
                   </div>
                   <div class="impact-card-num" id="statEwaste">0<small>kg</small></div>
-                  <div class="impact-card-label">E-waste Diverted</div>
-                  <div class="impact-card-sub">Prevented hazardous landfill seepage</div>
+                  <div class="impact-card-sub" id="statEwasteSub">Across active requests</div>
                 </div>
                 <div class="impact-card">
                   <div class="impact-card-top">
-                    <span class="impact-card-icon">🌱</span>
-                    <span class="impact-card-tag">Emissions</span>
+                    <span class="impact-card-tag">CO₂ Offset</span>
+                    <svg class="i impact-card-svg"><use href="#i-leaf" /></svg>
                   </div>
                   <div class="impact-card-num" id="statCo2">0<small>kg</small></div>
-                  <div class="impact-card-label">CO₂ Offset Avoided</div>
-                  <div class="impact-card-sub">Equivalent to ~7 tree-years</div>
+                  <div class="impact-card-sub" id="statCo2Sub">1.44 kg saved per kg completed</div>
                 </div>
                 <div class="impact-card">
                   <div class="impact-card-top">
-                    <span class="impact-card-icon">🪙</span>
-                    <span class="impact-card-tag">Metals</span>
+                    <span class="impact-card-tag">Metals Recovered</span>
+                    <svg class="i impact-card-svg"><use href="#i-box" /></svg>
                   </div>
                   <div class="impact-card-num" id="statMetals">0<small>g</small></div>
-                  <div class="impact-card-label">Precious Metals Saved</div>
-                  <div class="impact-card-sub">High-purity Copper, Aluminum & Gold</div>
+                  <div class="impact-card-sub">Estimated copper, aluminum & gold</div>
                 </div>
                 <div class="impact-card">
                   <div class="impact-card-top">
-                    <span class="impact-card-icon">🎯</span>
-                    <span class="impact-card-tag">Efficiency</span>
+                    <span class="impact-card-tag">Completion Rate</span>
+                    <svg class="i impact-card-svg"><use href="#i-check" /></svg>
                   </div>
-                  <div class="impact-card-num" id="statRate">100<small>%</small></div>
-                  <div class="impact-card-label">Circular Recovery Rate</div>
-                  <div class="impact-card-sub">Zero-landfill certified process</div>
+                  <div class="impact-card-num" id="statRate">0<small>%</small></div>
+                  <div class="impact-card-sub" id="statRateSub">Completed requests</div>
                 </div>
               </div>
               <div class="impact-progress-wrap">
                 <div class="impact-progress-header">
                   <div class="impact-progress-title">
-                    <span class="impact-progress-dot"></span>
-                    <span><strong>Circularity Index</strong> · Diverted from toxic electronic landfills</span>
+                    <span><strong>Recovery Completion</strong></span>
                   </div>
-                  <span class="impact-progress-badge" id="impactProgressPercent">100% Circular</span>
+                  <span class="impact-progress-badge" id="impactProgressPercent">0%</span>
                 </div>
                 <div class="impact-progress-track">
-                  <div class="impact-progress-bar" id="impactProgressBar" style="width: 100%;"></div>
+                  <div class="impact-progress-bar" id="impactProgressBar" style="width: 0%;"></div>
                 </div>
               </div>
             </section>
@@ -1029,6 +993,6 @@
       }
     </script>
     <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
-    <script defer src="app.js?v=17"></script>
+    <script defer src="app.js?v=18"></script>
   </body>
 </html>

@@ -1282,17 +1282,17 @@
   function requestRow(r, withRequester) {
     const isOwner = !isAdmin() && String(r.email).toLowerCase() === state.user.email.toLowerCase();
     const canCancel = isOwner && r.status === "Pending";
-    const catIcon = CATEGORY_ICONS[r.category] || "📦";
+    const catCode = CATEGORIES.find((c) => c.name === r.category)?.code || String(r.category || "OT").slice(0, 2).toUpperCase();
     return `<tr class="row-link" tabindex="0" data-open="${esc(r.id)}">
       <td><span class="id">${esc(displayId(r.id))}</span><span class="sub">${esc(fmtDate(r.createdAt))}</span></td>
       ${withRequester ? `<td class="col-requester"><strong>${esc(r.user)}</strong><span class="sub">${esc(r.email || "")}</span></td>` : ""}
       <td>
         <div style="display:flex;align-items:center;gap:9px;">
-          <span style="font-size:16px;line-height:1;display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--surface-2);flex:none;">${catIcon}</span>
+          <span class="cat-code" aria-hidden="true">${esc(catCode)}</span>
           <div><strong>${esc(r.category)}</strong>${r.qty > 1 ? `<span class="sub">Qty: ${esc(r.qty)}</span>` : ""}</div>
         </div>
       </td>
-      <td class="method"><span style="font-weight:600;display:inline-flex;align-items:center;gap:5px;">${r.method === "Pickup" ? "🚚" : "📍"} ${esc(r.method)}</span></td>
+      <td class="method">${esc(r.method)}</td>
       <td class="num">${esc(fmtDate(r.date))}</td>
       <td class="col-location"><div class="clip" title="${esc(r.location)}">${esc(r.location)}</div></td>
       <td>
@@ -1360,11 +1360,14 @@
     const recoveryRate = mine.length ? Math.round((done / mine.length) * 100) : 100;
 
     if ($("statEwaste")) $("statEwaste").innerHTML = `${Math.round(totalWeight * 10) / 10}<small>kg</small>`;
+    if ($("statEwasteSub")) $("statEwasteSub").textContent = `${mine.length} ${mine.length === 1 ? "request" : "requests"} tracked`;
     if ($("statCo2")) $("statCo2").innerHTML = `${co2Saved}<small>kg</small>`;
+    if ($("statCo2Sub")) $("statCo2Sub").textContent = `${Math.round(completedWeight * 10) / 10} kg completed × 1.44`;
     if ($("statMetals")) $("statMetals").innerHTML = `${metalsGrams}<small>g</small>`;
     if ($("statRate")) $("statRate").innerHTML = `${recoveryRate}<small>%</small>`;
+    if ($("statRateSub")) $("statRateSub").textContent = `${done} of ${mine.length} completed`;
     if ($("impactProgressBar")) $("impactProgressBar").style.width = `${recoveryRate}%`;
-    if ($("impactProgressPercent")) $("impactProgressPercent").textContent = `${recoveryRate}% Circular`;
+    if ($("impactProgressPercent")) $("impactProgressPercent").textContent = `${recoveryRate}%`;
 
     // Pipeline funnel
     const pipelineSteps = [
@@ -1408,7 +1411,10 @@
     updateSustainabilityAndPipeline(mine, count, done);
 
     if ($("overviewWelcomeGreeting") && state.user) {
-      $("overviewWelcomeGreeting").textContent = `${getTimeGreeting(state.user.name)} 👋`;
+      $("overviewWelcomeGreeting").textContent = getTimeGreeting(state.user.name);
+    }
+    if ($("overviewWelcomeSub")) {
+      $("overviewWelcomeSub").textContent = `${pending} pending review · ${active} in progress · ${done} completed`;
     }
 
     if (isAdmin()) {
@@ -1557,17 +1563,20 @@
           ${
             recent.length
               ? `<div class="table-wrap"><table class="tbl"><thead><tr><th scope="col">Request</th><th scope="col">Category</th><th scope="col">Date</th><th scope="col">Status</th></tr></thead><tbody>
-            ${recent.map((r) => `<tr class="row-link" tabindex="0" data-open="${esc(r.id)}">
+            ${recent.map((r) => {
+              const catCode = CATEGORIES.find((c) => c.name === r.category)?.code || String(r.category || "OT").slice(0, 2).toUpperCase();
+              return `<tr class="row-link" tabindex="0" data-open="${esc(r.id)}">
               <td><span class="id">${esc(displayId(r.id))}</span></td>
               <td>
                 <div style="display:flex;align-items:center;gap:8px;">
-                  <span style="font-size:16px;">${CATEGORY_ICONS[r.category] || "📦"}</span>
-                  <div><strong>${esc(r.category)}</strong><span class="sub">${r.method === "Pickup" ? "🚚" : "📍"} ${esc(r.method)}</span></div>
+                  <span class="cat-code" aria-hidden="true">${esc(catCode)}</span>
+                  <div><strong>${esc(r.category)}</strong><span class="sub">${esc(r.method)}</span></div>
                 </div>
               </td>
               <td class="num">${esc(fmtDate(r.date))}</td>
               <td>${pill(r.status)}</td>
-            </tr>`).join("")}
+            </tr>`;
+            }).join("")}
           </tbody></table></div>`
               : `<div class="empty"><strong>No requests yet</strong>Book a pickup or choose a drop-off point.<br /><a class="btn btn-primary" href="#/new">New request</a></div>`
           }
@@ -2175,6 +2184,14 @@
       $("rzpModePill").textContent = "TEST MODE";
 
       let selectedPayMethod = "UPI";
+      const detectCardNetwork = (digits) => {
+        if (/^4/.test(digits)) return "VISA";
+        if (/^(5[1-5]|2[2-7])/.test(digits)) return "MASTERCARD";
+        if (/^3[47]/.test(digits)) return "AMEX";
+        if (/^(60|6521|6522|508)/.test(digits)) return "RUPAY";
+        return "CARD";
+      };
+
       body.innerHTML = `
         <div class="rzp-summary">
           <div>
@@ -2185,7 +2202,7 @@
         </div>
 
         <div>
-          <label style="display:block;font-size:12px;font-weight:650;margin-bottom:8px;color:var(--muted);">Choose Payment Method</label>
+          <label style="display:block;font-size:12px;font-weight:650;margin-bottom:8px;color:var(--muted);">Payment Method</label>
           <div class="rzp-methods" id="rzpMethods">
             <button type="button" class="rzp-method-btn is-active" data-rzp-method="UPI">
               <strong>UPI / QR</strong>
@@ -2199,13 +2216,9 @@
               <strong>Credit Card</strong>
               <small>Visa, Mastercard, Amex</small>
             </button>
-            <button type="button" class="rzp-method-btn" data-rzp-method="Netbanking">
-              <strong>Netbanking</strong>
-              <small>HDFC, SBI, ICICI, Axis</small>
-            </button>
-            <button type="button" class="rzp-method-btn" data-rzp-method="Wallet" style="grid-column: span 2;">
-              <strong>Wallet</strong>
-              <small>Amazon Pay, Mobikwik, Freecharge</small>
+            <button type="button" class="rzp-method-btn" data-rzp-method="Netbanking & Wallet">
+              <strong>Netbanking / Wallet</strong>
+              <small>HDFC, SBI, ICICI, Paytm</small>
             </button>
           </div>
         </div>
@@ -2215,36 +2228,60 @@
           <input id="rzpPayInput" type="text" value="deepak@okaxis" placeholder="name@okbank" />
         </div>
 
-        <div id="rzpCardFields" hidden style="display:flex;flex-direction:column;gap:10px;">
+        <div class="rzp-card-panel" id="rzpCardFields" hidden>
+          <div class="rzp-card-panel-head">
+            <span id="rzpCardPanelTitle">Debit Card Details</span>
+            <span class="rzp-card-brand" id="rzpCardBrand">VISA</span>
+          </div>
           <div class="field">
-            <label for="rzpCardNumber" id="rzpCardNumberLabel">Debit Card Number</label>
-            <input id="rzpCardNumber" type="text" inputmode="numeric" maxlength="19" value="4111 1111 1111 1111" placeholder="XXXX XXXX XXXX XXXX" />
+            <label for="rzpCardNumber" id="rzpCardNumberLabel">Card Number</label>
+            <input id="rzpCardNumber" type="text" inputmode="numeric" maxlength="19" autocomplete="cc-number" value="4111 1111 1111 1111" placeholder="XXXX XXXX XXXX XXXX" />
           </div>
           <div class="rzp-card-grid">
             <div class="field">
               <label for="rzpCardExpiry">Expiry (MM/YY)</label>
-              <input id="rzpCardExpiry" type="text" maxlength="5" value="12/28" placeholder="MM/YY" />
+              <input id="rzpCardExpiry" type="text" inputmode="numeric" maxlength="5" autocomplete="cc-exp" value="12/28" placeholder="MM/YY" />
             </div>
             <div class="field">
               <label for="rzpCardCvv">CVV</label>
-              <input id="rzpCardCvv" type="password" inputmode="numeric" maxlength="4" value="123" placeholder="123" />
+              <input id="rzpCardCvv" type="password" inputmode="numeric" maxlength="4" autocomplete="cc-csc" value="123" placeholder="123" />
             </div>
           </div>
           <div class="field">
             <label for="rzpCardHolder">Cardholder Name</label>
-            <input id="rzpCardHolder" type="text" value="${esc(state.user?.name || "Deepak")}" placeholder="Name on card" />
+            <input id="rzpCardHolder" type="text" autocomplete="cc-name" value="${esc(state.user?.name || "Deepak")}" placeholder="Name on card" />
           </div>
         </div>
 
         <p class="form-error" id="rzpErr" role="alert"></p>
 
-        <div class="modal-actions">
+        <div class="modal-actions" style="margin-top:4px;">
           <button class="btn" type="button" id="rzpCancelBtn">Cancel</button>
           <button class="btn btn-rzp" type="button" id="rzpPayNowBtn">Pay ${fmtInr(part.priceInr)}</button>
         </div>
       `;
 
       modal.hidden = false;
+
+      const updateBrandBadge = () => {
+        const digits = ($("rzpCardNumber")?.value || "").replace(/\D/g, "");
+        if ($("rzpCardBrand")) $("rzpCardBrand").textContent = detectCardNetwork(digits);
+      };
+
+      $("rzpCardNumber")?.addEventListener("input", (e) => {
+        const digits = e.target.value.replace(/\D/g, "").slice(0, 16);
+        e.target.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ");
+        updateBrandBadge();
+      });
+
+      $("rzpCardExpiry")?.addEventListener("input", (e) => {
+        const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
+        e.target.value = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+      });
+
+      $("rzpCardCvv")?.addEventListener("input", (e) => {
+        e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4);
+      });
 
       const syncMethodFields = () => {
         const isCard = selectedPayMethod === "Debit Card" || selectedPayMethod === "Credit Card";
@@ -2254,14 +2291,12 @@
         if (cardFields) cardFields.hidden = !isCard;
 
         if (isCard) {
-          const cardLbl = $("rzpCardNumberLabel");
+          if ($("rzpCardPanelTitle")) $("rzpCardPanelTitle").textContent = `${selectedPayMethod} Details`;
           const cardInp = $("rzpCardNumber");
-          if (cardLbl) cardLbl.textContent = `${selectedPayMethod} Number`;
-          if (cardInp && !cardInp.value.trim()) {
-            cardInp.value = selectedPayMethod === "Credit Card" ? "5555 5555 5555 4444" : "4111 1111 1111 1111";
-          } else if (cardInp && (cardInp.value === "4111 1111 1111 1111" || cardInp.value === "5555 5555 5555 4444")) {
+          if (cardInp && (!cardInp.value.trim() || cardInp.value === "4111 1111 1111 1111" || cardInp.value === "5555 5555 5555 4444")) {
             cardInp.value = selectedPayMethod === "Credit Card" ? "5555 5555 5555 4444" : "4111 1111 1111 1111";
           }
+          updateBrandBadge();
           return;
         }
 
@@ -2271,14 +2306,10 @@
           lbl.textContent = "UPI ID";
           inp.value = "deepak@okaxis";
           inp.placeholder = "name@okbank";
-        } else if (selectedPayMethod === "Netbanking") {
-          lbl.textContent = "Bank Name";
-          inp.value = "HDFC Bank Retail";
-          inp.placeholder = "Bank name";
         } else {
-          lbl.textContent = "Wallet Mobile";
-          inp.value = "+91 98765 43210";
-          inp.placeholder = "Mobile number";
+          lbl.textContent = "Bank or Wallet";
+          inp.value = "HDFC Bank Retail";
+          inp.placeholder = "Bank name or Paytm/PhonePe number";
         }
       };
 
@@ -2370,7 +2401,7 @@
           <div class="part-meta">
             <span>Condition: <strong>${esc(p.condition)}</strong></span>
             <span>Qty: <strong>${esc(p.qty)}</strong></span>
-            <span>📍 ${esc(p.location)}</span>
+            <span>${esc(p.location)}</span>
             <span>Seller: ${esc(p.sellerName)}${isSeller ? " (You)" : ""}</span>
           </div>
         </div>
@@ -2428,14 +2459,13 @@
     host.innerHTML = `
       <div class="parts-hero">
         <div>
-          <span class="parts-hero-badge">⚡ Razorpay Enabled · Circular Parts Exchange</span>
-          <h2>Sell & Buy Salvaged Electronic Parts</h2>
-          <p>Monetize working RAM, SSDs, displays, chargers, and PCBs directly on EcoCycle. Buyers pay securely via Razorpay Checkout and sellers receive verified UPI payout receipts.</p>
+          <h2>Parts Marketplace</h2>
+          <p>List tested electronic components for sale or purchase available parts via Razorpay checkout.</p>
         </div>
-        <div class="docs-hero-actions">
+        <div>
           <button class="btn btn-primary btn-sm" type="button" id="partsQuickSellBtn">
             <svg class="i"><use href="#i-plus"/></svg>
-            <span>List a Part to Sell</span>
+            <span>List a Part</span>
           </button>
         </div>
       </div>

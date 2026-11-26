@@ -1,0 +1,23 @@
+{
+  "name": "ecocycle-ewaste-management",
+  "version": "1.0.0",
+  "private": true,
+  "description": "EcoCycle - E-waste Collection, Recycling and Circular Parts Platform",
+  "main": "CAPSTONE/server.js",
+  "scripts": {
+    "start": "node CAPSTONE/server.js",
+    "test": "node --test CAPSTONE/tests/app.test.js",
+    "build": "node --check CAPSTONE/server.js && node --check CAPSTONE/app.js && node --check CAPSTONE/routes/parts.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^17.4.2",
+    "express": "^5.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongodb": "^6.20.0",
+    "mongoose": "^8.24.8"
+  }
+}

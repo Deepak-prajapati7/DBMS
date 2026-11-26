@@ -1,0 +1,7 @@
+.DS_Store
+.env
+node_modules/
+CAPSTONE/node_modules/
+CAPSTONE/.env
+.vercel
+CAPSTONE/.vercel
