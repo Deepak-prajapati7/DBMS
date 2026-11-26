@@ -163,10 +163,13 @@
         <line x1="5" y1="12" x2="19" y2="12" />
         <polyline points="12 5 19 12 12 19" />
       </symbol>
-      <symbol id="i-db" viewBox="0 0 24 24">
-        <ellipse cx="12" cy="5" rx="9" ry="3" />
-        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
-        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+      <symbol id="i-tag" viewBox="0 0 24 24">
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+        <line x1="7" y1="7" x2="7.01" y2="7" />
+      </symbol>
+      <symbol id="i-credit-card" viewBox="0 0 24 24">
+        <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+        <line x1="1" y1="10" x2="23" y2="10" />
       </symbol>
     </svg>
 
@@ -403,9 +406,9 @@
             <kbd>/</kbd>
           </form>
           <div class="topbar-right">
-            <div class="backend-pill" id="backendPill" title="Server & MongoDB API Status">
+            <div class="backend-pill" id="backendPill" title="EcoCycle Service Status">
               <span class="backend-dot"></span>
-              <span class="backend-text" id="backendStatusText">MongoDB Active</span>
+              <span class="backend-text" id="backendStatusText">Service Active</span>
             </div>
             <a class="btn btn-primary btn-sm topbar-action-btn" href="#/new" id="topbarNewBtn" title="Book a new collection">
               <svg class="i" style="width: 14px; height: 14px;"><use href="#i-plus" /></svg>
@@ -481,6 +484,17 @@
                   <p>Locate certified collection and repair hubs nearby.</p>
                 </div>
                 <a href="#/map" aria-label="Find drop-off locations">Explore</a>
+              </article>
+
+              <article class="action-card">
+                <div class="action-card-icon" aria-hidden="true">
+                  <svg class="i"><use href="#i-tag" /></svg>
+                </div>
+                <div>
+                  <h3>Sell parts</h3>
+                  <p>List usable components or pay via Razorpay.</p>
+                </div>
+                <a href="#/parts" aria-label="Open parts marketplace">Sell</a>
               </article>
 
               <article class="action-card">
@@ -923,9 +937,9 @@
             </div>
           </section>
 
-          <!-- Project Docs & Database -->
-          <section class="view" id="view-docs" hidden>
-            <div class="docs-shell" id="docsContainer"></div>
+          <!-- Sell Parts & Razorpay Marketplace -->
+          <section class="view" id="view-parts" hidden>
+            <div class="parts-shell" id="partsContainer"></div>
           </section>
         </main>
       </div>
@@ -978,6 +992,33 @@
       </div>
     </div>
 
+    <!-- Razorpay Checkout / Receipt Modal -->
+    <div class="modal-scrim" id="rzpModal" hidden>
+      <div
+        class="modal rzp-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="rzpModalTitle"
+      >
+        <div class="rzp-head">
+          <div class="rzp-brand">
+            <div class="rzp-logo-mark" aria-hidden="true">R</div>
+            <div>
+              <strong id="rzpModalTitle">Razorpay Checkout</strong>
+              <small id="rzpOrderMeta">EcoCycle Circular Parts</small>
+            </div>
+          </div>
+          <div class="rzp-head-right">
+            <span class="rzp-mode-pill" id="rzpModePill">TEST MODE</span>
+            <button class="icon-btn on-dark" id="rzpCloseBtn" type="button" aria-label="Close Razorpay dialog">
+              <svg class="i"><use href="#i-x" /></svg>
+            </button>
+          </div>
+        </div>
+        <div class="rzp-body" id="rzpModalBody"></div>
+      </div>
+    </div>
+
     <div class="toasts" id="toasts" aria-live="polite"></div>
 
     <!-- Leaflet JS Library: Local vendor first (zero external API/CDN dependency), fallback to CDN -->
@@ -987,6 +1028,7 @@
         document.write('<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""><\/script>');
       }
     </script>
-    <script defer src="app.js?v=16"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+    <script defer src="app.js?v=17"></script>
   </body>
 </html>
