@@ -159,23 +159,6 @@
     },
   ];
 
-  const CATEGORY_ICONS = {
-    Computers: "💻",
-    "Mobile phones": "📱",
-    Batteries: "🔋",
-    Televisions: "📺",
-    Printers: "🖨️",
-    Cables: "🔌",
-    "Game consoles": "🎮",
-    "Audio equipment": "🎧",
-    Cameras: "📷",
-    "Small appliances": "⚡",
-    "Networking equipment": "🌐",
-    Wearables: "⌚",
-    "Lamps and lighting": "💡",
-    "Other small electronics": "📦",
-  };
-
   const STATUSES = [
     "Pending",
     "Approved",
@@ -192,29 +175,29 @@
   const NAV = {
     user: [
       { id: "overview", label: "Overview", icon: "grid" },
-      { id: "new", label: "New request", icon: "plus" },
-      { id: "requests", label: "My requests", icon: "list" },
-      { id: "parts", label: "Sell parts", icon: "tag" },
-      { id: "map", label: "Find a point", icon: "pin" },
+      { id: "new", label: "New Request", icon: "plus" },
+      { id: "requests", label: "My Requests", icon: "list" },
+      { id: "parts", label: "Sell Parts", icon: "tag" },
+      { id: "map", label: "Find a Point", icon: "pin" },
       { id: "categories", label: "Categories", icon: "box" },
-      { id: "guide", label: "Safety guide", icon: "book" },
+      { id: "guide", label: "Safety Guide", icon: "book" },
     ],
     admin: [
       { id: "overview", label: "Overview", icon: "grid" },
-      { id: "requests", label: "All requests", icon: "list" },
+      { id: "requests", label: "All Requests", icon: "list" },
       { id: "parts", label: "Parts & Razorpay", icon: "tag" },
-      { id: "map", label: "Recycling points", icon: "pin" },
-      { id: "guide", label: "Safety guide", icon: "book" },
+      { id: "map", label: "Recycling Points", icon: "pin" },
+      { id: "guide", label: "Safety Guide", icon: "book" },
     ],
   };
   const TITLES = {
     overview: "Overview",
-    new: "New request",
-    requests: { user: "My requests", admin: "All requests" },
-    parts: { user: "Sell & buy parts", admin: "Parts & Razorpay" },
-    map: { user: "Find a drop-off point", admin: "Recycling points" },
-    categories: "Accepted categories",
-    guide: "Safety guide",
+    new: "New Request",
+    requests: { user: "My Requests", admin: "All Requests" },
+    parts: { user: "Sell & Buy Parts", admin: "Parts & Razorpay" },
+    map: { user: "Find a Drop-Off Point", admin: "Recycling Points" },
+    categories: "Accepted Categories",
+    guide: "Safety Guide",
   };
 
   const QUICK_CITIES = [
@@ -258,8 +241,9 @@
   function getTimeGreeting(name = "Deepak") {
     const hour = new Date().getHours();
     const period = hour < 12 ? "morning" : hour < 17 ? "afternoon" : "evening";
-    const firstName = String(name || "Deepak").trim().split(/\s+/).filter(Boolean)[0] || "Deepak";
-    return `Good ${period} ${firstName}`;
+    const rawFirst = String(name || "Deepak").trim().split(/\s+/).filter(Boolean)[0] || "Deepak";
+    const firstName = rawFirst.toLowerCase() === "system" ? "Deepak" : rawFirst;
+    return `Good ${period}, ${firstName}`;
   }
   const fmtDate = (iso) => {
     const d = new Date(String(iso).length <= 10 ? `${iso}T00:00:00` : iso);
@@ -821,10 +805,14 @@
       return request;
     }
     if (requestRoute && method === "DELETE" && !path.endsWith("/status")) {
-      if (profile.role !== "admin") throw new Error("Administrator access is required.");
       const requests = ensureOfflineRequests();
+      const targetReq = requests.find((entry) => String(entry.id) === requestRoute[1]);
+      if (!targetReq) throw new Error("Request not found.");
+      const isOwner = String(targetReq.email || "").toLowerCase() === profile.email.toLowerCase();
+      if (profile.role !== "admin" && !isOwner) {
+        throw new Error("You are not authorized to remove this request.");
+      }
       const remaining = requests.filter((entry) => String(entry.id) !== requestRoute[1]);
-      if (remaining.length === requests.length) throw new Error("Request not found.");
       writeStoredJson(STORE.requests, remaining);
       return { ok: true };
     }
@@ -924,9 +912,11 @@
       const parts = ensureOfflineParts();
       const part = parts.find((p) => String(p.id) === partDeleteMatch[1]);
       if (!part) throw new Error("Part listing not found.");
-      const isOwner = String(part.sellerEmail || "").toLowerCase() === profile.email.toLowerCase();
-      if (profile.role !== "admin" && (!isOwner || part.status !== "Available")) {
-        throw new Error("You can only remove your own available part listings.");
+      const userEmail = profile.email.toLowerCase();
+      const isSeller = String(part.sellerEmail || "").toLowerCase() === userEmail;
+      const isBuyer = String(part.buyerEmail || "").toLowerCase() === userEmail;
+      if (profile.role !== "admin" && !isSeller && !isBuyer) {
+        throw new Error("You can only remove your own part listings or payments.");
       }
       writeStoredJson(STORE.parts, parts.filter((p) => String(p.id) !== partDeleteMatch[1]));
       return { ok: true };
@@ -1109,9 +1099,28 @@
     $("authMessage").textContent = "";
   }
 
+  function showLanding(mode) {
+    closeDrawer();
+    $("app").hidden = true;
+    if (mode === "auth") {
+      if ($("landing")) $("landing").hidden = true;
+      $("auth").hidden = false;
+    } else {
+      $("auth").hidden = true;
+      if ($("landing")) $("landing").hidden = false;
+    }
+  }
+
+  function openAuthGate(mode = "login") {
+    showLanding("auth");
+    setAuthMode(mode);
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }
+
   async function startSession(profile) {
     await Promise.all([loadRequests(), loadParts()]);
     state.user = profile;
+    if ($("landing")) $("landing").hidden = true;
     $("auth").hidden = true;
     $("app").hidden = false;
     $("avatar").textContent = initials(profile.name);
@@ -1146,13 +1155,15 @@
     closeDrawer();
     $("toasts").replaceChildren();
     $("app").hidden = true;
-    $("auth").hidden = false;
+    $("auth").hidden = true;
+    if ($("landing")) $("landing").hidden = false;
     $("authForm").reset();
     setAuthMode("login");
     $("authMessage").textContent = logoutError
       ? `Signed out on this page, but the server could not end the session: ${logoutError}`
       : "";
     history.replaceState(null, "", location.pathname);
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }
 
   async function submitAuth(e) {
@@ -1282,6 +1293,7 @@
   function requestRow(r, withRequester) {
     const isOwner = !isAdmin() && String(r.email).toLowerCase() === state.user.email.toLowerCase();
     const canCancel = isOwner && r.status === "Pending";
+    const canRemove = isAdmin() || isOwner;
     const catCode = CATEGORIES.find((c) => c.name === r.category)?.code || String(r.category || "OT").slice(0, 2).toUpperCase();
     return `<tr class="row-link" tabindex="0" data-open="${esc(r.id)}">
       <td><span class="id">${esc(displayId(r.id))}</span><span class="sub">${esc(fmtDate(r.createdAt))}</span></td>
@@ -1298,7 +1310,10 @@
       <td>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
           ${pill(r.status)}
-          ${canCancel ? `<button class="btn btn-sm btn-ghost-danger tbl-action-btn" type="button" data-cancel-row="${esc(r.id)}" title="Cancel request">Cancel</button>` : ""}
+          <div class="row-action-group">
+            ${canCancel ? `<button class="btn btn-sm tbl-action-btn" type="button" data-cancel-row="${esc(r.id)}" title="Cancel request">Cancel</button>` : ""}
+            ${canRemove ? `<button class="btn btn-sm btn-ghost-danger tbl-action-btn" type="button" data-delete-row="${esc(r.id)}" title="Remove request">Remove</button>` : ""}
+          </div>
         </div>
       </td>
     </tr>`;
@@ -1309,51 +1324,35 @@
    * ------------------------------------------------------------------ */
   function kpi(label, value, note) {
     const details = {
-      "Total requests": ["clock", "blue"],
-      "My requests": ["list", "blue"],
-      "Awaiting review": ["check", "green"],
-      "In progress": ["grid", "purple"],
-      Completed: ["check", "amber"],
+      "Total requests": ["list", "neutral"],
+      "Total Requests": ["list", "neutral"],
+      "My requests": ["list", "neutral"],
+      "Awaiting review": ["clock", "amber"],
+      "Awaiting Review": ["clock", "amber"],
+      "In progress": ["trend", "blue"],
+      "In Progress": ["trend", "blue"],
+      Completed: ["check", "green"],
       "Rejected or cancelled": ["x", "rose"],
     };
-    const [glyph, tone] = details[label] || ["box", "blue"];
-    const numericVal = Number(value);
-    const countAttr = Number.isFinite(numericVal) ? ` data-countup="${numericVal}"` : "";
-    return `<article class="kpi kpi-${tone} rb-spotlight">
-      <div class="kpi-heading"><span class="kpi-icon">${icon(glyph)}</span><span class="kpi-label">${esc(label)}</span></div>
-      <div class="kpi-value"${countAttr}>${esc(value)}</div>
+    const [glyph, tone] = details[label] || ["box", "neutral"];
+    return `<article class="kpi kpi-${tone}">
+      <div class="kpi-top">
+        <div class="kpi-value">${esc(value)}</div>
+        <span class="kpi-status-icon" aria-hidden="true">${icon(glyph)}</span>
+      </div>
+      <div class="kpi-label">${esc(label)}</div>
       <div class="kpi-note">${esc(note)}</div>
     </article>`;
   }
 
-  function animateCountUp(el, target, unitHtml = "", decimals = 0, duration = 620) {
+  function animateCountUp(el, target, unitHtml = "", decimals = 0) {
     if (!el) return;
     const end = Number(target) || 0;
-    const reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced || end === 0) {
-      const formatted = decimals > 0 ? (Math.round(end * 10 ** decimals) / 10 ** decimals) : Math.round(end);
-      el.innerHTML = `${formatted}${unitHtml}`;
-      return;
-    }
-    const startTime = performance.now();
-    const factor = 10 ** decimals;
-    const step = (now) => {
-      const t = Math.min(1, (now - startTime) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      const val = end * eased;
-      const display = decimals > 0 ? Math.round(val * factor) / factor : Math.round(val);
-      el.innerHTML = `${display}${unitHtml}`;
-      if (t < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
+    const formatted = decimals > 0 ? (Math.round(end * 10 ** decimals) / 10 ** decimals) : Math.round(end);
+    el.innerHTML = `${formatted}${unitHtml}`;
   }
 
-  function runKpiCountUps(root = document) {
-    root.querySelectorAll("[data-countup]").forEach((el) => {
-      const target = Number(el.dataset.countup);
-      if (Number.isFinite(target)) animateCountUp(el, target);
-    });
-  }
+  function runKpiCountUps() {}
 
   function weekBuckets(requests, weeks = 8) {
     const now = new Date();
@@ -1397,17 +1396,21 @@
     animateCountUp($("statMetals"), metalsGrams, "<small>g</small>", 0);
     animateCountUp($("statRate"), recoveryRate, "<small>%</small>", 0);
     if ($("statRateSub")) $("statRateSub").textContent = `${done} of ${mine.length} completed`;
+    if ($("impactCompletedText")) $("impactCompletedText").textContent = `${done} of ${mine.length} ${mine.length === 1 ? "request" : "requests"} completed`;
     if ($("impactProgressBar")) $("impactProgressBar").style.width = `${recoveryRate}%`;
     if ($("impactProgressPercent")) $("impactProgressPercent").textContent = `${recoveryRate}%`;
+    if ($("recoveryStatusBadge")) {
+      $("recoveryStatusBadge").hidden = mine.length === 0;
+    }
 
     // Pipeline funnel
     const pipelineSteps = [
-      { name: "Pending Review", status: "Pending", color: "#f5ac32" },
-      { name: "Approved", status: "Approved", color: "#12aaa0" },
-      { name: "Scheduled", status: "Scheduled", color: "#3679ed" },
-      { name: "Collected", status: "Collected", color: "#32b66a" },
-      { name: "Processing", status: "Processing", color: "#784be8" },
-      { name: "Completed", status: "Completed", color: "#22a879" },
+      { name: "Pending Review", status: "Pending", color: "#d97706" },
+      { name: "Approved", status: "Approved", color: "#0284c7" },
+      { name: "Scheduled", status: "Scheduled", color: "#334155" },
+      { name: "Collected", status: "Collected", color: "#0d9488" },
+      { name: "Processing", status: "Processing", color: "#64748b" },
+      { name: "Completed", status: "Completed", color: "#059669" },
     ];
 
     if ($("pipelineTrack")) {
@@ -1438,6 +1441,7 @@
     const pending = count((r) => r.status === "Pending");
     const active = count((r) => IN_PROGRESS.includes(r.status));
     const done = count((r) => r.status === "Completed");
+    const adminView = isAdmin();
 
     updateSustainabilityAndPipeline(mine, count, done);
 
@@ -1445,10 +1449,24 @@
       $("overviewWelcomeGreeting").textContent = getTimeGreeting(state.user.name);
     }
     if ($("overviewWelcomeSub")) {
-      $("overviewWelcomeSub").textContent = `${pending} pending review · ${active} in progress · ${done} completed`;
+      $("overviewWelcomeSub").textContent = adminView
+        ? `${pending} pending review · ${active} in progress · ${done} completed`
+        : "Here's what's happening with your recycling activity today.";
     }
+    if ($("overviewSecondaryAction")) {
+      $("overviewSecondaryAction").textContent = adminView ? "View All Requests" : "View My Requests";
+    }
+    if ($("overviewColumns")) {
+      $("overviewColumns").classList.toggle("is-user", !adminView);
+      $("overviewColumns").classList.toggle("is-admin", adminView);
+    }
+    if ($("impactRateCell")) $("impactRateCell").hidden = !adminView;
+    if ($("pipelinePanel")) $("pipelinePanel").hidden = !adminView;
+    if ($("overviewGrid")) $("overviewGrid").hidden = !adminView;
+    if ($("overviewQuickActions")) $("overviewQuickActions").hidden = adminView;
+    if ($("overviewPrimaryCol")) $("overviewPrimaryCol").hidden = adminView;
 
-    if (isAdmin()) {
+    if (adminView) {
       $("kpis").innerHTML =
         kpi("Total requests", mine.length, "All time") +
         kpi(
@@ -1488,14 +1506,14 @@
       const maxWeek = Math.max(1, ...weeks.map((w) => w.count));
       const weekScale = Math.max(8, Math.ceil(maxWeek / 2) * 2);
       const statusColors = {
-        Pending: "#f5ac32",
-        Scheduled: "#3679ed",
-        Processing: "#784be8",
-        Rejected: "#e74670",
-        Approved: "#12aaa0",
-        Collected: "#32b66a",
-        Completed: "#22a879",
-        Cancelled: "#9aa7b8",
+        Pending: "#d97706",
+        Scheduled: "#334155",
+        Processing: "#64748b",
+        Rejected: "#dc2626",
+        Approved: "#0284c7",
+        Collected: "#0d9488",
+        Completed: "#059669",
+        Cancelled: "#94a3b8",
       };
       let statusStop = 0;
       const donutStops = statusCounts
@@ -1528,10 +1546,10 @@
         <section class="panel">
           <div class="panel-head"><h2>Requests by category</h2><span class="panel-tag">Top ${byCat.length}</span></div>
           <div class="panel-body">
-            ${byCat.length ? `<ul class="bars">${byCat.map(([n, c], i) => {
+            ${byCat.length ? `<ul class="bars">${byCat.map(([n, c]) => {
               const code = CATEGORIES.find((category) => category.name === n)?.code || n.slice(0, 2).toUpperCase();
               return `<li class="category-bar">
-                <span class="category-mark category-mark-${i % 6}" aria-hidden="true">${esc(code)}</span>
+                <span class="category-mark" aria-hidden="true">${esc(code)}</span>
                 <span class="bar-label" title="${esc(n)}">${esc(n)}</span>
                 <span class="bar-track"><span class="bar-fill" style="display:block;width:${(c / maxCat) * 100}%"></span></span>
                 <span class="bar-val">${c}</span><small>${Math.round((c / total) * 100)}%</small>
@@ -1575,51 +1593,66 @@
           }
         </section>`;
     } else {
-      const upcoming = mine
-        .filter((r) => IN_PROGRESS.includes(r.status) || r.status === "Pending")
-        .filter((r) => r.date >= todayISO())
-        .sort((a, b) => a.date.localeCompare(b.date))[0];
       $("kpis").innerHTML =
-        kpi("My requests", mine.length, "All time") +
-        kpi("Awaiting review", pending, "Not yet approved") +
-        kpi("In progress", active, "Approved to processing") +
-        kpi("Completed", done, "Recycled");
+        kpi("Total Requests", mine.length, "") +
+        kpi("Awaiting Review", pending, "") +
+        kpi("In Progress", active, "") +
+        kpi("Completed", done, "");
 
       const recent = [...mine]
         .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
         .slice(0, 5);
-      $("overviewGrid").innerHTML = `
-        <section class="panel flush">
-          <div class="panel-head"><h2>Recent requests</h2><a class="link" href="#/requests">View all</a></div>
-          ${
-            recent.length
-              ? `<div class="table-wrap"><table class="tbl"><thead><tr><th scope="col">Request</th><th scope="col">Category</th><th scope="col">Date</th><th scope="col">Status</th></tr></thead><tbody>
-            ${recent.map((r) => {
-              const catCode = CATEGORIES.find((c) => c.name === r.category)?.code || String(r.category || "OT").slice(0, 2).toUpperCase();
-              return `<tr class="row-link" tabindex="0" data-open="${esc(r.id)}">
-              <td><span class="id">${esc(displayId(r.id))}</span></td>
-              <td>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <span class="cat-code" aria-hidden="true">${esc(catCode)}</span>
-                  <div><strong>${esc(r.category)}</strong><span class="sub">${esc(r.method)}</span></div>
-                </div>
-              </td>
-              <td class="num">${esc(fmtDate(r.date))}</td>
-              <td>${pill(r.status)}</td>
-            </tr>`;
-            }).join("")}
-          </tbody></table></div>`
-              : `<div class="empty"><strong>No requests yet</strong>Book a pickup or choose a drop-off point.<br /><a class="btn btn-primary" href="#/new">New request</a></div>`
-          }
-        </section>
-        <section class="panel flush">
-          <div class="panel-head"><h2>Next steps</h2></div>
-          <ul class="next-list">
-            <li><div>${upcoming ? `<strong>Next handover: ${esc(fmtDate(upcoming.date))}</strong><small>${esc(upcoming.category)} · ${esc(upcoming.method)}</small>` : `<strong>No handover scheduled</strong><small>Create a request to book one</small>`}</div>${upcoming ? `<button class="btn btn-sm" type="button" data-open="${esc(upcoming.id)}">View</button>` : `<a class="btn btn-sm btn-primary" href="#/new">New request</a>`}</li>
-            <li><div><strong>Find a drop-off point</strong><small>Recycling points and shops on a map</small></div><a class="btn btn-sm" href="#/map">Open map</a></li>
-            <li><div><strong>Check the safety guide</strong><small>Batteries and devices</small></div><a class="btn btn-sm" href="#/guide">Read</a></li>
-          </ul>
-        </section>`;
+
+      if ($("overviewPrimaryCol")) {
+        $("overviewPrimaryCol").innerHTML = `
+          <section class="recent-requests-section" aria-label="Recent Requests">
+            <div class="section-head-row">
+              <div>
+                <h2>Recent Requests</h2>
+                <p class="section-sub">Track the latest recycling requests and their current status.</p>
+              </div>
+              <a class="text-link" href="#/requests">View all <span aria-hidden="true">→</span></a>
+            </div>
+            ${
+              recent.length
+                ? `<div class="recent-table-shell"><div class="table-wrap"><table class="tbl overview-recent-tbl">
+                  <thead>
+                    <tr>
+                      <th scope="col">Request</th>
+                      <th scope="col">Item</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Date</th>
+                      <th scope="col" class="col-action">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${recent
+                      .map((r) => {
+                        const statusLabel = r.status === "Pending" ? "Awaiting Review" : r.status;
+                        return `<tr class="row-link" tabindex="0" data-open="${esc(r.id)}">
+                          <td><span class="id">${esc(displayId(r.id))}</span></td>
+                          <td>
+                            <span class="recent-item-name">${esc(r.category)}</span>
+                          </td>
+                          <td><span class="pill s-${sKey(r.status)}">${esc(statusLabel)}</span></td>
+                          <td class="num recent-date-cell">${esc(fmtDate(r.date))}</td>
+                          <td class="col-action">
+                            <div class="row-action-group">
+                              <button class="action-text-btn" type="button" data-open="${esc(r.id)}">View</button>
+                              <button class="action-text-btn action-text-danger" type="button" data-delete-row="${esc(r.id)}">Remove</button>
+                            </div>
+                          </td>
+                        </tr>`;
+                      })
+                      .join("")}
+                  </tbody>
+                </table></div></div>`
+                : `<div class="empty-minimal"><strong>No recycling requests yet</strong><p>Submit a pickup or drop-off request to see your activity here.</p><a class="btn btn-primary btn-sm" href="#/new">+ New Request</a></div>`
+            }
+          </section>
+        `;
+      }
+      if ($("overviewGrid")) $("overviewGrid").innerHTML = "";
     }
     runKpiCountUps($("kpis"));
   }
@@ -2084,17 +2117,16 @@
     $("categoryBody").innerHTML = CATEGORIES.map(
       (c) => `<tr>
         <td>
-          <div style="display:flex;align-items:center;gap:10px;">
+          <div class="cat-cell">
             <span class="cat-code" aria-hidden="true">${esc(c.code)}</span>
-            <span style="font-size:18px;line-height:1;">${CATEGORY_ICONS[c.name] || "📦"}</span>
             <div>
-              <strong style="font-weight:650;font-size:13.5px;">${esc(c.name)}</strong>
-              <div style="font-size:11.5px;color:var(--muted);">~${esc(c.avgWeight)} kg/unit · ${esc(c.co2PerKg)} kg CO₂/kg</div>
+              <strong class="cat-name">${esc(c.name)}</strong>
+              <span class="sub">~${esc(c.avgWeight)} kg/unit · ${esc(c.co2PerKg)} kg CO₂/kg</span>
             </div>
           </div>
         </td>
         <td>${esc(c.desc)}</td>
-        <td class="method">${c.note ? `<span style="display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:6px;background:rgba(245,158,11,0.14);color:#b45309;font-size:11.5px;font-weight:600;">⚠️ ${esc(c.note)}</span>` : '<span style="color:var(--muted);font-size:12px;">Standard Handling</span>'}</td>
+        <td class="method">${c.note ? `<span class="cat-note">${icon("alert")}<span>${esc(c.note)}</span></span>` : '<span class="sub">Standard handling</span>'}</td>
         <td class="actions">${isAdmin() ? "" : `<button class="btn btn-sm btn-primary" type="button" data-category="${esc(c.name)}">Request Pickup</button>`}</td>
       </tr>`,
     ).join("");
@@ -2304,18 +2336,27 @@
         if (/^(60|6521|6522|508)/.test(digits)) return "RUPAY";
         return "CARD";
       };
+      const BANK_DEFAULT_IFSC = {
+        "HDFC Bank": "HDFC0001234",
+        "State Bank of India (SBI)": "SBIN0001122",
+        "ICICI Bank": "ICIC0000456",
+        "Axis Bank": "UTIB0000789",
+        "Kotak Mahindra Bank": "KKBK0000321",
+        "Punjab National Bank": "PUNB0123400",
+        "Bank of Baroda": "BARB0JAIPUR",
+      };
 
       body.innerHTML = `
         <div class="rzp-summary">
           <div>
-            <strong style="font-size:14.5px;display:block;">${esc(part.title)}</strong>
-            <small style="color:var(--muted);">Qty: ${esc(part.qty)} · Seller: ${esc(part.sellerName)}</small>
+            <strong class="rzp-summary-title">${esc(part.title)}</strong>
+            <small class="rzp-summary-sub">Qty: ${esc(part.qty)} · Seller: ${esc(part.sellerName)}</small>
           </div>
-          <strong>${fmtInr(part.priceInr)}</strong>
+          <strong class="rzp-summary-amount">${fmtInr(part.priceInr)}</strong>
         </div>
 
         <div>
-          <label style="display:block;font-size:12px;font-weight:650;margin-bottom:8px;color:var(--muted);">Payment Method</label>
+          <label class="rzp-section-label">Choose Payment Method</label>
           <div class="rzp-methods" id="rzpMethods">
             <button type="button" class="rzp-method-btn is-active" data-rzp-method="UPI">
               <strong>UPI / QR</strong>
@@ -2329,16 +2370,27 @@
               <strong>Credit Card</strong>
               <small>Visa, Mastercard, Amex</small>
             </button>
-            <button type="button" class="rzp-method-btn" data-rzp-method="Netbanking & Wallet">
-              <strong>Netbanking / Wallet</strong>
-              <small>HDFC, SBI, ICICI, Paytm</small>
+            <button type="button" class="rzp-method-btn" data-rzp-method="Bank Transfer">
+              <strong>Netbanking / Bank</strong>
+              <small>Bank Account, IFSC, NEFT</small>
             </button>
           </div>
         </div>
 
-        <div class="field" id="rzpInputField">
-          <label for="rzpPayInput" id="rzpPayInputLabel">UPI ID</label>
-          <input id="rzpPayInput" type="text" value="deepak@okaxis" placeholder="name@okbank" />
+        <div class="rzp-card-panel" id="rzpInputField">
+          <div class="rzp-card-panel-head">
+            <span id="rzpPayInputLabel">UPI ID</span>
+            <span class="rzp-card-brand">INSTANT</span>
+          </div>
+          <div class="field">
+            <input id="rzpPayInput" type="text" value="deepak@okaxis" placeholder="name@okbank" aria-label="UPI ID" />
+          </div>
+          <div class="rzp-quick-chips" id="rzpUpiChips">
+            <button type="button" class="rzp-chip" data-upi-handle="@okaxis">@okaxis</button>
+            <button type="button" class="rzp-chip" data-upi-handle="@okicici">@okicici</button>
+            <button type="button" class="rzp-chip" data-upi-handle="@ybl">@ybl</button>
+            <button type="button" class="rzp-chip" data-upi-handle="@paytm">@paytm</button>
+          </div>
         </div>
 
         <div class="rzp-card-panel" id="rzpCardFields" hidden>
@@ -2366,9 +2418,48 @@
           </div>
         </div>
 
+        <div class="rzp-card-panel" id="rzpBankFields" hidden>
+          <div class="rzp-card-panel-head">
+            <span>Bank Account & Netbanking Details</span>
+            <span class="rzp-card-brand">NEFT / IMPS</span>
+          </div>
+          <div class="rzp-quick-chips" id="rzpBankChips">
+            <button type="button" class="rzp-chip is-selected" data-bank-pick="HDFC Bank">HDFC</button>
+            <button type="button" class="rzp-chip" data-bank-pick="State Bank of India (SBI)">SBI</button>
+            <button type="button" class="rzp-chip" data-bank-pick="ICICI Bank">ICICI</button>
+            <button type="button" class="rzp-chip" data-bank-pick="Axis Bank">Axis</button>
+            <button type="button" class="rzp-chip" data-bank-pick="Kotak Mahindra Bank">Kotak</button>
+          </div>
+          <div class="field">
+            <label for="rzpBankName">Bank Name</label>
+            <select id="rzpBankName">
+              ${Object.keys(BANK_DEFAULT_IFSC).map((b) => `<option value="${esc(b)}">${esc(b)}</option>`).join("")}
+            </select>
+          </div>
+          <div class="field">
+            <label for="rzpBankHolder">Account Holder Name</label>
+            <input id="rzpBankHolder" type="text" value="${esc(state.user?.name || "Deepak")}" placeholder="Full name as on bank account" />
+          </div>
+          <div class="rzp-card-grid">
+            <div class="field">
+              <label for="rzpBankAccount">Account Number</label>
+              <input id="rzpBankAccount" type="text" inputmode="numeric" maxlength="22" value="5010 0482 1923" placeholder="9–18 digit account no." />
+            </div>
+            <div class="field">
+              <label for="rzpBankIfsc">IFSC Code</label>
+              <input id="rzpBankIfsc" type="text" maxlength="11" value="HDFC0001234" placeholder="e.g. HDFC0001234" style="text-transform:uppercase;" />
+            </div>
+          </div>
+        </div>
+
         <p class="form-error" id="rzpErr" role="alert"></p>
 
-        <div class="modal-actions" style="margin-top:4px;">
+        <div class="rzp-secure-note">
+          <svg class="i"><use href="#i-shield"/></svg>
+          <span>256-bit TLS encrypted · Instant Razorpay order verification</span>
+        </div>
+
+        <div class="modal-actions" style="margin-top:2px;">
           <button class="btn" type="button" id="rzpCancelBtn">Cancel</button>
           <button class="btn btn-rzp" type="button" id="rzpPayNowBtn">Pay ${fmtInr(part.priceInr)}</button>
         </div>
@@ -2396,12 +2487,52 @@
         e.target.value = e.target.value.replace(/\D/g, "").slice(0, 4);
       });
 
+      $("rzpBankAccount")?.addEventListener("input", (e) => {
+        const digits = e.target.value.replace(/\D/g, "").slice(0, 18);
+        e.target.value = digits.replace(/(\d{4})(?=\d)/g, "$1 ");
+      });
+
+      $("rzpBankIfsc")?.addEventListener("input", (e) => {
+        e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 11);
+      });
+
+      const selectBank = (bankName) => {
+        if ($("rzpBankName")) $("rzpBankName").value = bankName;
+        if ($("rzpBankIfsc") && BANK_DEFAULT_IFSC[bankName]) {
+          $("rzpBankIfsc").value = BANK_DEFAULT_IFSC[bankName];
+        }
+        body.querySelectorAll("[data-bank-pick]").forEach((chip) => {
+          chip.classList.toggle("is-selected", chip.dataset.bankPick === bankName);
+        });
+      };
+
+      $("rzpBankName")?.addEventListener("change", (e) => {
+        selectBank(e.target.value);
+      });
+
+      body.querySelectorAll("[data-bank-pick]").forEach((chip) => {
+        chip.addEventListener("click", () => selectBank(chip.dataset.bankPick));
+      });
+
+      body.querySelectorAll("[data-upi-handle]").forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const inp = $("rzpPayInput");
+          if (!inp) return;
+          const prefix = inp.value.split("@")[0].trim() || "deepak";
+          inp.value = `${prefix}${chip.dataset.upiHandle}`;
+          inp.focus();
+        });
+      });
+
       const syncMethodFields = () => {
         const isCard = selectedPayMethod === "Debit Card" || selectedPayMethod === "Credit Card";
-        const singleField = $("rzpInputField");
+        const isBank = selectedPayMethod === "Bank Transfer";
+        const upiPanel = $("rzpInputField");
         const cardFields = $("rzpCardFields");
-        if (singleField) singleField.hidden = isCard;
+        const bankFields = $("rzpBankFields");
+        if (upiPanel) upiPanel.hidden = isCard || isBank;
         if (cardFields) cardFields.hidden = !isCard;
+        if (bankFields) bankFields.hidden = !isBank;
 
         if (isCard) {
           if ($("rzpCardPanelTitle")) $("rzpCardPanelTitle").textContent = `${selectedPayMethod} Details`;
@@ -2413,17 +2544,15 @@
           return;
         }
 
+        if (isBank) {
+          return;
+        }
+
         const lbl = $("rzpPayInputLabel");
         const inp = $("rzpPayInput");
-        if (selectedPayMethod === "UPI") {
-          lbl.textContent = "UPI ID";
-          inp.value = "deepak@okaxis";
-          inp.placeholder = "name@okbank";
-        } else {
-          lbl.textContent = "Bank or Wallet";
-          inp.value = "HDFC Bank Retail";
-          inp.placeholder = "Bank name or Paytm/PhonePe number";
-        }
+        if (lbl) lbl.textContent = "UPI ID";
+        if (inp && !inp.value.trim()) inp.value = "deepak@okaxis";
+        if (inp) inp.placeholder = "name@okbank";
       };
 
       syncMethodFields();
@@ -2444,6 +2573,7 @@
         const payBtn = $("rzpPayNowBtn");
         const errEl = $("rzpErr");
         const isCard = selectedPayMethod === "Debit Card" || selectedPayMethod === "Credit Card";
+        const isBank = selectedPayMethod === "Bank Transfer";
         let methodSummary = selectedPayMethod;
 
         if (isCard) {
@@ -2468,9 +2598,33 @@
             return;
           }
           methodSummary = `${selectedPayMethod} (•••• ${digits.slice(-4)})`;
-        } else if (!($("rzpPayInput")?.value || "").trim()) {
-          errEl.textContent = `Enter your ${selectedPayMethod} details to continue.`;
+        } else if (isBank) {
+          const bankName = ($("rzpBankName")?.value || "").trim();
+          const holder = ($("rzpBankHolder")?.value || "").trim();
+          const acctDigits = ($("rzpBankAccount")?.value || "").replace(/\D/g, "");
+          const ifsc = ($("rzpBankIfsc")?.value || "").trim().toUpperCase();
+          if (!bankName) {
+            errEl.textContent = "Select a bank to continue.";
+            return;
+          }
+          if (!holder) {
+            errEl.textContent = "Enter the bank account holder name.";
+            return;
+          }
+          if (acctDigits.length < 9 || acctDigits.length > 18) {
+            errEl.textContent = "Enter a valid 9 to 18 digit bank account number.";
+            return;
+          }
+          if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc)) {
+            errEl.textContent = "Enter a valid 11-character IFSC code (e.g. HDFC0001234).";
+            return;
+          }
+          methodSummary = `Bank Transfer · ${bankName} (•••• ${acctDigits.slice(-4)} · ${ifsc})`;
+        } else if (!($("rzpPayInput")?.value || "").trim() || !$("rzpPayInput").value.includes("@")) {
+          errEl.textContent = "Enter a valid UPI ID (e.g. name@okbank).";
           return;
+        } else {
+          methodSummary = `UPI (${$("rzpPayInput").value.trim()})`;
         }
 
         payBtn.disabled = true;
@@ -2494,43 +2648,117 @@
     }
   }
 
-  function renderPartCard(p) {
+  function getFilteredParts() {
+    const me = (state.user?.email || "").toLowerCase();
+    const allParts = state.parts || [];
+    const myListings = allParts.filter(
+      (p) => String(p.sellerEmail || "").toLowerCase() === me || String(p.buyerEmail || "").toLowerCase() === me,
+    );
+    const q = state.partsSearch.trim().toLowerCase();
+    const baseList = state.partsTab === "mine" ? myListings : allParts;
+    return baseList.filter((p) => {
+      if (state.partsFilterCat !== "all" && p.partCategory !== state.partsFilterCat) return false;
+      if (state.partsFilterStatus !== "all" && p.status !== state.partsFilterStatus) return false;
+      if (
+        q &&
+        ![p.title, p.partCategory, p.location, p.sellerName, p.description, p.condition, p.razorpayPaymentId]
+          .some((f) => String(f || "").toLowerCase().includes(q))
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }
+
+  function renderPartRow(p) {
     const me = (state.user?.email || "").toLowerCase();
     const isSeller = String(p.sellerEmail || "").toLowerCase() === me;
+    const isBuyer = String(p.buyerEmail || "").toLowerCase() === me;
     const isAvailable = p.status === "Available";
     const canBuy = isAvailable;
     const canSettlePayout = isAdmin() && p.status === "Sold";
-    const canRemove = isAdmin() || (isSeller && isAvailable);
+    const canRemove = isAdmin() || isSeller || isBuyer;
+    const metaSub = p.razorpayPaymentId
+      ? `Paid · ${p.razorpayPaymentId}`
+      : p.sellerUpi
+        ? `UPI: ${p.sellerUpi}`
+        : "Razorpay protected";
 
     return `
-      <article class="part-card rb-spotlight" data-part-id="${esc(p.id)}">
-        <div>
-          <div class="part-card-top">
-            <span class="part-cat-pill">${esc(p.partCategory)}</span>
-            <span class="part-status-pill ${partStatusClass(p.status)}">${esc(p.status)}</span>
-          </div>
-          <h3>${esc(p.title)}</h3>
-          <p class="part-desc">${esc(p.description || "Verified salvaged electronic component ready for reuse or recovery.")}</p>
-          <div class="part-meta">
-            <span>Condition: <strong>${esc(p.condition)}</strong></span>
-            <span>Qty: <strong>${esc(p.qty)}</strong></span>
-            <span>${esc(p.location)}</span>
-            <span>Seller: ${esc(p.sellerName)}${isSeller ? " (You)" : ""}</span>
-          </div>
-        </div>
-        <div class="part-card-foot">
-          <div class="part-price">
-            <strong>${fmtInr(p.priceInr)}</strong>
-            <small>${p.razorpayPaymentId ? `Paid · ${esc(p.razorpayPaymentId)}` : p.sellerUpi ? `UPI: ${esc(p.sellerUpi)}` : "Razorpay protected"}</small>
-          </div>
+      <tr class="part-row" data-part-id="${esc(p.id)}">
+        <td class="part-col-title" data-label="Part">
+          <strong>${esc(p.title)}</strong>
+          <span class="part-row-desc">${esc(p.description || "Verified salvaged electronic component ready for reuse or recovery.")}</span>
+          <span class="part-row-ref">${esc(metaSub)}</span>
+        </td>
+        <td data-label="Category"><span class="part-cat-pill">${esc(p.partCategory)}</span></td>
+        <td data-label="Condition">${esc(p.condition)}</td>
+        <td class="num" data-label="Qty">${esc(p.qty)}</td>
+        <td data-label="Location">${esc(p.location)}</td>
+        <td data-label="Seller">${esc(p.sellerName)}${isSeller ? " (You)" : ""}</td>
+        <td class="num part-col-price" data-label="Price"><strong>${fmtInr(p.priceInr)}</strong></td>
+        <td data-label="Status"><span class="part-status-pill ${partStatusClass(p.status)}">${esc(p.status)}</span></td>
+        <td class="part-col-actions" data-label="Actions">
           <div class="part-actions">
-            ${canBuy ? `<button class="btn btn-sm btn-rzp rb-btn-sheen" type="button" data-buy-part="${esc(p.id)}">Buy with Razorpay</button>` : ""}
+            ${canBuy ? `<button class="btn btn-sm btn-rzp" type="button" data-buy-part="${esc(p.id)}">Buy with Razorpay</button>` : ""}
             ${p.razorpayPaymentId ? `<button class="btn btn-sm" type="button" data-receipt-part="${esc(p.id)}">Receipt</button>` : ""}
             ${canSettlePayout ? `<button class="btn btn-sm btn-primary" type="button" data-payout-part="${esc(p.id)}">Settle Payout</button>` : ""}
             ${canRemove ? `<button class="btn btn-sm btn-ghost-danger" type="button" data-delete-part="${esc(p.id)}">Remove</button>` : ""}
           </div>
+        </td>
+      </tr>
+    `;
+  }
+
+  function renderPartsResults() {
+    const resultsHost = $("partsResultsHost");
+    if (!resultsHost) return;
+    const filtered = getFilteredParts();
+    const countEl = $("partsToolbarCount");
+    if (countEl) {
+      countEl.textContent = `${filtered.length} ${filtered.length === 1 ? "part" : "parts"}`;
+    }
+    if (!filtered.length) {
+      const hasFilters =
+        state.partsSearch.trim() !== "" ||
+        state.partsFilterCat !== "all" ||
+        state.partsFilterStatus !== "all";
+      resultsHost.innerHTML = `
+        <div class="panel">
+          <div class="empty">
+            <strong>No matching parts found</strong>
+            Try clearing your filters or list a new part to sell.
+            <div class="empty-actions">
+              ${hasFilters ? `<button class="btn" type="button" id="partsResetFiltersBtn">Clear filters</button>` : ""}
+              <button class="btn btn-primary" type="button" id="emptySellBtn">+ Sell a Part</button>
+            </div>
+          </div>
         </div>
-      </article>
+      `;
+      return;
+    }
+
+    resultsHost.innerHTML = `
+      <div class="panel flush">
+        <div class="table-wrap">
+          <table class="tbl parts-tbl">
+            <thead>
+              <tr>
+                <th scope="col">Part</th>
+                <th scope="col">Category</th>
+                <th scope="col">Condition</th>
+                <th scope="col">Qty</th>
+                <th scope="col">Location</th>
+                <th scope="col">Seller</th>
+                <th scope="col">Price</th>
+                <th scope="col">Status</th>
+                <th scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody>${filtered.map(renderPartRow).join("")}</tbody>
+          </table>
+        </div>
+      </div>
     `;
   }
 
@@ -2554,29 +2782,14 @@
       ? "Razorpay Live API"
       : "Razorpay Test Checkout";
 
-    const q = state.partsSearch.trim().toLowerCase();
-    const baseList = state.partsTab === "mine" ? myListings : allParts;
-    const filtered = baseList.filter((p) => {
-      if (state.partsFilterCat !== "all" && p.partCategory !== state.partsFilterCat) return false;
-      if (state.partsFilterStatus !== "all" && p.status !== state.partsFilterStatus) return false;
-      if (
-        q &&
-        ![p.title, p.partCategory, p.location, p.sellerName, p.description, p.condition]
-          .some((f) => String(f || "").toLowerCase().includes(q))
-      ) {
-        return false;
-      }
-      return true;
-    });
-
     host.innerHTML = `
-      <div class="parts-hero rb-aurora">
+      <div class="parts-hero">
         <div>
-          <h2 class="rb-shiny-text">Parts Marketplace</h2>
+          <h2>Parts Marketplace</h2>
           <p>List tested electronic components for sale or purchase available parts via Razorpay checkout.</p>
         </div>
         <div>
-          <button class="btn btn-primary btn-sm rb-btn-sheen" type="button" id="partsQuickSellBtn">
+          <button class="btn btn-primary" type="button" id="partsQuickSellBtn">
             <svg class="i"><use href="#i-plus"/></svg>
             <span>List a Part</span>
           </button>
@@ -2584,22 +2797,22 @@
       </div>
 
       <div class="parts-stats">
-        <div class="parts-stat-card rb-spotlight">
+        <div class="parts-stat-card">
           <small>Marketplace</small>
           <strong>${availableParts.length} Available</strong>
           <span>${allParts.length} total parts listed</span>
         </div>
-        <div class="parts-stat-card rb-spotlight">
+        <div class="parts-stat-card">
           <small>My Activity</small>
           <strong>${myListings.length} Listings</strong>
           <span>Selling & purchased parts</span>
         </div>
-        <div class="parts-stat-card rb-spotlight">
+        <div class="parts-stat-card">
           <small>My Razorpay Earnings</small>
           <strong>${fmtInr(myEarnings)}</strong>
           <span>From sold & settled parts</span>
         </div>
-        <div class="parts-stat-card rb-spotlight">
+        <div class="parts-stat-card">
           <small>Payment Gateway</small>
           <strong>${esc(rzpModeLabel)}</strong>
           <span>INR (₹) · HMAC-SHA256 verified</span>
@@ -2692,22 +2905,19 @@
             <option value="all">All statuses</option>
             ${["Available", "Sold", "Payout Settled"].map((s) => `<option value="${esc(s)}" ${state.partsFilterStatus === s ? "selected" : ""}>${esc(s)}</option>`).join("")}
           </select>
-          <span class="toolbar-count">${filtered.length} ${filtered.length === 1 ? "part" : "parts"}</span>
+          <span class="toolbar-count" id="partsToolbarCount"></span>
         </div>
-        ${
-          filtered.length
-            ? `<div class="parts-grid">${filtered.map(renderPartCard).join("")}</div>`
-            : `<div class="panel"><div class="empty"><strong>No matching parts found</strong>Try clearing your filters or list a new part to sell.<br /><button class="btn btn-primary" type="button" id="emptySellBtn" style="margin-top:12px;">+ Sell a Part</button></div></div>`
-        }`
+        <div id="partsResultsHost"></div>`
       }
     `;
 
+    // Render initial filtered list without recreating toolbar or losing search focus
+    if (state.partsTab !== "sell") {
+      renderPartsResults();
+    }
+
     // Wire interactive controls inside #view-parts
     $("partsQuickSellBtn")?.addEventListener("click", () => {
-      state.partsTab = "sell";
-      renderParts();
-    });
-    $("emptySellBtn")?.addEventListener("click", () => {
       state.partsTab = "sell";
       renderParts();
     });
@@ -2726,21 +2936,16 @@
     if (searchInp) {
       searchInp.addEventListener("input", () => {
         state.partsSearch = searchInp.value;
-        renderParts();
-        const nextInp = $("partsSearchInput");
-        if (nextInp) {
-          nextInp.focus();
-          nextInp.setSelectionRange(nextInp.value.length, nextInp.value.length);
-        }
+        renderPartsResults();
       });
     }
     $("partsCatFilter")?.addEventListener("change", (e) => {
       state.partsFilterCat = e.target.value;
-      renderParts();
+      renderPartsResults();
     });
     $("partsStatusFilter")?.addEventListener("change", (e) => {
       state.partsFilterStatus = e.target.value;
-      renderParts();
+      renderPartsResults();
     });
 
     const pCat = $("pCategory");
@@ -2816,18 +3021,42 @@
       }
     });
 
-    host.querySelectorAll("[data-buy-part]").forEach((btn) => {
-      btn.addEventListener("click", () => openRazorpayCheckout(btn.dataset.buyPart));
-    });
-    host.querySelectorAll("[data-receipt-part]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const p = state.parts.find((x) => String(x.id) === String(btn.dataset.receiptPart));
+    $("partsResultsHost")?.addEventListener("click", async (e) => {
+      const target = e.target instanceof Element ? e.target : null;
+      if (!target) return;
+
+      if (target.closest("#emptySellBtn")) {
+        state.partsTab = "sell";
+        renderParts();
+        return;
+      }
+      if (target.closest("#partsResetFiltersBtn")) {
+        state.partsSearch = "";
+        state.partsFilterCat = "all";
+        state.partsFilterStatus = "all";
+        if ($("partsSearchInput")) $("partsSearchInput").value = "";
+        if ($("partsCatFilter")) $("partsCatFilter").value = "all";
+        if ($("partsStatusFilter")) $("partsStatusFilter").value = "all";
+        renderPartsResults();
+        return;
+      }
+
+      const buyBtn = target.closest("[data-buy-part]");
+      if (buyBtn) {
+        openRazorpayCheckout(buyBtn.dataset.buyPart);
+        return;
+      }
+
+      const receiptBtn = target.closest("[data-receipt-part]");
+      if (receiptBtn) {
+        const p = state.parts.find((x) => String(x.id) === String(receiptBtn.dataset.receiptPart));
         if (p) openPartReceipt(p);
-      });
-    });
-    host.querySelectorAll("[data-payout-part]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const id = btn.dataset.payoutPart;
+        return;
+      }
+
+      const payoutBtn = target.closest("[data-payout-part]");
+      if (payoutBtn) {
+        const id = payoutBtn.dataset.payoutPart;
         try {
           const updated = await localApi(`/api/parts/${encodeURIComponent(id)}/payout`, {
             method: "POST",
@@ -2842,11 +3071,12 @@
         } catch (err) {
           toast(`Could not settle payout: ${err.message}`, "error");
         }
-      });
-    });
-    host.querySelectorAll("[data-delete-part]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        const id = btn.dataset.deletePart;
+        return;
+      }
+
+      const deleteBtn = target.closest("[data-delete-part]");
+      if (deleteBtn) {
+        const id = deleteBtn.dataset.deletePart;
         const ok = await confirmDialog({
           title: "Remove part listing?",
           text: "This listing will be removed from the marketplace.",
@@ -2861,7 +3091,7 @@
         } catch (err) {
           toast(`Could not remove listing: ${err.message}`, "error");
         }
-      });
+      }
     });
   }
 
@@ -5163,6 +5393,32 @@
         }
         return;
       }
+      const deleteBtn = e.target.closest("[data-delete-row]");
+      if (deleteBtn) {
+        e.stopPropagation();
+        const reqId = deleteBtn.dataset.deleteRow;
+        const r = findRequest(reqId);
+        if (r) {
+          confirmDialog({
+            title: `Remove ${displayId(r.id)}?`,
+            text: "This collection request will be permanently removed.",
+            confirmLabel: "Remove",
+          }).then(async (ok) => {
+            if (!ok) return;
+            try {
+              await localApi(`/api/requests/${encodeURIComponent(r.id)}`, {
+                method: "DELETE",
+              });
+              state.requests = state.requests.filter((x) => x.id !== r.id);
+              if (state.openRequestId === r.id) closeDrawer();
+              afterChange(`${displayId(r.id)} removed`);
+            } catch (error) {
+              toast(`Could not remove request: ${error.message}`, "error");
+            }
+          });
+        }
+        return;
+      }
       const open = e.target.closest("[data-open]");
       if (open) openDrawer(open.dataset.open);
     });
@@ -5237,23 +5493,181 @@
   }
 
   /* ------------------------------------------------------------------
+   * Landing Page Interactions (React Bits Motion & Interactive Stepper)
+   * ------------------------------------------------------------------ */
+  function initLandingPage() {
+    const landing = $("landing");
+    if (!landing) return;
+
+    landing.querySelectorAll("[data-open-auth]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        openAuthGate(btn.dataset.openAuth === "signup" ? "signup" : "login");
+      });
+    });
+
+    landing.querySelectorAll("[data-lp-map]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        startSession({
+          name: "Eco Explorer",
+          email: "guest@ecocycle.org",
+          role: "user",
+        });
+        location_hash("#/map");
+      });
+    });
+
+    landing.querySelectorAll("[data-lp-demo]").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const isDemoAdmin = btn.dataset.lpDemo === "admin";
+        openAuthGate("login");
+        $("authRole").value = isDemoAdmin ? "admin" : "user";
+        $("authEmail").value = isDemoAdmin ? "admin@example.com" : "rahul@example.com";
+        $("authPassword").value = "demo1234";
+        await submitAuth({ preventDefault: () => {} });
+      });
+    });
+
+    $("authBackLandingBtn")?.addEventListener("click", () => {
+      showLanding("landing");
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    });
+
+    // React Bits Spotlight pointer tracking on landing cards
+    let lpSpotRaf = 0;
+    landing.addEventListener(
+      "pointermove",
+      (e) => {
+        if (!(e.target instanceof Element)) return;
+        const card = e.target.closest(".lp-spotlight");
+        if (!card || lpSpotRaf) return;
+        lpSpotRaf = requestAnimationFrame(() => {
+          lpSpotRaf = 0;
+          const rect = card.getBoundingClientRect();
+          card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
+          card.style.setProperty("--my", `${e.clientY - rect.top}px`);
+        });
+      },
+      { passive: true },
+    );
+
+    // React Bits Magnet CTA effect
+    landing.querySelectorAll(".lp-btn-magnet").forEach((btn) => {
+      btn.addEventListener("pointermove", (e) => {
+        if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+        const r = btn.getBoundingClientRect();
+        const dx = Math.max(-5, Math.min(5, ((e.clientX - r.left) / r.width - 0.5) * 10));
+        const dy = Math.max(-4, Math.min(4, ((e.clientY - r.top) / r.height - 0.5) * 8));
+        btn.style.transform = `translate(${dx}px, ${dy}px)`;
+      });
+      btn.addEventListener("pointerleave", () => {
+        btn.style.transform = "";
+      });
+    });
+
+    // React Bits CountUp observer for Impact band
+    const countEls = landing.querySelectorAll("[data-lp-countup]");
+    if (countEls.length && "IntersectionObserver" in window) {
+      const obs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            obs.unobserve(el);
+            const target = Number(el.dataset.lpCountup) || 0;
+            const dec = Number(el.dataset.lpDecimals) || 0;
+            const suffix = el.dataset.lpSuffix || "";
+            const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+            if (reduced) {
+              el.textContent = `${dec ? target.toFixed(dec) : Math.round(target)}${suffix}`;
+              return;
+            }
+            const start = performance.now();
+            const dur = 800;
+            const step = (now) => {
+              const t = Math.min(1, (now - start) / dur);
+              const eased = 1 - Math.pow(1 - t, 3);
+              const val = target * eased;
+              el.textContent = `${dec ? val.toFixed(dec) : Math.round(val)}${suffix}`;
+              if (t < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+          });
+        },
+        { threshold: 0.3 },
+      );
+      countEls.forEach((el) => obs.observe(el));
+    }
+
+    // Interactive Stepper data
+    const LP_STEPS = [
+      {
+        tag: "Stage 01 · Citizen Portal",
+        title: "Instant Pickup or Drop-Off Scheduling",
+        desc: "Choose from 14 regulated e-waste streams (Computers, Mobile Phones, Batteries, Televisions, Networking Gear, and more). EcoCycle computes estimated diverted weight and battery safety instructions automatically before submission.",
+        points: [
+          "Real-time weight and CO₂ impact estimate",
+          "Drop-off autofill directly from the Pan-India Leaflet map",
+          "Instant cancellation or removal controls anytime",
+        ],
+      },
+      {
+        tag: "Stage 02 · Operations & Dispatch",
+        title: "Verified Review & Collection Assignment",
+        desc: "Operations administrators inspect incoming requests in real time, confirm safe handling requirements, and schedule certified collection vans or hub drop-off windows.",
+        points: [
+          "One-click approval & status progression timeline",
+          "Full audit history recorded for every collection ID",
+          "Automated badge alerts for awaiting review items",
+        ],
+      },
+      {
+        tag: "Stage 03 · Parts & Razorpay",
+        title: "Trade Reusable Parts with Escrow Receipts",
+        desc: "Before shredding, tested RAM sticks, SSDs, displays, adapters, and server PCBs can be listed in the circular marketplace and paid in INR via UPI, Cards, or Bank Account & IFSC.",
+        points: [
+          "HMAC-SHA256 verified Razorpay order and payment signatures",
+          "Supports UPI ID, Debit/Credit Card, and Bank NEFT details",
+          "Downloadable EcoCycle PDF payment receipts generated offline",
+        ],
+      },
+      {
+        tag: "Stage 04 · Sustainability Ledger",
+        title: "Certified Recovery & Carbon Offset Accounting",
+        desc: "Completed handovers automatically update your circular metrics—tracking total kilograms diverted, CO₂ avoided (1.44 kg/kg), recovered precious metals, and recovery completion rate.",
+        points: [
+          "Automatic per-user and platform-wide environmental telemetry",
+          "Export clean CSV reports for audit and compliance",
+          "CPCB & ISO 14001 circular lifecycle documentation",
+        ],
+      },
+    ];
+
+    landing.querySelectorAll("[data-lp-step]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const idx = Number(btn.dataset.lpStep) || 0;
+        const data = LP_STEPS[idx];
+        if (!data) return;
+        landing.querySelectorAll("[data-lp-step]").forEach((b, i) => {
+          const active = i === idx;
+          b.classList.toggle("is-active", active);
+          b.setAttribute("aria-selected", String(active));
+        });
+        if ($("lpStageTag")) $("lpStageTag").textContent = data.tag;
+        if ($("lpStageTitle")) $("lpStageTitle").textContent = data.title;
+        if ($("lpStageDesc")) $("lpStageDesc").textContent = data.desc;
+        if ($("lpStagePoints")) {
+          $("lpStagePoints").innerHTML = data.points.map((pt) => `<li>${esc(pt)}</li>`).join("");
+        }
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------------
    * Init
    * ------------------------------------------------------------------ */
-  let spotlightRaf = 0;
-  document.addEventListener("pointermove", (e) => {
-    if (!(e.target instanceof Element)) return;
-    const card = e.target.closest(".rb-spotlight");
-    if (!card || spotlightRaf) return;
-    spotlightRaf = requestAnimationFrame(() => {
-      spotlightRaf = 0;
-      const rect = card.getBoundingClientRect();
-      card.style.setProperty("--mx", `${e.clientX - rect.left}px`);
-      card.style.setProperty("--my", `${e.clientY - rect.top}px`);
-    });
-  }, { passive: true });
-
   setTheme(store.get(STORE.theme) === "dark" ? "dark" : "light");
   wire();
+  initLandingPage();
   setAuthMode("login");
   localApi("/api/auth/session")
     .then((profile) => {
@@ -5263,10 +5677,16 @@
       return startSession(profile);
     })
     .catch((error) => {
-      if (currentHash() === "map") {
+      const h = currentHash();
+      if (h === "map") {
         startSession({ name: "Eco Explorer", email: "guest@ecocycle.org", role: "user" });
-      } else if (!/^Please sign in|^Your session has expired/.test(error.message)) {
-        $("authMessage").textContent = error.message;
+      } else if (h === "signin" || h === "signup") {
+        openAuthGate(h === "signup" ? "signup" : "login");
+      } else {
+        showLanding("landing");
+        if (!/^Please sign in|^Your session has expired/.test(error.message)) {
+          $("authMessage").textContent = error.message;
+        }
       }
     });
 })();

@@ -18,12 +18,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <link rel="stylesheet" href="styles.css?v=19" />
+    <link rel="stylesheet" href="styles.css?v=29" />
   </head>
   <body data-theme="light">
     <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -173,8 +173,325 @@
       </symbol>
     </svg>
 
+    <!-- ============ Public Landing Page (React Bits Enhanced) ============ -->
+    <div class="landing" id="landing">
+      <header class="lp-nav">
+        <div class="lp-nav-inner">
+          <a class="lp-brand" href="#landingTop" aria-label="EcoCycle Home">
+            <span class="brand-logo"><img src="Assest/logo.jpeg" alt="" decoding="async" /></span>
+            <span class="lp-brand-name">
+              <strong>EcoCycle</strong>
+              <small>Circular E-Waste Platform</small>
+            </span>
+          </a>
+          <nav class="lp-links" aria-label="Landing navigation">
+            <a href="#lpCapabilities">Platform</a>
+            <a href="#lpWorkflow">Workflow</a>
+            <a href="#lpMarketplace">Parts & Razorpay</a>
+            <a href="#lpImpact">Impact</a>
+          </nav>
+          <div class="lp-nav-actions">
+            <button class="btn btn-sm lp-btn-ghost" type="button" data-lp-map>Explore Map</button>
+            <button class="btn btn-sm lp-btn-outline" type="button" data-open-auth="login">Sign in</button>
+            <button class="btn btn-sm btn-primary lp-btn-magnet lp-btn-sheen" type="button" data-open-auth="signup">Get Started</button>
+          </div>
+        </div>
+      </header>
+
+      <main id="landingTop">
+        <!-- Hero with React Bits Aurora + DotGrid + BlurText + ShinyText + Spotlight -->
+        <section class="lp-hero lp-aurora">
+          <div class="lp-dotgrid" aria-hidden="true"></div>
+          <div class="lp-container lp-hero-grid">
+            <div class="lp-hero-copy">
+              <div class="lp-pill-badge lp-blur-in">
+                <span class="lp-pulse-dot" aria-hidden="true"></span>
+                <span>CPCB & ISO 14001 Compliant E-Waste Network</span>
+              </div>
+              <h1 class="lp-hero-title lp-blur-in" style="--d:60ms;">
+                Smart e-waste collection, <span class="lp-shiny-text">from doorstep to recovery.</span>
+              </h1>
+              <p class="lp-hero-sub lp-blur-in" style="--d:120ms;">
+                Schedule verified home pickups across 14 electronic waste streams, discover 113+ authorized collection centers across India, and trade salvaged components with instant Razorpay checkout.
+              </p>
+              <div class="lp-hero-cta lp-blur-in" style="--d:180ms;">
+                <button class="btn btn-primary lp-cta-lg lp-btn-magnet lp-btn-sheen" type="button" data-open-auth="login">
+                  <span>Book a Pickup</span>
+                  <svg class="i"><use href="#i-arrow-right" /></svg>
+                </button>
+                <button class="btn lp-cta-lg lp-btn-dark-outline" type="button" data-lp-demo="user">
+                  <span>Launch Live Demo</span>
+                </button>
+                <button class="btn lp-cta-lg lp-btn-dark-ghost" type="button" data-lp-map>
+                  <svg class="i"><use href="#i-pin" /></svg>
+                  <span>Pan-India Map</span>
+                </button>
+              </div>
+              <div class="lp-hero-proof lp-blur-in" style="--d:240ms;">
+                <span><strong>113+</strong> India Hubs</span>
+                <i aria-hidden="true"></i>
+                <span><strong>14</strong> Accepted Streams</span>
+                <i aria-hidden="true"></i>
+                <span><strong>UPI · Cards · Bank</strong> via Razorpay</span>
+              </div>
+            </div>
+
+            <!-- Interactive Spotlight Operations Preview -->
+            <div class="lp-hero-preview lp-spotlight lp-blur-in" style="--d:150ms;" aria-label="EcoCycle workspace preview">
+              <div class="lp-preview-top">
+                <div class="lp-preview-dots" aria-hidden="true"><span></span><span></span><span></span></div>
+                <span class="lp-preview-url">ecocycle.in / overview</span>
+                <span class="lp-preview-status"><i></i>Live Sync</span>
+              </div>
+              <div class="lp-preview-body">
+                <div class="lp-preview-kpis">
+                  <div>
+                    <small>Diverted Volume</small>
+                    <strong>33.1 kg</strong>
+                  </div>
+                  <div>
+                    <small>CO₂ Offset</small>
+                    <strong>22 kg</strong>
+                  </div>
+                  <div>
+                    <small>Metals Recovered</small>
+                    <strong>2,066 g</strong>
+                  </div>
+                </div>
+                <div class="lp-preview-list">
+                  <div class="lp-preview-row">
+                    <div>
+                      <strong>ECO-1730000008</strong>
+                      <span>Wearables · Doorstep Pickup</span>
+                    </div>
+                    <em class="lp-tag is-amber">Awaiting Review</em>
+                  </div>
+                  <div class="lp-preview-row">
+                    <div>
+                      <strong>ECO-1730000006</strong>
+                      <span>Networking Equipment · Assigned</span>
+                    </div>
+                    <em class="lp-tag is-blue">Approved</em>
+                  </div>
+                  <div class="lp-preview-row">
+                    <div>
+                      <strong>Samsung 512GB NVMe SSD</strong>
+                      <span>Razorpay Bank Transfer · Verified</span>
+                    </div>
+                    <em class="lp-tag is-green">₹2,450</em>
+                  </div>
+                </div>
+                <div class="lp-preview-foot">
+                  <span>Recovery Completion · 2 of 5 requests completed</span>
+                  <strong>40%</strong>
+                </div>
+                <div class="lp-preview-bar"><span style="width:40%;"></span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- React Bits Infinite Velocity Marquee Strip -->
+        <div class="lp-marquee" aria-label="Platform capabilities ticker">
+          <div class="lp-marquee-track">
+            <span>CPCB E-Waste Rules Compliant</span><b>•</b>
+            <span>113+ Authorized Indian Drop-Off Centers</span><b>•</b>
+            <span>Razorpay UPI, Card & Bank NEFT Checkout</span><b>•</b>
+            <span>Automated CO₂ & Metals Recovery Ledger</span><b>•</b>
+            <span>Instant PDF Payment Receipts</span><b>•</b>
+            <span>14 Regulated Electronics Streams</span><b>•</b>
+            <span>CPCB E-Waste Rules Compliant</span><b>•</b>
+            <span>113+ Authorized Indian Drop-Off Centers</span><b>•</b>
+            <span>Razorpay UPI, Card & Bank NEFT Checkout</span><b>•</b>
+            <span>Automated CO₂ & Metals Recovery Ledger</span><b>•</b>
+            <span>Instant PDF Payment Receipts</span><b>•</b>
+            <span>14 Regulated Electronics Streams</span><b>•</b>
+          </div>
+        </div>
+
+        <!-- React Bits Spotlight Bento Grid: Platform Capabilities -->
+        <section class="lp-section" id="lpCapabilities">
+          <div class="lp-container">
+            <div class="lp-section-head">
+              <span class="lp-eyebrow">Platform Capabilities</span>
+              <h2>Built for citizens, recyclers, and parts recovery.</h2>
+              <p>Everything required to submit collections, locate compliant drop-off facilities, and monetize tested electronic hardware in one unified system.</p>
+            </div>
+
+            <div class="lp-bento">
+              <article class="lp-card lp-spotlight lp-span-2">
+                <div class="lp-card-icon"><svg class="i"><use href="#i-truck" /></svg></div>
+                <h3>Doorstep Pickup & Drop-Off Scheduling</h3>
+                <p>Submit structured requests across 14 waste categories with instant estimated weight, carbon offset, and a live 6-stage lifecycle audit trail from pending review to completion.</p>
+                <div class="lp-card-meta">
+                  <span>Pending → Approved → Scheduled → Collected → Processing → Completed</span>
+                </div>
+              </article>
+
+              <article class="lp-card lp-spotlight">
+                <div class="lp-card-icon"><svg class="i"><use href="#i-pin" /></svg></div>
+                <h3>Pan-India Drop-Off Map</h3>
+                <p>Explore 113+ verified partner hubs, electronics repair shops, and authorized scrap yards by city, PIN code, radius, or geolocation.</p>
+              </article>
+
+              <article class="lp-card lp-spotlight">
+                <div class="lp-card-icon"><svg class="i"><use href="#i-tag" /></svg></div>
+                <h3>Circular Parts & Razorpay</h3>
+                <p>List functional RAM, SSDs, PCBs, and displays for reuse. Buyers pay in INR via UPI, Debit/Credit Card, or Bank Transfer with HMAC-SHA256 verification and downloadable PDF receipts.</p>
+              </article>
+
+              <article class="lp-card lp-spotlight">
+                <div class="lp-card-icon"><svg class="i"><use href="#i-leaf" /></svg></div>
+                <h3>Automated CO₂ & Metal Ledger</h3>
+                <p>Calculates diverted e-waste mass, carbon emissions avoided (1.44 kg CO₂ per kg completed), and estimated copper, aluminum, and gold recovery.</p>
+              </article>
+
+              <article class="lp-card lp-spotlight">
+                <div class="lp-card-icon"><svg class="i"><use href="#i-shield" /></svg></div>
+                <h3>Battery Safety & Operations Triage</h3>
+                <p>Built-in handling precautions for swollen lithium cells, device sanitization checklists, and dedicated admin dispatch queues for fast request approvals.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <!-- React Bits CountUp Impact Metrics Band -->
+        <section class="lp-impact-band" id="lpImpact">
+          <div class="lp-container">
+            <div class="lp-countup-grid">
+              <div class="lp-count-item">
+                <strong data-lp-countup="113" data-lp-suffix="+">113+</strong>
+                <span>Verified India Hubs & Shops</span>
+              </div>
+              <div class="lp-count-item">
+                <strong data-lp-countup="14">14</strong>
+                <span>Regulated E-Waste Streams</span>
+              </div>
+              <div class="lp-count-item">
+                <strong data-lp-countup="1.44" data-lp-decimals="2" data-lp-suffix=" kg">1.44 kg</strong>
+                <span>CO₂ Offset per kg Recycled</span>
+              </div>
+              <div class="lp-count-item">
+                <strong data-lp-countup="100" data-lp-suffix="%">100%</strong>
+                <span>Razorpay Signature Verified</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- React Bits Interactive Circular Workflow Stepper -->
+        <section class="lp-section lp-section-alt" id="lpWorkflow">
+          <div class="lp-container">
+            <div class="lp-section-head">
+              <span class="lp-eyebrow">How It Works</span>
+              <h2>Four transparent steps from device to circular reuse.</h2>
+              <p>Select a stage below to inspect how EcoCycle tracks accountability across citizens, dispatchers, and buyers.</p>
+            </div>
+
+            <div class="lp-stepper-layout">
+              <div class="lp-stepper-nav" id="lpWorkflowSteps" role="tablist" aria-label="Circular recycling workflow">
+                <button class="lp-step-btn is-active" type="button" data-lp-step="0" role="tab" aria-selected="true">
+                  <span class="lp-step-num">01</span>
+                  <div>
+                    <strong>Submit Collection Request</strong>
+                    <small>Pick category, quantity, method & date</small>
+                  </div>
+                </button>
+                <button class="lp-step-btn" type="button" data-lp-step="1" role="tab" aria-selected="false">
+                  <span class="lp-step-num">02</span>
+                  <div>
+                    <strong>Verify & Schedule Pickup</strong>
+                    <small>Operations approves and assigns van slot</small>
+                  </div>
+                </button>
+                <button class="lp-step-btn" type="button" data-lp-step="2" role="tab" aria-selected="false">
+                  <span class="lp-step-num">03</span>
+                  <div>
+                    <strong>Salvage & Trade Working Parts</strong>
+                    <small>List reusable components via Razorpay INR</small>
+                  </div>
+                </button>
+                <button class="lp-step-btn" type="button" data-lp-step="3" role="tab" aria-selected="false">
+                  <span class="lp-step-num">04</span>
+                  <div>
+                    <strong>Authorized Recycling & Impact Audit</strong>
+                    <small>Recover metals & update your CO₂ ledger</small>
+                  </div>
+                </button>
+              </div>
+
+              <div class="lp-stepper-stage lp-spotlight" id="lpWorkflowPreview">
+                <div class="lp-stage-badge" id="lpStageTag">Stage 01 · Citizen Portal</div>
+                <h3 id="lpStageTitle">Instant Pickup or Drop-Off Scheduling</h3>
+                <p id="lpStageDesc">Choose from 14 regulated e-waste streams (Computers, Mobile Phones, Batteries, Televisions, Networking Gear, and more). EcoCycle computes estimated diverted weight and battery safety instructions automatically before submission.</p>
+                <ul class="lp-stage-points" id="lpStagePoints">
+                  <li>Real-time weight and CO₂ impact estimate</li>
+                  <li>Drop-off autofill directly from the Pan-India Leaflet map</li>
+                  <li>Instant cancellation or removal controls anytime</li>
+                </ul>
+                <div class="lp-stage-action">
+                  <button class="btn btn-primary btn-sm lp-btn-sheen" type="button" data-open-auth="signup">Try Stage in Portal →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Circular Parts & Razorpay Showcase -->
+        <section class="lp-section" id="lpMarketplace">
+          <div class="lp-container">
+            <div class="lp-cta-panel lp-aurora">
+              <div class="lp-cta-panel-copy">
+                <span class="lp-eyebrow is-on-dark">Circular Marketplace · Razorpay INR</span>
+                <h2>Turn tested spare components into verified circular value.</h2>
+                <p>Sell salvaged laptop RAM, NVMe drives, adapters, displays, and telecom PCBs—or purchase verified components using UPI, Debit/Credit Card, or Bank Account & IFSC with downloadable PDF payment receipts.</p>
+                <div class="lp-cta-actions">
+                  <button class="btn btn-primary lp-btn-magnet lp-btn-sheen" type="button" data-lp-demo="user">
+                    <span>Demo as Citizen (Rahul)</span>
+                  </button>
+                  <button class="btn lp-btn-dark-outline" type="button" data-lp-demo="admin">
+                    <span>Demo as Admin</span>
+                  </button>
+                  <button class="btn lp-btn-dark-ghost" type="button" data-open-auth="login">Sign in with Email</button>
+                </div>
+              </div>
+              <div class="lp-cta-panel-metrics">
+                <div class="lp-mini-stat">
+                  <small>Payment Methods</small>
+                  <strong>UPI · Cards · Bank NEFT</strong>
+                </div>
+                <div class="lp-mini-stat">
+                  <small>Verification</small>
+                  <strong>HMAC-SHA256 Signed</strong>
+                </div>
+                <div class="lp-mini-stat">
+                  <small>Documentation</small>
+                  <strong>Instant PDF Receipts</strong>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer class="lp-footer">
+        <div class="lp-container lp-footer-inner">
+          <div class="lp-footer-brand">
+            <strong>EcoCycle</strong>
+            <span>Circular E-Waste Collection & Recovery Management System</span>
+          </div>
+          <div class="lp-footer-links">
+            <a href="#lpCapabilities">Platform</a>
+            <a href="#lpWorkflow">Workflow</a>
+            <button type="button" data-lp-map>Drop-Off Map</button>
+            <button type="button" data-open-auth="login">Sign In</button>
+          </div>
+        </div>
+      </footer>
+    </div>
+
     <!-- ============ Sign in ============ -->
-    <div class="auth" id="auth">
+    <div class="auth" id="auth" hidden>
       <section class="auth-brand">
         <div class="brand">
           <span class="brand-logo"><img src="Assest/logo.jpeg" alt="" fetchpriority="high" decoding="async" /></span>
@@ -185,33 +502,30 @@
           <span class="brand-badge-pill">INR · Live</span>
         </div>
         <div class="auth-brand-body">
-          <div class="hero-badge">
-            <span class="hero-badge-dot rb-pulse-dot"></span>
-            <span>Smart E-Waste & Circular Parts Platform</span>
-          </div>
+          <p class="hero-eyebrow">E-Waste & Circular Operations</p>
           <h1 class="hero-headline">
-            Collection requests, <span class="rb-shiny-text">from doorstep to recovery.</span>
+            Collection requests, from doorstep to recovery.
           </h1>
           <p class="hero-subtext">
             Schedule e-waste pickups, locate authorized recycling centers across India, and trade usable electronic components with Razorpay.
           </p>
 
           <ul class="auth-points">
-            <li class="rb-spotlight">
+            <li>
               <div class="auth-point-icon"><svg class="i"><use href="#i-truck" /></svg></div>
               <div>
                 <strong>Doorstep Pickup Scheduling</strong>
                 <span>Book home collections across 14 accepted e-waste categories</span>
               </div>
             </li>
-            <li class="rb-spotlight">
+            <li>
               <div class="auth-point-icon"><svg class="i"><use href="#i-pin" /></svg></div>
               <div>
                 <strong>Pan-India Drop-Off Map</strong>
                 <span>Search 110+ recycling hubs, repair shops, and scrap yards</span>
               </div>
             </li>
-            <li class="rb-spotlight">
+            <li>
               <div class="auth-point-icon"><svg class="i"><use href="#i-tag" /></svg></div>
               <div>
                 <strong>Parts Marketplace with Razorpay</strong>
@@ -245,6 +559,7 @@
       <section class="auth-form-wrap">
         <div class="auth-card-backdrop"></div>
         <div class="auth-card">
+          <button type="button" class="auth-back-btn" id="authBackLandingBtn">← Back to EcoCycle home</button>
           <div class="auth-card-header">
             <div class="auth-card-icon-wrap">
               <svg class="i"><use href="#i-recycle" /></svg>
@@ -315,7 +630,7 @@
             </div>
             <p class="form-error" id="authMessage" role="alert"></p>
             <button
-              class="btn btn-primary btn-block btn-hero-glow"
+              class="btn btn-primary btn-block"
               id="authSubmit"
               type="submit"
             >
@@ -407,10 +722,6 @@
               <span class="backend-dot"></span>
               <span class="backend-text" id="backendStatusText">Service Active</span>
             </div>
-            <a class="btn btn-primary btn-sm topbar-action-btn" href="#/new" id="topbarNewBtn" title="Book a new collection">
-              <svg class="i" style="width: 14px; height: 14px;"><use href="#i-plus" /></svg>
-              <span>New Request</span>
-            </a>
             <a class="icon-btn notification-btn" href="#/requests" aria-label="Open requests awaiting review" title="Open requests">
               <svg class="i"><use href="#i-bell" /></svg>
               <span class="notification-count" id="topbarBadge" hidden></span>
@@ -434,139 +745,85 @@
             <div class="dashboard-heading">
               <div>
                 <h1 id="dashboardHeading">Overview</h1>
-                <p id="dashboardSub">Track recycling progress, monitor requests, and measure circular environmental impact.</p>
+                <p id="dashboardSub">Track your recycling requests and environmental impact.</p>
               </div>
-              <div class="dashboard-date">
-                <svg class="i"><use href="#i-calendar" /></svg>
-                <time id="todayLabel"></time>
-              </div>
+              <time class="dashboard-date" id="todayLabel"></time>
             </div>
-            <div class="overview-intro rb-aurora">
-              <div class="overview-intro-icon" aria-hidden="true">
-                <svg class="i" style="width:28px;height:28px;"><use href="#i-recycle" /></svg>
-              </div>
+
+            <div class="overview-intro">
               <div class="overview-intro-copy">
-                <div class="overview-pill">
-                  <span class="overview-pill-dot rb-pulse-dot"></span>
-                  <span>Live Operations Portal</span>
-                </div>
-                <h2 id="overviewWelcomeGreeting" class="rb-shiny-text">Welcome back</h2>
-                <p id="overviewWelcomeSub">Summary of active e-waste collections and recovery progress.</p>
+                <h2 id="overviewWelcomeGreeting">Good morning, Rahul</h2>
+                <p id="overviewWelcomeSub">Here's what's happening with your recycling activity today.</p>
               </div>
               <div class="overview-intro-actions">
-                <a class="btn btn-primary rb-btn-sheen" href="#/new"><svg class="i" style="width:14px;height:14px;"><use href="#i-plus" /></svg>Book pickup</a>
-                <a class="btn" href="#/parts"><svg class="i" style="width:14px;height:14px;"><use href="#i-tag" /></svg>Sell parts</a>
-                <a class="btn" href="#/requests">All requests</a>
+                <a class="btn btn-primary" href="#/new">+ New Request</a>
+                <a class="btn" href="#/requests" id="overviewSecondaryAction">View My Requests</a>
               </div>
-            </div>
-
-            <div class="overview-quick-actions" aria-label="Quick actions">
-              <article class="action-card rb-spotlight">
-                <div class="action-card-icon" aria-hidden="true">
-                  <svg class="i"><use href="#i-plus" /></svg>
-                </div>
-                <div>
-                  <h3>New request</h3>
-                  <p>Book a collection or drop-off in minutes.</p>
-                </div>
-                <a href="#/new" aria-label="Create a new request">Open</a>
-              </article>
-
-              <article class="action-card rb-spotlight">
-                <div class="action-card-icon" aria-hidden="true">
-                  <svg class="i"><use href="#i-pin" /></svg>
-                </div>
-                <div>
-                  <h3>Find points</h3>
-                  <p>Locate certified collection and repair hubs nearby.</p>
-                </div>
-                <a href="#/map" aria-label="Find drop-off locations">Explore</a>
-              </article>
-
-              <article class="action-card rb-spotlight">
-                <div class="action-card-icon" aria-hidden="true">
-                  <svg class="i"><use href="#i-tag" /></svg>
-                </div>
-                <div>
-                  <h3>Sell parts</h3>
-                  <p>List usable components or pay via Razorpay.</p>
-                </div>
-                <a href="#/parts" aria-label="Open parts marketplace">Sell</a>
-              </article>
-
-              <article class="action-card rb-spotlight">
-                <div class="action-card-icon" aria-hidden="true">
-                  <svg class="i"><use href="#i-book" /></svg>
-                </div>
-                <div>
-                  <h3>Recycling guide</h3>
-                  <p>Review safe handling and processing steps.</p>
-                </div>
-                <a href="#/guide" aria-label="Read recycling guide">Read</a>
-              </article>
             </div>
 
             <div class="kpis" id="kpis"></div>
 
-            <!-- Environmental Impact Summary -->
-            <section class="impact-hero rb-spotlight" id="impactHero" aria-label="Environmental impact metrics">
-              <div class="impact-hero-head">
-                <div class="impact-hero-title">
-                  <span class="impact-badge">Sustainability Ledger</span>
-                  <h2>Environmental Impact</h2>
-                </div>
-                <span class="fine" id="sustainabilityPill">Calculated from completed collections</span>
-              </div>
-              <div class="impact-grid" id="impactGrid">
-                <div class="impact-card rb-spotlight">
-                  <div class="impact-card-top">
-                    <span class="impact-card-tag">E-waste Diverted</span>
-                    <span class="impact-icon-well"><svg class="i impact-card-svg"><use href="#i-recycle" /></svg></span>
-                  </div>
-                  <div class="impact-card-num" id="statEwaste">0<small>kg</small></div>
-                  <div class="impact-card-sub" id="statEwasteSub">Across active requests</div>
-                </div>
-                <div class="impact-card rb-spotlight">
-                  <div class="impact-card-top">
-                    <span class="impact-card-tag">CO₂ Offset</span>
-                    <span class="impact-icon-well"><svg class="i impact-card-svg"><use href="#i-leaf" /></svg></span>
-                  </div>
-                  <div class="impact-card-num" id="statCo2">0<small>kg</small></div>
-                  <div class="impact-card-sub" id="statCo2Sub">1.44 kg saved per kg completed</div>
-                </div>
-                <div class="impact-card rb-spotlight">
-                  <div class="impact-card-top">
-                    <span class="impact-card-tag">Metals Recovered</span>
-                    <span class="impact-icon-well"><svg class="i impact-card-svg"><use href="#i-box" /></svg></span>
-                  </div>
-                  <div class="impact-card-num" id="statMetals">0<small>g</small></div>
-                  <div class="impact-card-sub">Estimated copper, aluminum & gold</div>
-                </div>
-                <div class="impact-card rb-spotlight">
-                  <div class="impact-card-top">
-                    <span class="impact-card-tag">Completion Rate</span>
-                    <span class="impact-icon-well"><svg class="i impact-card-svg"><use href="#i-check" /></svg></span>
-                  </div>
-                  <div class="impact-card-num" id="statRate">0<small>%</small></div>
-                  <div class="impact-card-sub" id="statRateSub">Completed requests</div>
-                </div>
-              </div>
-              <div class="impact-progress-wrap">
-                <div class="impact-progress-header">
-                  <div class="impact-progress-title">
-                    <span class="impact-progress-dot rb-pulse-dot"></span>
-                    <span><strong>Recovery Completion</strong> · Verified landfill diversion</span>
-                  </div>
-                  <span class="impact-progress-badge" id="impactProgressPercent">0%</span>
-                </div>
-                <div class="impact-progress-track">
-                  <div class="impact-progress-bar" id="impactProgressBar" style="width: 0%;"></div>
-                </div>
-              </div>
-            </section>
+            <!-- 65% / 35% User Workspace (or stacked Admin Analytics) -->
+            <div class="overview-columns is-user" id="overviewColumns">
+              <div class="overview-primary-col" id="overviewPrimaryCol"></div>
 
-            <!-- Status Funnel Pipeline -->
-            <div class="pipeline-panel" id="pipelinePanel" aria-label="Request lifecycle stages">
+              <!-- Environmental Impact Summary -->
+              <section class="impact-hero" id="impactHero" aria-label="Environmental impact metrics">
+                <div class="impact-hero-head">
+                  <h2>Environmental Impact</h2>
+                  <span class="fine" id="sustainabilityPill">Your contribution from completed collections</span>
+                </div>
+                <div class="impact-grid" id="impactGrid">
+                  <div class="impact-card">
+                    <span class="impact-card-icon" aria-hidden="true"><svg class="i"><use href="#i-recycle" /></svg></span>
+                    <div class="impact-card-body">
+                      <div class="impact-card-num" id="statEwaste">0<small>kg</small></div>
+                      <div class="impact-card-tag">E-waste diverted</div>
+                      <div class="impact-card-sub" id="statEwasteSub" hidden>Across active requests</div>
+                    </div>
+                  </div>
+                  <div class="impact-card">
+                    <span class="impact-card-icon" aria-hidden="true"><svg class="i"><use href="#i-leaf" /></svg></span>
+                    <div class="impact-card-body">
+                      <div class="impact-card-num" id="statCo2">0<small>kg</small></div>
+                      <div class="impact-card-tag">CO₂ offset</div>
+                      <div class="impact-card-sub" id="statCo2Sub" hidden>1.44 kg saved per kg completed</div>
+                    </div>
+                  </div>
+                  <div class="impact-card">
+                    <span class="impact-card-icon" aria-hidden="true"><svg class="i"><use href="#i-box" /></svg></span>
+                    <div class="impact-card-body">
+                      <div class="impact-card-num" id="statMetals">0<small>g</small></div>
+                      <div class="impact-card-tag">Materials recovered</div>
+                    </div>
+                  </div>
+                  <div class="impact-card" id="impactRateCell" hidden>
+                    <span class="impact-card-icon" aria-hidden="true"><svg class="i"><use href="#i-check" /></svg></span>
+                    <div class="impact-card-body">
+                      <div class="impact-card-num" id="statRate">0<small>%</small></div>
+                      <div class="impact-card-tag">Completion rate</div>
+                      <div class="impact-card-sub" id="statRateSub">Completed requests</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="impact-progress-wrap">
+                  <div class="impact-progress-header">
+                    <span>Recovery Completion</span>
+                    <span class="impact-progress-badge" id="impactProgressPercent">0%</span>
+                  </div>
+                  <div class="impact-progress-track">
+                    <div class="impact-progress-bar" id="impactProgressBar" style="width: 0%;"></div>
+                  </div>
+                  <div class="impact-progress-meta">
+                    <span class="impact-completed-text" id="impactCompletedText">0 of 0 requests completed</span>
+                    <span class="recovery-good-badge" id="recoveryStatusBadge"><svg class="i"><use href="#i-check" /></svg><span>Good progress</span></span>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Status Funnel Pipeline (Admin) -->
+            <div class="pipeline-panel" id="pipelinePanel" aria-label="Request lifecycle stages" hidden>
               <div class="pipeline-head">
                 <h3>Collection & Recovery Pipeline</h3>
                 <span class="fine">Click stage to filter</span>
@@ -574,7 +831,38 @@
               <div class="pipeline-track" id="pipelineTrack"></div>
             </div>
 
-            <div class="grid-2" id="overviewGrid"></div>
+            <div class="grid-2" id="overviewGrid" hidden></div>
+
+            <!-- Bottom Quick Actions -->
+            <section class="quick-actions-section" id="overviewQuickActions" aria-label="Quick actions">
+              <h2 class="section-heading">Quick Actions</h2>
+              <div class="quick-actions-list">
+                <a class="quick-action-row" href="#/map">
+                  <span class="quick-action-icon" aria-hidden="true"><svg class="i"><use href="#i-pin" /></svg></span>
+                  <span class="quick-action-copy">
+                    <strong>Find a Collection Point</strong>
+                    <span>Locate certified recycling and repair hubs nearby.</span>
+                  </span>
+                  <span class="quick-action-arrow" aria-hidden="true">→</span>
+                </a>
+                <a class="quick-action-row" href="#/parts">
+                  <span class="quick-action-icon" aria-hidden="true"><svg class="i"><use href="#i-tag" /></svg></span>
+                  <span class="quick-action-copy">
+                    <strong>Sell Parts</strong>
+                    <span>List reusable components and sell eligible parts.</span>
+                  </span>
+                  <span class="quick-action-arrow" aria-hidden="true">→</span>
+                </a>
+                <a class="quick-action-row" href="#/guide">
+                  <span class="quick-action-icon" aria-hidden="true"><svg class="i"><use href="#i-book" /></svg></span>
+                  <span class="quick-action-copy">
+                    <strong>Recycling Guide</strong>
+                    <span>Learn safe handling and processing steps.</span>
+                  </span>
+                  <span class="quick-action-arrow" aria-hidden="true">→</span>
+                </a>
+              </div>
+            </section>
           </section>
 
           <!-- Requests -->
@@ -1022,6 +1310,6 @@
       }
     </script>
     <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
-    <script defer src="app.js?v=20"></script>
+    <script defer src="app.js?v=28"></script>
   </body>
 </html>

@@ -469,7 +469,7 @@ router.post('/:id/payout', authenticate, requireAdmin, async (req, res, next) =>
   }
 });
 
-// DELETE /api/parts/:id - Seller cancels own Available listing, or Admin deletes
+// DELETE /api/parts/:id - Seller, buyer, or Admin removes part/payment record
 router.delete('/:id', authenticate, async (req, res, next) => {
   try {
     const part = await findPartById(req.params.id);
@@ -477,11 +477,11 @@ router.delete('/:id', authenticate, async (req, res, next) => {
       return res.status(404).json({ error: 'Part listing not found.' });
     }
 
-    const isOwner = String(part.sellerEmail || '').toLowerCase() === req.user.email.toLowerCase();
-    if (req.user.role !== 'admin') {
-      if (!isOwner || part.status !== 'Available') {
-        return res.status(403).json({ error: 'You can only remove your own available part listings.' });
-      }
+    const userEmail = req.user.email.toLowerCase();
+    const isSeller = String(part.sellerEmail || '').toLowerCase() === userEmail;
+    const isBuyer = String(part.buyerEmail || '').toLowerCase() === userEmail;
+    if (req.user.role !== 'admin' && !isSeller && !isBuyer) {
+      return res.status(403).json({ error: 'You can only remove your own part listings or payments.' });
     }
 
     if (isDbConnected() && part._id) {

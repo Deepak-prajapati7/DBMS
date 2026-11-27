@@ -236,12 +236,17 @@ router.patch('/:id/status', authenticate, async (req, res, next) => {
   }
 });
 
-// DELETE /api/requests/:id - Delete a request (Admin only)
-router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
+// DELETE /api/requests/:id - Delete a request (Owner or Admin)
+router.delete('/:id', authenticate, async (req, res, next) => {
   try {
     const request = await findRequestById(req.params.id);
     if (!request) {
       return res.status(404).json({ error: 'Collection request not found.' });
+    }
+
+    const isOwner = String(request.email || '').toLowerCase() === req.user.email.toLowerCase();
+    if (req.user.role !== 'admin' && !isOwner) {
+      return res.status(403).json({ error: 'You are not authorized to remove this request.' });
     }
 
     if (isDbConnected() && request._id) {
