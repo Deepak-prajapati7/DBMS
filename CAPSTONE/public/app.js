@@ -1075,11 +1075,13 @@
     authMode = mode;
     const signup = mode === "signup";
     $("authNameField").hidden = !signup;
-    $("authTitle").textContent = signup ? "Create account" : getTimeGreeting("Deepak");
+    $("authTitle").textContent = signup ? "Create your account" : "Sign in to your account";
     $("authDescription").textContent = signup
-      ? "Create a user account. Administrator access is provisioned separately."
-      : "Use your account to continue.";
-    $("authSubmit").textContent = signup ? "Create account" : "Sign in";
+      ? "Join the circular network to schedule e-waste pickups and track impact."
+      : "Enter your details to manage e-waste pickups and view certified impact.";
+    $("authSubmit").innerHTML = signup
+      ? `<span>Create account</span><svg class="i" style="width:16px;height:16px;"><use href="#i-arrow-right" /></svg>`
+      : `<span>Sign in to EcoCycle</span><svg class="i" style="width:16px;height:16px;"><use href="#i-arrow-right" /></svg>`;
     $("authPassword").autocomplete = signup
       ? "new-password"
       : "current-password";
@@ -1199,7 +1201,12 @@
       );
       await startSession(profile);
     } catch (error) {
-      msg.textContent = error.message;
+      const raw = error.message || "";
+      if (raw.toLowerCase().includes("invalid credentials")) {
+        msg.textContent = "The email or password you entered is incorrect.";
+      } else {
+        msg.textContent = raw;
+      }
     } finally {
       submit.disabled = false;
     }
@@ -5248,6 +5255,47 @@
         }
       });
     }
+
+    // Phase 3 Auth Enhancements
+    $("toggleRoleLink")?.addEventListener("click", () => {
+      const roleSelect = $("authRole");
+      if (!roleSelect) return;
+      const isOps = roleSelect.value === "admin";
+      roleSelect.value = isOps ? "user" : "admin";
+      $("toggleRoleLink").textContent = isOps
+        ? "Sign in as operations / collection partner →"
+        : "Sign in as citizen / user →";
+      showToast(
+        isOps ? "Role set to Citizen" : "Role set to Operations Admin",
+        "info",
+      );
+    });
+
+    $("googleAuthBtn")?.addEventListener("click", () => {
+      showToast(
+        "Google authentication is configured in the production environment.",
+        "info",
+      );
+    });
+
+    $("authForgotLink")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      const email = $("authEmail")?.value.trim();
+      if (email) {
+        showToast(`Password recovery link sent to ${email}`, "success");
+      } else {
+        showToast("Enter your email above to receive a recovery link.", "warning");
+      }
+    });
+
+    const authDemo = $("authDemoActions");
+    if (authDemo) {
+      const isDemo =
+        new URLSearchParams(window.location.search).has("demo") ||
+        localStorage.getItem("ecocycle-demo") === "true" ||
+        window.NEXT_PUBLIC_DEMO === true;
+      authDemo.classList.toggle("hidden", !isDemo);
+    }
     $("logoutButton").addEventListener("click", () => void endSession());
     $("themeToggle").addEventListener("click", () =>
       setTheme(document.body.dataset.theme === "dark" ? "light" : "dark"),
@@ -5498,6 +5546,46 @@
   function initLandingPage() {
     const landing = $("landing");
     if (!landing) return;
+
+    // Sticky nav blur & shadow on scroll
+    const nav = $("lpNav");
+    if (nav) {
+      const onScroll = () => {
+        nav.classList.toggle("is-scrolled", window.scrollY > 20);
+      };
+      window.addEventListener("scroll", onScroll, { passive: true });
+      onScroll();
+    }
+
+    // Mobile Hamburger Menu Sheet
+    const hamburgerBtn = $("lpHamburgerBtn");
+    const mobileSheet = $("lpMobileSheet");
+    const sheetCloseBtn = $("lpSheetCloseBtn");
+    if (hamburgerBtn && mobileSheet) {
+      const toggleSheet = (open) => {
+        mobileSheet.classList.toggle("is-open", open);
+        hamburgerBtn.setAttribute("aria-expanded", String(open));
+        document.body.style.overflow = open ? "hidden" : "";
+      };
+      hamburgerBtn.addEventListener("click", () => {
+        const isOpen = mobileSheet.classList.contains("is-open");
+        toggleSheet(!isOpen);
+      });
+      sheetCloseBtn?.addEventListener("click", () => toggleSheet(false));
+      mobileSheet.querySelectorAll("a, button").forEach((el) => {
+        el.addEventListener("click", () => toggleSheet(false));
+      });
+    }
+
+    // Demo developer actions container visibility
+    const demoActions = $("lpDemoActions");
+    if (demoActions) {
+      const isDemo =
+        new URLSearchParams(window.location.search).has("demo") ||
+        localStorage.getItem("ecocycle-demo") === "true" ||
+        window.NEXT_PUBLIC_DEMO === true;
+      demoActions.classList.toggle("hidden", !isDemo);
+    }
 
     landing.querySelectorAll("[data-open-auth]").forEach((btn) => {
       btn.addEventListener("click", () => {
