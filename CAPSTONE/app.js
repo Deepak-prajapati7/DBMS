@@ -996,6 +996,7 @@
     partsFilterCat: "all",
     partsFilterStatus: "all",
     partsSearch: "",
+    partsViewMode: "grid", // "grid" or "list"
     razorpayConfig: null,
     view: "overview",
     openRequestId: null,
@@ -1453,7 +1454,9 @@
     updateSustainabilityAndPipeline(mine, count, done);
 
     if ($("overviewWelcomeGreeting") && state.user) {
-      $("overviewWelcomeGreeting").textContent = getTimeGreeting(state.user.name);
+      $("overviewWelcomeGreeting").textContent = adminView
+        ? `Operations Console · ${state.user.name}`
+        : `Welcome, ${state.user.name}`;
     }
     if ($("overviewWelcomeSub")) {
       $("overviewWelcomeSub").textContent = adminView
@@ -1513,14 +1516,14 @@
       const maxWeek = Math.max(1, ...weeks.map((w) => w.count));
       const weekScale = Math.max(8, Math.ceil(maxWeek / 2) * 2);
       const statusColors = {
-        Pending: "#d97706",
-        Scheduled: "#334155",
-        Processing: "#64748b",
-        Rejected: "#dc2626",
-        Approved: "#0284c7",
-        Collected: "#0d9488",
-        Completed: "#059669",
-        Cancelled: "#94a3b8",
+        Pending: "#d97706",    // warm amber
+        Scheduled: "#0284c7",  // sky blue
+        Processing: "#7c3aed", // violet
+        Rejected: "#e11d48",   // rose
+        Approved: "#2563eb",   // royal blue
+        Collected: "#0d9488",  // deep teal
+        Completed: "#059669",  // emerald
+        Cancelled: "#64748b",  // slate
       };
       let statusStop = 0;
       const donutStops = statusCounts
@@ -2685,35 +2688,89 @@
     const canBuy = isAvailable;
     const canSettlePayout = isAdmin() && p.status === "Sold";
     const canRemove = isAdmin() || isSeller || isBuyer;
+    // UPI hidden from public row — shown only in Razorpay checkout modal
     const metaSub = p.razorpayPaymentId
       ? `Paid · ${p.razorpayPaymentId}`
-      : p.sellerUpi
-        ? `UPI: ${p.sellerUpi}`
-        : "Razorpay protected";
+      : "Secure checkout · Razorpay";
 
     return `
       <tr class="part-row" data-part-id="${esc(p.id)}">
         <td class="part-col-title" data-label="Part">
           <strong>${esc(p.title)}</strong>
-          <span class="part-row-desc">${esc(p.description || "Verified salvaged electronic component ready for reuse or recovery.")}</span>
+          <span class="part-row-desc">${esc(p.description || "Verified salvaged electronic component ready for reuse.")}</span>
           <span class="part-row-ref">${esc(metaSub)}</span>
         </td>
         <td data-label="Category"><span class="part-cat-pill">${esc(p.partCategory)}</span></td>
-        <td data-label="Condition">${esc(p.condition)}</td>
+        <td data-label="Condition"><span class="condition-badge condition-${(p.condition || "").replace(/[^a-zA-Z]/g, "-").toLowerCase()}">${esc(p.condition)}</span></td>
         <td class="num" data-label="Qty">${esc(p.qty)}</td>
-        <td data-label="Location">${esc(p.location)}</td>
+        <td data-label="Location"><div class="text-clip" title="${esc(p.location)}">${esc(p.location)}</div></td>
         <td data-label="Seller">${esc(p.sellerName)}${isSeller ? " (You)" : ""}</td>
         <td class="num part-col-price" data-label="Price"><strong>${fmtInr(p.priceInr)}</strong></td>
         <td data-label="Status"><span class="part-status-pill ${partStatusClass(p.status)}">${esc(p.status)}</span></td>
         <td class="part-col-actions" data-label="Actions">
           <div class="part-actions">
-            ${canBuy ? `<button class="btn btn-sm btn-rzp" type="button" data-buy-part="${esc(p.id)}">Buy with Razorpay</button>` : ""}
+            ${canBuy ? `<button class="btn btn-sm btn-rzp" type="button" data-buy-part="${esc(p.id)}">Buy · Razorpay</button>` : ""}
             ${p.razorpayPaymentId ? `<button class="btn btn-sm" type="button" data-receipt-part="${esc(p.id)}">Receipt</button>` : ""}
-            ${canSettlePayout ? `<button class="btn btn-sm btn-primary" type="button" data-payout-part="${esc(p.id)}">Settle Payout</button>` : ""}
+            ${canSettlePayout ? `<button class="btn btn-sm btn-primary" type="button" data-payout-part="${esc(p.id)}">Settle</button>` : ""}
             ${canRemove ? `<button class="btn btn-sm btn-ghost-danger" type="button" data-delete-part="${esc(p.id)}">Remove</button>` : ""}
           </div>
         </td>
       </tr>
+    `;
+  }
+
+  // Card grid renderer for marketplace
+  function renderPartCard(p) {
+    const me = (state.user?.email || "").toLowerCase();
+    const isSeller = String(p.sellerEmail || "").toLowerCase() === me;
+    const isAvailable = p.status === "Available";
+    const canBuy = isAvailable;
+    const canSettlePayout = isAdmin() && p.status === "Sold";
+    const canRemove = isAdmin() || isSeller || String(p.buyerEmail || "").toLowerCase() === me;
+
+    // Map category to available images
+    const categoryImages = {
+      "RAM & Memory": "images/part-ram.webp",
+      "Storage (SSD/HDD)": "images/part-ssd.webp",
+      "Power Supplies & Adapters": "images/part-charger.webp",
+      "Battery Packs": "images/part-charger.webp",
+    };
+    const imgSrc = categoryImages[p.partCategory] || "images/part-ssd.webp";
+    const cityShort = (p.location || "").split(",")[0].trim().slice(0, 24);
+
+    return `
+      <div class="part-card card-ds" data-part-id="${esc(p.id)}">
+        <div class="part-card-img-wrap">
+          <img src="${imgSrc}" alt="${esc(p.title)}" class="part-card-img" loading="lazy" width="300" height="180" />
+          <span class="part-card-status-badge ${partStatusClass(p.status)}">${esc(p.status)}</span>
+          ${isAvailable ? `<span class="part-card-tested-badge">Tested</span>` : ""}
+        </div>
+        <div class="part-card-body">
+          <div class="part-card-chips">
+            <span class="part-cat-pill">${esc(p.partCategory)}</span>
+            <span class="condition-badge condition-${(p.condition || "").replace(/[^a-zA-Z]/g, "-").toLowerCase()}">${esc(p.condition)}</span>
+          </div>
+          <h3 class="part-card-title">${esc(p.title)}</h3>
+          <p class="part-card-desc">${esc(p.description || "Verified salvaged component, ready for reuse.")}</p>
+          <div class="part-card-meta">
+            <span class="part-card-city">
+              <svg class="i" style="width:12px;height:12px;"><use href="#i-pin"/></svg>
+              ${esc(cityShort)}
+            </span>
+            <span class="part-card-qty">Qty: ${esc(p.qty)}</span>
+          </div>
+          <div class="part-card-footer">
+            <span class="part-card-price">${fmtInr(p.priceInr)}</span>
+            <div class="part-card-actions">
+              ${canBuy ? `<button class="btn btn-sm btn-rzp" type="button" data-buy-part="${esc(p.id)}">Buy with Razorpay</button>` : ""}
+              ${p.razorpayPaymentId ? `<button class="btn btn-sm" type="button" data-receipt-part="${esc(p.id)}">Receipt</button>` : ""}
+              ${canSettlePayout ? `<button class="btn btn-sm btn-primary" type="button" data-payout-part="${esc(p.id)}">Settle</button>` : ""}
+              ${canRemove ? `<button class="btn btn-sm btn-ghost-danger" type="button" data-delete-part="${esc(p.id)}">Remove</button>` : ""}
+            </div>
+          </div>
+          <div class="part-card-seller">Secure payment via Razorpay · Seller: ${esc(p.sellerName)}${isSeller ? " (You)" : ""}</div>
+        </div>
+      </div>
     `;
   }
 
@@ -2745,28 +2802,38 @@
       return;
     }
 
-    resultsHost.innerHTML = `
-      <div class="panel flush">
-        <div class="table-wrap">
-          <table class="tbl parts-tbl">
-            <thead>
-              <tr>
-                <th scope="col">Part</th>
-                <th scope="col">Category</th>
-                <th scope="col">Condition</th>
-                <th scope="col">Qty</th>
-                <th scope="col">Location</th>
-                <th scope="col">Seller</th>
-                <th scope="col">Price</th>
-                <th scope="col">Status</th>
-                <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>${filtered.map(renderPartRow).join("")}</tbody>
-          </table>
+    const isGrid = state.partsViewMode !== "list";
+
+    if (isGrid) {
+      resultsHost.innerHTML = `
+        <div class="parts-grid">
+          ${filtered.map(renderPartCard).join("")}
         </div>
-      </div>
-    `;
+      `;
+    } else {
+      resultsHost.innerHTML = `
+        <div class="panel flush">
+          <div class="table-wrap parts-table-scroll">
+            <table class="tbl parts-tbl">
+              <thead>
+                <tr>
+                  <th scope="col">Part</th>
+                  <th scope="col">Category</th>
+                  <th scope="col">Condition</th>
+                  <th scope="col" class="num">Qty</th>
+                  <th scope="col">Location</th>
+                  <th scope="col">Seller</th>
+                  <th scope="col" class="num">Price</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody>${filtered.map(renderPartRow).join("")}</tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
   }
 
   function renderParts() {
@@ -2899,20 +2966,38 @@
           </aside>
         </div>`
           : `
-        <div class="toolbar">
-          <div class="search">
+        <div class="parts-toolbar-v2">
+          <div class="parts-toolbar-search">
             <svg class="i"><use href="#i-search" /></svg>
-            <input id="partsSearchInput" type="search" value="${esc(state.partsSearch)}" placeholder="Search parts, specs, seller or city..." aria-label="Search parts" />
+            <input id="partsSearchInput" type="search" value="${esc(state.partsSearch)}" placeholder="Search parts, category, seller or city…" aria-label="Search parts" />
+            ${state.partsSearch ? `<button class="parts-search-clear" type="button" id="partsSearchClearBtn" aria-label="Clear search">✕</button>` : ""}
           </div>
-          <select id="partsCatFilter" aria-label="Filter by part category">
-            <option value="all">All part categories</option>
-            ${PART_CATEGORIES.map((c) => `<option value="${esc(c)}" ${state.partsFilterCat === c ? "selected" : ""}>${esc(c)}</option>`).join("")}
-          </select>
-          <select id="partsStatusFilter" aria-label="Filter by listing status">
-            <option value="all">All statuses</option>
-            ${["Available", "Sold", "Payout Settled"].map((s) => `<option value="${esc(s)}" ${state.partsFilterStatus === s ? "selected" : ""}>${esc(s)}</option>`).join("")}
-          </select>
-          <span class="toolbar-count" id="partsToolbarCount"></span>
+          <div class="parts-toolbar-filters">
+            <select id="partsCatFilter" aria-label="Filter by part category">
+              <option value="all">All categories</option>
+              ${PART_CATEGORIES.map((c) => `<option value="${esc(c)}" ${state.partsFilterCat === c ? "selected" : ""}>${esc(c)}</option>`).join("")}
+            </select>
+            <select id="partsStatusFilter" aria-label="Filter by listing status">
+              <option value="all">All statuses</option>
+              ${["Available", "Sold", "Payout Settled"].map((s) => `<option value="${esc(s)}" ${state.partsFilterStatus === s ? "selected" : ""}>${esc(s)}</option>`).join("")}
+            </select>
+            ${state.partsFilterCat !== "all" || state.partsFilterStatus !== "all" ? `
+              <button class="filter-chip-clear" type="button" id="partsResetFiltersBtn">
+                <svg class="i" style="width:12px;height:12px;"><use href="#i-x"/></svg>
+                Clear filters
+              </button>` : ""}
+          </div>
+          <div class="parts-toolbar-right">
+            <span class="toolbar-count" id="partsToolbarCount"></span>
+            <div class="view-toggle-btns" role="group" aria-label="View mode">
+              <button type="button" class="view-toggle-btn ${state.partsViewMode !== "list" ? "is-active" : ""}" id="partsViewGrid" aria-label="Grid view" title="Grid view">
+                <svg class="i" style="width:16px;height:16px;"><use href="#i-grid"/></svg>
+              </button>
+              <button type="button" class="view-toggle-btn ${state.partsViewMode === "list" ? "is-active" : ""}" id="partsViewList" aria-label="List view" title="List view">
+                <svg class="i" style="width:16px;height:16px;"><use href="#i-list"/></svg>
+              </button>
+            </div>
+          </div>
         </div>
         <div id="partsResultsHost"></div>`
       }
@@ -2946,12 +3031,25 @@
         renderPartsResults();
       });
     }
+    $("partsSearchClearBtn")?.addEventListener("click", () => {
+      state.partsSearch = "";
+      renderParts();
+    });
     $("partsCatFilter")?.addEventListener("change", (e) => {
       state.partsFilterCat = e.target.value;
       renderPartsResults();
     });
     $("partsStatusFilter")?.addEventListener("change", (e) => {
       state.partsFilterStatus = e.target.value;
+      renderPartsResults();
+    });
+    // Grid/List toggle
+    $("partsViewGrid")?.addEventListener("click", () => {
+      state.partsViewMode = "grid";
+      renderPartsResults();
+    });
+    $("partsViewList")?.addEventListener("click", () => {
+      state.partsViewMode = "list";
       renderPartsResults();
     });
 
@@ -3047,13 +3145,12 @@
         renderPartsResults();
         return;
       }
-
+      // Handle items from both grid cards and list table
       const buyBtn = target.closest("[data-buy-part]");
       if (buyBtn) {
         openRazorpayCheckout(buyBtn.dataset.buyPart);
         return;
       }
-
       const receiptBtn = target.closest("[data-receipt-part]");
       if (receiptBtn) {
         const p = state.parts.find((x) => String(x.id) === String(receiptBtn.dataset.receiptPart));
@@ -5766,7 +5863,12 @@
     })
     .catch((error) => {
       const h = currentHash();
-      if (h === "map") {
+      const demoParam = new URLSearchParams(window.location.search).get("demoUser");
+      if (demoParam === "admin" || h === "demo-admin") {
+        startSession({ name: "System Admin", email: "admin@example.com", role: "admin" });
+      } else if (demoParam === "citizen" || h === "demo-citizen") {
+        startSession({ name: "Priya Verma", email: "citizen@example.com", role: "user" });
+      } else if (h === "map") {
         startSession({ name: "Eco Explorer", email: "guest@ecocycle.org", role: "user" });
       } else if (h === "signin" || h === "signup") {
         openAuthGate(h === "signup" ? "signup" : "login");
