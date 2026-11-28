@@ -1,3 +1,5 @@
+@import url("tokens.css");
+
 /* ===================================================================
  * EcoCycle — E-Waste Collection & Circular Operations Platform
  * Production Operations UI Stylesheet
@@ -31,32 +33,39 @@
  * ------------------------------------------------------------------- */
 :root {
   color-scheme: light;
-  --font: "Inter", "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font: var(--font-ui, "Inter", sans-serif);
+  --font-display: var(--font-display, "Fraunces", Georgia, serif);
+  --font-mono: var(--font-mono, ui-monospace, monospace);
 
-  /* Clean Light Canvas & Hairline Dividers */
-  --bg: #fafafa;
-  --surface: #ffffff;
-  --surface-2: #f6f8f7;
-  --surface-3: #eef1f0;
-  --line: #e5e7eb;
-  --line-strong: #d1d5db;
-  --text: #0f172a;
-  --text-secondary: #334155;
-  --muted: #64748b;
-  --muted-subtle: #94a3b8;
+  /* Clean Warm Off-White Canvas & Hairline Dividers */
+  --bg: var(--color-bg, #F7F8F5);
+  --surface: var(--color-surface, #ffffff);
+  --surface-2: var(--color-bg-subtle, #F0F2ED);
+  --surface-3: var(--color-surface-sunken, #EBECE6);
+  --line: var(--color-border, #E2E6DF);
+  --line-strong: var(--color-border-strong, #CCD2C7);
+  --text: var(--color-text, #0E1A14);
+  --text-secondary: var(--color-text-secondary, #4A5E54);
+  --muted: var(--color-text-tertiary, #6E8277);
+  --muted-subtle: #9CB2A5;
 
-  /* Restrained EcoCycle Green Accent */
-  --accent: #059669;
-  --accent-hover: #047857;
-  --accent-active: #065f46;
-  --accent-ink: #ffffff;
-  --accent-soft: #ecfdf5;
-  --accent-soft-hover: #d1fae5;
-  --danger: #dc2626;
-  --danger-hover: #b91c1c;
-  --danger-soft: #fef2f2;
-  --focus: #059669;
+  /* Deep Forest Green Primary Range */
+  --primary: var(--color-primary, #0F3D2E);
+  --accent: var(--color-primary, #0F3D2E);
+  --accent-hover: var(--color-primary-hover, #165440);
+  --accent-active: var(--color-primary-active, #0A2B20);
+  --accent-ink: var(--color-text-on-primary, #F7F8F5);
+  --accent-soft: var(--color-primary-subtle, #F0F5F2);
+  --accent-soft-hover: var(--color-primary-surface, #E8EFEA);
+  --danger: var(--color-status-danger, #C5221F);
+  --danger-hover: #A51D1A;
+  --danger-soft: var(--color-status-danger-bg, #FDF2F2);
+  --focus: var(--color-primary, #0F3D2E);
+
+  /* Vivid Lime / Emerald CTA Accent (for CTAs only) */
+  --cta-accent: var(--color-accent, #10E599);
+  --cta-accent-hover: var(--color-accent-hover, #0DD08A);
+  --cta-accent-ink: var(--color-accent-ink, #071F17);
 
   /* Unified Neutral Navigation Rail */
   --side-bg: #ffffff;
@@ -97,27 +106,32 @@
 /* Dark Mode Tokens */
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0f1419;
-  --surface: #151b22;
-  --surface-2: #1b232c;
-  --surface-3: #242e39;
-  --line: #242d37;
-  --line-strong: #323e4b;
-  --text: #f3f4f6;
-  --text-secondary: #d1d5db;
-  --muted: #9ca3af;
-  --muted-subtle: #6b7280;
+  --bg: var(--color-bg, #09120E);
+  --surface: var(--color-surface, #11211A);
+  --surface-2: var(--color-bg-subtle, #0D1A14);
+  --surface-3: var(--color-surface-raised, #162B22);
+  --line: var(--color-border, #1F352B);
+  --line-strong: var(--color-border-strong, #2E4D3E);
+  --text: var(--color-text, #F2F5F3);
+  --text-secondary: var(--color-text-secondary, #9DB3A7);
+  --muted: var(--color-text-tertiary, #6D8578);
+  --muted-subtle: #426955;
 
-  --accent: #10b981;
-  --accent-hover: #059669;
-  --accent-active: #047857;
-  --accent-ink: #052e23;
-  --accent-soft: rgba(16, 185, 129, 0.14);
-  --accent-soft-hover: rgba(16, 185, 129, 0.22);
-  --danger: #f87171;
-  --danger-hover: #ef4444;
-  --danger-soft: rgba(239, 68, 68, 0.14);
-  --focus: #10b981;
+  --primary: var(--color-primary, #1C6B52);
+  --accent: var(--color-primary, #1C6B52);
+  --accent-hover: var(--color-primary-hover, #248566);
+  --accent-active: var(--color-primary-active, #15523E);
+  --accent-ink: #F2F5F3;
+  --accent-soft: rgba(28, 107, 82, 0.20);
+  --accent-soft-hover: rgba(28, 107, 82, 0.32);
+  --danger: var(--color-status-danger, #F87171);
+  --danger-hover: #EF4444;
+  --danger-soft: var(--color-status-danger-bg, rgba(248, 113, 113, 0.14));
+  --focus: var(--color-accent, #10E599);
+
+  --cta-accent: var(--color-accent, #10E599);
+  --cta-accent-hover: var(--color-accent-hover, #34EBB1);
+  --cta-accent-ink: var(--color-accent-ink, #051A11);
 
   --side-bg: #0b0f14;
   --side-text: #9ca3af;
@@ -4309,5 +4323,88 @@ select {
     opacity: 1;
     filter: none;
     transform: none;
+  }
+}
+
+/* ===================================================================
+ * EcoCycle Design System Overrides & Integrations
+ * =================================================================== */
+.lp-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--color-text, #0E1A14);
+}
+.logo-mark-wrap {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary, #0F3D2E);
+  flex-shrink: 0;
+}
+[data-theme="dark"] .logo-mark-wrap {
+  color: var(--color-text, #F2F5F3);
+}
+.logo-mark-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.logo-text-ds {
+  font-family: var(--font-ui, "Inter", sans-serif);
+  font-size: 1.25rem;
+  font-weight: 750;
+  letter-spacing: -0.025em;
+  color: var(--color-text, #0E1A14);
+  line-height: 1;
+}
+
+/* Primary CTAs — Vivid Lime / Emerald Accent */
+.lp-btn-sheen.btn-primary,
+.lp-cta-lg.btn-primary {
+  background: var(--color-accent, #10E599) !important;
+  color: var(--color-accent-ink, #071F17) !important;
+  border-color: rgba(7, 31, 23, 0.16) !important;
+  box-shadow: var(--shadow-cta) !important;
+  font-weight: 700 !important;
+}
+.lp-btn-sheen.btn-primary:hover,
+.lp-cta-lg.btn-primary:hover {
+  background: var(--color-accent-hover, #0DD08A) !important;
+  color: var(--color-accent-ink, #071F17) !important;
+  box-shadow: var(--shadow-cta-hover) !important;
+  transform: translateY(-1px) scale(1.01) !important;
+}
+.lp-btn-sheen.btn-primary:active,
+.lp-cta-lg.btn-primary:active {
+  background: var(--color-accent-active, #09B878) !important;
+  transform: translateY(0) scale(0.99) !important;
+}
+
+/* Typography & Section Rhythm Integration */
+.lp-hero-title {
+  font-family: var(--font-display, "Fraunces", Georgia, serif) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.025em !important;
+}
+.lp-section-head h2 {
+  font-family: var(--font-display, "Fraunces", Georgia, serif) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+}
+.hero-headline {
+  font-family: var(--font-display, "Fraunces", Georgia, serif) !important;
+  letter-spacing: -0.02em !important;
+}
+
+.lp-section {
+  padding: var(--section-padding-y, 120px) 0 !important;
+}
+@media (max-width: 768px) {
+  .lp-section {
+    padding: 72px 0 !important;
   }
 }

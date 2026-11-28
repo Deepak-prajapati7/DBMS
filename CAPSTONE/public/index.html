@@ -18,9 +18,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="stylesheet" href="tokens.css" />
     <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="styles.css?v=29" />
@@ -177,18 +178,23 @@
     <div class="landing" id="landing">
       <header class="lp-nav">
         <div class="lp-nav-inner">
-          <a class="lp-brand" href="#landingTop" aria-label="EcoCycle Home">
-            <span class="brand-logo"><img src="Assest/logo.jpeg" alt="" decoding="async" /></span>
-            <span class="lp-brand-name">
-              <strong>EcoCycle</strong>
-              <small>Circular E-Waste Platform</small>
+          <a class="lp-brand logo-lockup-ds" href="#landingTop" aria-label="EcoCycle Home">
+            <span class="brand-logo logo-mark-wrap" aria-hidden="true">
+              <svg class="logo-mark-svg" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 3.5C9.992 3.5 3.5 9.992 3.5 18c0 3.31 1.11 6.36 2.98 8.81l2.48-1.93A11.43 11.43 0 0 1 6.5 18c0-6.35 5.15-11.5 11.5-11.5 3.82 0 7.2 1.86 9.31 4.71L24 14.5h9v-9l-3.32 3.32A14.43 14.43 0 0 0 18 3.5Z" fill="currentColor" />
+                <path d="M29.52 9.19A14.47 14.47 0 0 1 32.5 18c0 8.008-6.492 14.5-14.5 14.5-3.56 0-6.83-1.28-9.38-3.41l2.06-2.37A11.42 11.42 0 0 0 18 29c6.35 0 11.5-5.15 11.5-11.5 0-2.92-1.09-5.59-2.89-7.63l2.91-.68Z" fill="currentColor" opacity="0.75" />
+                <path d="M12.5 23.5c0-6.075 4.925-11 11-11 0 6.075-4.925 11-11 11Z" fill="var(--color-accent, #10E599)" />
+                <path d="M12.5 23.5c3.2-2.1 6.8-5.7 11-11" stroke="var(--color-primary-900, #071F17)" stroke-width="1.2" stroke-linecap="round" opacity="0.6" />
+              </svg>
             </span>
+            <span class="logo-text-ds">EcoCycle</span>
           </a>
           <nav class="lp-links" aria-label="Landing navigation">
             <a href="#lpCapabilities">Platform</a>
             <a href="#lpWorkflow">Workflow</a>
             <a href="#lpMarketplace">Parts & Razorpay</a>
             <a href="#lpImpact">Impact</a>
+            <a href="style-guide.html" class="lp-link-guide"><span class="badge-ds badge-ds--forest badge-ds--sm">Style Guide</span></a>
           </nav>
           <div class="lp-nav-actions">
             <button class="btn btn-sm lp-btn-ghost" type="button" data-lp-map>Explore Map</button>
