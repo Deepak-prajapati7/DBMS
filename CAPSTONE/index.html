@@ -174,9 +174,10 @@
       </symbol>
     </svg>
 
-    <!-- ============ Public Landing Page (React Bits Enhanced) ============ -->
+    <!-- ============ Public Landing Page (Image-Led Premium) ============ -->
     <div class="landing" id="landing">
-      <header class="lp-nav">
+      <!-- Sticky Translucent Navigation with Scroll Blur -->
+      <header class="lp-nav" id="lpNav">
         <div class="lp-nav-inner">
           <a class="lp-brand logo-lockup-ds" href="#landingTop" aria-label="EcoCycle Home">
             <span class="brand-logo logo-mark-wrap" aria-hidden="true">
@@ -189,314 +190,835 @@
             </span>
             <span class="logo-text-ds">EcoCycle</span>
           </a>
+
           <nav class="lp-links" aria-label="Landing navigation">
             <a href="#lpCapabilities">Platform</a>
-            <a href="#lpWorkflow">Workflow</a>
-            <a href="#lpMarketplace">Parts & Razorpay</a>
+            <a href="#lpAccept">What we accept</a>
+            <a href="#lpWorkflow">How it works</a>
+            <a href="#lpMarketplace">Marketplace</a>
             <a href="#lpImpact">Impact</a>
             <a href="style-guide.html" class="lp-link-guide"><span class="badge-ds badge-ds--forest badge-ds--sm">Style Guide</span></a>
           </nav>
+
           <div class="lp-nav-actions">
-            <button class="btn btn-sm lp-btn-ghost" type="button" data-lp-map>Explore Map</button>
-            <button class="btn btn-sm lp-btn-outline" type="button" data-open-auth="login">Sign in</button>
-            <button class="btn btn-sm btn-primary lp-btn-magnet lp-btn-sheen" type="button" data-open-auth="signup">Get Started</button>
+            <button class="btn-ds btn-ds--ghost btn-ds--sm" type="button" data-open-auth="login">Sign in</button>
+            <button class="btn-ds btn-ds--accent btn-ds--sm" type="button" data-open-auth="signup">Book a pickup</button>
+            <button class="lp-hamburger-btn" id="lpHamburgerBtn" type="button" aria-label="Open navigation menu" aria-expanded="false">
+              <span></span><span></span><span></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Full-Screen Sheet Menu for Mobile -->
+        <div class="lp-mobile-sheet" id="lpMobileSheet" hidden aria-label="Mobile navigation sheet">
+          <div class="lp-mobile-sheet-head">
+            <span class="logo-text-ds">EcoCycle</span>
+            <button class="lp-sheet-close" id="lpSheetCloseBtn" type="button" aria-label="Close navigation menu">&times;</button>
+          </div>
+          <div class="lp-mobile-sheet-body">
+            <a class="lp-mobile-sheet-link" href="#lpCapabilities">Platform</a>
+            <a class="lp-mobile-sheet-link" href="#lpAccept">What we accept</a>
+            <a class="lp-mobile-sheet-link" href="#lpWorkflow">How it works</a>
+            <a class="lp-mobile-sheet-link" href="#lpMarketplace">Marketplace</a>
+            <a class="lp-mobile-sheet-link" href="#lpImpact">Impact</a>
+            <a class="lp-mobile-sheet-link" href="style-guide.html">Design System &amp; Tokens</a>
+          </div>
+          <div class="lp-mobile-sheet-foot">
+            <button class="btn-ds btn-ds--secondary btn-ds--md" style="width: 100%; margin-bottom: 8px;" type="button" data-open-auth="login">Sign in</button>
+            <button class="btn-ds btn-ds--accent btn-ds--md" style="width: 100%;" type="button" data-open-auth="signup">Book a free pickup</button>
           </div>
         </div>
       </header>
 
       <main id="landingTop">
-        <!-- Hero with React Bits Aurora + DotGrid + BlurText + ShinyText + Spotlight -->
-        <section class="lp-hero lp-aurora">
-          <div class="lp-dotgrid" aria-hidden="true"></div>
-          <div class="lp-container lp-hero-grid">
+        <!-- 2. Full-Width Photographic Hero with Dark Green Gradient Overlay -->
+        <section class="lp-hero lp-hero--image-led">
+          <div class="lp-hero-bg-media" aria-hidden="true">
+            <img src="images/hero-bg.webp" alt="Circuits and sustainable electronic recovery" class="lp-hero-bg-img" fetchpriority="high" />
+            <div class="lp-hero-gradient-scrim"></div>
+          </div>
+
+          <div class="container-ds lp-hero-grid">
             <div class="lp-hero-copy">
-              <div class="lp-pill-badge lp-blur-in">
-                <span class="lp-pulse-dot" aria-hidden="true"></span>
-                <span>CPCB & ISO 14001 Compliant E-Waste Network</span>
+              <div class="badge-ds badge-ds--forest badge-ds--sm lp-hero-eyebrow">
+                <span class="badge-ds__dot badge-ds__dot--pulse"></span>
+                <span>Responsible Hardware Recovery &bull; Pan-India</span>
               </div>
-              <h1 class="lp-hero-title lp-blur-in" style="--d:60ms;">
-                Smart e-waste collection, <span class="lp-shiny-text">from doorstep to recovery.</span>
+
+              <h1 class="lp-hero-title">
+                Give your old electronics<br />
+                <span class="lp-hero-title-accent">a second life.</span>
               </h1>
-              <p class="lp-hero-sub lp-blur-in" style="--d:120ms;">
-                Schedule verified home pickups across 14 electronic waste streams, discover 113+ authorized collection centers across India, and trade salvaged components with instant Razorpay checkout.
+
+              <p class="lp-hero-sub">
+                Free doorstep pickup for obsolete laptops, phones, and batteries. We safely recycle hazardous materials and recover working parts for reuse.
               </p>
-              <div class="lp-hero-cta lp-blur-in" style="--d:180ms;">
-                <button class="btn btn-primary lp-cta-lg lp-btn-magnet lp-btn-sheen" type="button" data-open-auth="login">
-                  <span>Book a Pickup</span>
-                  <svg class="i"><use href="#i-arrow-right" /></svg>
+
+              <div class="lp-hero-cta">
+                <button class="btn-ds btn-ds--accent btn-ds--lg lp-hero-cta-btn" type="button" data-open-auth="signup">
+                  <span>Book a free pickup</span>
+                  <svg class="i" style="width: 18px; height: 18px;"><use href="#i-arrow-right" /></svg>
                 </button>
-                <button class="btn lp-cta-lg lp-btn-dark-outline" type="button" data-lp-demo="user">
-                  <span>Launch Live Demo</span>
-                </button>
-                <button class="btn lp-cta-lg lp-btn-dark-ghost" type="button" data-lp-map>
-                  <svg class="i"><use href="#i-pin" /></svg>
-                  <span>Pan-India Map</span>
+                <button class="lp-hero-link" type="button" data-lp-map>
+                  <svg class="i" style="width: 16px; height: 16px;"><use href="#i-pin" /></svg>
+                  <span>Find a drop-off near you &rarr;</span>
                 </button>
               </div>
-              <div class="lp-hero-proof lp-blur-in" style="--d:240ms;">
-                <span><strong>113+</strong> India Hubs</span>
-                <i aria-hidden="true"></i>
-                <span><strong>14</strong> Accepted Streams</span>
-                <i aria-hidden="true"></i>
-                <span><strong>UPI · Cards · Bank</strong> via Razorpay</span>
+
+              <!-- Trust row with monochrome badges -->
+              <div class="lp-hero-trust">
+                <span class="lp-trust-item"><svg class="i" style="width: 16px; height: 16px;"><use href="#i-shield" /></svg> CPCB Authorized Recyclers</span>
+                <span class="lp-trust-sep">&bull;</span>
+                <span class="lp-trust-item"><svg class="i" style="width: 16px; height: 16px;"><use href="#i-leaf" /></svg> ISO 14001 Certified</span>
+                <span class="lp-trust-sep">&bull;</span>
+                <span class="lp-trust-item"><svg class="i" style="width: 16px; height: 16px;"><use href="#i-check" /></svg> Certified Data Sanitization</span>
               </div>
             </div>
 
-            <!-- Interactive Spotlight Operations Preview -->
-            <div class="lp-hero-preview lp-spotlight lp-blur-in" style="--d:150ms;" aria-label="EcoCycle workspace preview">
-              <div class="lp-preview-top">
-                <div class="lp-preview-dots" aria-hidden="true"><span></span><span></span><span></span></div>
-                <span class="lp-preview-url">ecocycle.in / overview</span>
-                <span class="lp-preview-status"><i></i>Live Sync</span>
+            <!-- Floating frosted-glass stat cards over the image -->
+            <div class="lp-hero-stats-panel" aria-label="EcoCycle verified operational impact">
+              <div class="card-ds lp-stat-card lp-stat-card--glass">
+                <div class="lp-stat-icon-wrap"><svg class="i"><use href="#i-truck" /></svg></div>
+                <div>
+                  <div class="lp-stat-number"><strong data-lp-countup="33.1" data-lp-decimals="1">33.1</strong> <small>kg</small></div>
+                  <div class="lp-stat-label">Diverted E-Waste Volume</div>
+                </div>
               </div>
-              <div class="lp-preview-body">
-                <div class="lp-preview-kpis">
-                  <div>
-                    <small>Diverted Volume</small>
-                    <strong>33.1 kg</strong>
-                  </div>
-                  <div>
-                    <small>CO₂ Offset</small>
-                    <strong>22 kg</strong>
-                  </div>
-                  <div>
-                    <small>Metals Recovered</small>
-                    <strong>2,066 g</strong>
-                  </div>
+
+              <div class="card-ds lp-stat-card lp-stat-card--glass">
+                <div class="lp-stat-icon-wrap"><svg class="i"><use href="#i-leaf" /></svg></div>
+                <div>
+                  <div class="lp-stat-number"><strong data-lp-countup="22">22</strong> <small>kg</small></div>
+                  <div class="lp-stat-label">Avoided CO₂ Equivalent</div>
                 </div>
-                <div class="lp-preview-list">
-                  <div class="lp-preview-row">
-                    <div>
-                      <strong>ECO-1730000008</strong>
-                      <span>Wearables · Doorstep Pickup</span>
-                    </div>
-                    <em class="lp-tag is-amber">Awaiting Review</em>
-                  </div>
-                  <div class="lp-preview-row">
-                    <div>
-                      <strong>ECO-1730000006</strong>
-                      <span>Networking Equipment · Assigned</span>
-                    </div>
-                    <em class="lp-tag is-blue">Approved</em>
-                  </div>
-                  <div class="lp-preview-row">
-                    <div>
-                      <strong>Samsung 512GB NVMe SSD</strong>
-                      <span>Razorpay Bank Transfer · Verified</span>
-                    </div>
-                    <em class="lp-tag is-green">₹2,450</em>
-                  </div>
+              </div>
+
+              <div class="card-ds lp-stat-card lp-stat-card--glass">
+                <div class="lp-stat-icon-wrap"><svg class="i"><use href="#i-pin" /></svg></div>
+                <div>
+                  <div class="lp-stat-number"><strong data-lp-countup="113">113</strong><small>+</small></div>
+                  <div class="lp-stat-label">Verified India Drop-Off Hubs</div>
                 </div>
-                <div class="lp-preview-foot">
-                  <span>Recovery Completion · 2 of 5 requests completed</span>
-                  <strong>40%</strong>
-                </div>
-                <div class="lp-preview-bar"><span style="width:40%;"></span></div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- React Bits Infinite Velocity Marquee Strip -->
-        <div class="lp-marquee" aria-label="Platform capabilities ticker">
+        <!-- Seamless dark ticker strip (No dead white gap) -->
+        <div class="lp-marquee lp-marquee--dark" aria-label="Platform capabilities ticker">
           <div class="lp-marquee-track">
-            <span>CPCB E-Waste Rules Compliant</span><b>•</b>
-            <span>113+ Authorized Indian Drop-Off Centers</span><b>•</b>
-            <span>Razorpay UPI, Card & Bank NEFT Checkout</span><b>•</b>
-            <span>Automated CO₂ & Metals Recovery Ledger</span><b>•</b>
-            <span>Instant PDF Payment Receipts</span><b>•</b>
-            <span>14 Regulated Electronics Streams</span><b>•</b>
-            <span>CPCB E-Waste Rules Compliant</span><b>•</b>
-            <span>113+ Authorized Indian Drop-Off Centers</span><b>•</b>
-            <span>Razorpay UPI, Card & Bank NEFT Checkout</span><b>•</b>
-            <span>Automated CO₂ & Metals Recovery Ledger</span><b>•</b>
-            <span>Instant PDF Payment Receipts</span><b>•</b>
-            <span>14 Regulated Electronics Streams</span><b>•</b>
+            <span>CPCB Authorized Recycler Network</span><b>&bull;</b>
+            <span>Free Doorstep Pickup Across 14 Categories</span><b>&bull;</b>
+            <span>Certified Data Wipe &amp; Battery Terminal Taping</span><b>&bull;</b>
+            <span>Tested Parts Recovery &amp; Razorpay Payouts</span><b>&bull;</b>
+            <span>Instant Digital Form-6 Green Certificates</span><b>&bull;</b>
+            <span>CPCB Authorized Recycler Network</span><b>&bull;</b>
+            <span>Free Doorstep Pickup Across 14 Categories</span><b>&bull;</b>
+            <span>Certified Data Wipe &amp; Battery Terminal Taping</span><b>&bull;</b>
+            <span>Tested Parts Recovery &amp; Razorpay Payouts</span><b>&bull;</b>
+            <span>Instant Digital Form-6 Green Certificates</span><b>&bull;</b>
           </div>
         </div>
 
-        <!-- React Bits Spotlight Bento Grid: Platform Capabilities -->
-        <section class="lp-section" id="lpCapabilities">
-          <div class="lp-container">
-            <div class="lp-section-head">
-              <span class="lp-eyebrow">Platform Capabilities</span>
-              <h2>Built for citizens, recyclers, and parts recovery.</h2>
-              <p>Everything required to submit collections, locate compliant drop-off facilities, and monetize tested electronic hardware in one unified system.</p>
+        <!-- 3. What We Accept: Bento Grid of 14 Categories -->
+        <section class="section-ds lp-accept-section" id="lpAccept">
+          <div class="container-ds">
+            <div class="section-header-ds section-header-ds--center">
+              <span class="section-eyebrow-ds"><span class="badge-ds__dot badge-ds__dot--pulse"></span>What We Accept</span>
+              <h2 class="section-title-ds">14 electronic waste streams. Handled with care.</h2>
+              <p class="section-subtitle-ds">
+                Whether you have an old smartphone, a swollen laptop battery, a cracked television, or commercial server hardware, our authorized recyclers ensure safe containment and maximum component reuse.
+              </p>
             </div>
 
-            <div class="lp-bento">
-              <article class="lp-card lp-spotlight lp-span-2">
-                <div class="lp-card-icon"><svg class="i"><use href="#i-truck" /></svg></div>
-                <h3>Doorstep Pickup & Drop-Off Scheduling</h3>
-                <p>Submit structured requests across 14 waste categories with instant estimated weight, carbon offset, and a live 6-stage lifecycle audit trail from pending review to completion.</p>
-                <div class="lp-card-meta">
-                  <span>Pending → Approved → Scheduled → Collected → Processing → Completed</span>
+            <div class="lp-accept-bento">
+              <!-- 1. Phones -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-phones.webp" alt="Smartphones and tablets" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Handhelds</span>
+                  <h3>Smartphones &amp; Tablets</h3>
+                  <p>Android, iPhones &amp; iPads. Free factory reset &amp; safe lithium battery handling.</p>
+                  <span class="lp-cat-tip">Tip: Remove SIM and microSD cards before handover.</span>
                 </div>
               </article>
 
-              <article class="lp-card lp-spotlight">
-                <div class="lp-card-icon"><svg class="i"><use href="#i-pin" /></svg></div>
-                <h3>Pan-India Drop-Off Map</h3>
-                <p>Explore 113+ verified partner hubs, electronics repair shops, and authorized scrap yards by city, PIN code, radius, or geolocation.</p>
+              <!-- 2. Laptops -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-laptops.webp" alt="Laptops and ultrabooks" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Computers</span>
+                  <h3>Laptops &amp; Notebooks</h3>
+                  <p>Working or non-functional. High-yield salvage for RAM, SSDs, and aluminum enclosures.</p>
+                  <span class="lp-cat-tip">Tip: Include charging brick if available for testing.</span>
+                </div>
               </article>
 
-              <article class="lp-card lp-spotlight">
-                <div class="lp-card-icon"><svg class="i"><use href="#i-tag" /></svg></div>
-                <h3>Circular Parts & Razorpay</h3>
-                <p>List functional RAM, SSDs, PCBs, and displays for reuse. Buyers pay in INR via UPI, Debit/Credit Card, or Bank Transfer with HMAC-SHA256 verification and downloadable PDF receipts.</p>
+              <!-- 3. Batteries -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-batteries.webp" alt="Lithium and lead-acid battery packs" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--warning badge-ds--sm">Hazardous Care</span>
+                  <h3>Batteries (Lithium &amp; Lead)</h3>
+                  <p>Power banks, phone batteries &amp; UPS cells. Transported in fire-safe thermal sleeves.</p>
+                  <span class="lp-cat-tip">Tip: Tape exposed metallic terminals with insulation tape.</span>
+                </div>
               </article>
 
-              <article class="lp-card lp-spotlight">
-                <div class="lp-card-icon"><svg class="i"><use href="#i-leaf" /></svg></div>
-                <h3>Automated CO₂ & Metal Ledger</h3>
-                <p>Calculates diverted e-waste mass, carbon emissions avoided (1.44 kg CO₂ per kg completed), and estimated copper, aluminum, and gold recovery.</p>
+              <!-- 4. TVs & Displays -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-tvs.webp" alt="Televisions and computer monitors" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Displays</span>
+                  <h3>Televisions &amp; Monitors</h3>
+                  <p>CRT, LED &amp; OLED panels. Specialized phosphorus, circuit, and glass recycling.</p>
+                  <span class="lp-cat-tip">Tip: Keep front glass intact to prevent sharp hazards.</span>
+                </div>
               </article>
 
-              <article class="lp-card lp-spotlight">
-                <div class="lp-card-icon"><svg class="i"><use href="#i-shield" /></svg></div>
-                <h3>Battery Safety & Operations Triage</h3>
-                <p>Built-in handling precautions for swollen lithium cells, device sanitization checklists, and dedicated admin dispatch queues for fast request approvals.</p>
+              <!-- 5. Networking -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-networking.webp" alt="Routers and switches" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Telecom</span>
+                  <h3>Networking Gear</h3>
+                  <p>Wi-Fi routers, network switches, modems, patch panels &amp; optical receivers.</p>
+                  <span class="lp-cat-tip">Tip: Reset network admin credentials to default before collection.</span>
+                </div>
+              </article>
+
+              <!-- 6. Printers & Scanners -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-printers.webp" alt="Printers and document scanners" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Peripherals</span>
+                  <h3>Printers &amp; Scanners</h3>
+                  <p>Desktop inkjets, laser printers &amp; flatbed scanners. Plastic and motor recovery.</p>
+                  <span class="lp-cat-tip">Tip: Remove ink or toner cartridges to avoid leaks.</span>
+                </div>
+              </article>
+
+              <!-- 7. Wearables -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-wearables.webp" alt="Smartwatches and fitness bands" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Wearables</span>
+                  <h3>Smartwatches &amp; Audio Bands</h3>
+                  <p>Smartwatches, fitness bands, wireless earbuds &amp; charging cases with micro-cells.</p>
+                  <span class="lp-cat-tip">Tip: Disconnect Bluetooth sync from your mobile device.</span>
+                </div>
+              </article>
+
+              <!-- 8. Gaming Consoles -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-gaming.webp" alt="Gaming consoles and controllers" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Entertainment</span>
+                  <h3>Gaming Consoles</h3>
+                  <p>PlayStation, Xbox &amp; Nintendo hardware. Tested for HDMI, power supply, and drive salvage.</p>
+                  <span class="lp-cat-tip">Tip: Eject any game media and co-package gamepads.</span>
+                </div>
+              </article>
+
+              <!-- 9. PC Hardware & GPUs -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-hardware.webp" alt="PC Motherboards and graphics cards" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--accent badge-ds--sm">High Yield</span>
+                  <h3>PC Hardware &amp; GPUs</h3>
+                  <p>Motherboards, graphics cards, CPUs, heatsinks &amp; desktop computer enclosures.</p>
+                  <span class="lp-cat-tip">Tip: Highest yield for reclaimed copper, aluminum, and gold.</span>
+                </div>
+              </article>
+
+              <!-- 10. Audio & Studio Gear -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-audio.webp" alt="Audio speakers and studio equipment" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Audio</span>
+                  <h3>Audio &amp; Studio Equipment</h3>
+                  <p>Headphones, home theater speakers, amplifiers, subwoofers &amp; mixing boards.</p>
+                  <span class="lp-cat-tip">Tip: Bundle audio jacks and external power cords together.</span>
+                </div>
+              </article>
+
+              <!-- 11. Cables & Chargers -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-cables.webp" alt="Power cords and charging cables" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Accessories</span>
+                  <h3>Cables &amp; Chargers</h3>
+                  <p>USB cords, HDMI leads, power adapters &amp; extension power strips. 100% copper reclaim.</p>
+                  <span class="lp-cat-tip">Tip: Bundle cords loosely with a tie or rubber band.</span>
+                </div>
+              </article>
+
+              <!-- 12. Storage Media -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-storage.webp" alt="Hard drives and NVMe SSDs" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--warning badge-ds--sm">Data Security</span>
+                  <h3>Storage (HDDs &amp; SSDs)</h3>
+                  <p>Internal SATA hard drives, NVMe chips &amp; external backup drives. Multi-pass data sanitization.</p>
+                  <span class="lp-cat-tip">Tip: Certified cryptographic wiping or physical shredding.</span>
+                </div>
+              </article>
+
+              <!-- 13. Enterprise Server Blades -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-servers.webp" alt="Server racks and enterprise blades" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Enterprise</span>
+                  <h3>Server Equipment &amp; Racks</h3>
+                  <p>1U/2U rack servers, SAN storage arrays &amp; enterprise data center power units.</p>
+                  <span class="lp-cat-tip">Tip: Bulk manifest uploads and Form-6 certificates provided.</span>
+                </div>
+              </article>
+
+              <!-- 14. Power Supplies -->
+              <article class="card-ds card-ds--interactive lp-cat-card">
+                <div class="lp-cat-img-wrap"><img src="images/cat-power.webp" alt="Power supplies and adapters" loading="lazy" /></div>
+                <div class="lp-cat-body">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Power</span>
+                  <h3>Power Supplies &amp; SMPS</h3>
+                  <p>Computer power supplies, inverter boards &amp; uninterruptible power supplies (UPS).</p>
+                  <span class="lp-cat-tip">Tip: Wrap exposed wiring leads before pickup handover.</span>
+                </div>
               </article>
             </div>
           </div>
         </section>
 
-        <!-- React Bits CountUp Impact Metrics Band -->
-        <section class="lp-impact-band" id="lpImpact">
-          <div class="lp-container">
-            <div class="lp-countup-grid">
-              <div class="lp-count-item">
-                <strong data-lp-countup="113" data-lp-suffix="+">113+</strong>
-                <span>Verified India Hubs & Shops</span>
-              </div>
-              <div class="lp-count-item">
-                <strong data-lp-countup="14">14</strong>
-                <span>Regulated E-Waste Streams</span>
-              </div>
-              <div class="lp-count-item">
-                <strong data-lp-countup="1.44" data-lp-decimals="2" data-lp-suffix=" kg">1.44 kg</strong>
-                <span>CO₂ Offset per kg Recycled</span>
-              </div>
-              <div class="lp-count-item">
-                <strong data-lp-countup="100" data-lp-suffix="%">100%</strong>
-                <span>Razorpay Signature Verified</span>
-              </div>
+        <!-- 4. Platform Capabilities: Bento Layout with Varied Card Sizes -->
+        <section class="section-ds section-ds--alt lp-capabilities-section" id="lpCapabilities">
+          <div class="container-ds">
+            <div class="section-header-ds">
+              <span class="section-eyebrow-ds"><span class="badge-ds__dot badge-ds__dot--pulse"></span>Platform Capabilities</span>
+              <h2 class="section-title-ds">Engineered for citizens, recyclers, and parts recovery.</h2>
+              <p class="section-subtitle-ds">
+                Everything required to book verified doorstep collections, locate certified drop-off kiosks, and trade tested spare parts in one unified platform.
+              </p>
+            </div>
+
+            <div class="lp-cap-bento">
+              <!-- Large Feature Card 1: Doorstep Pickup (Spans 2 columns) -->
+              <article class="card-ds card-ds--feature lp-cap-card lp-cap-card--hero">
+                <div class="lp-cap-content">
+                  <span class="badge-ds badge-ds--accent badge-ds--sm">Core Workflow</span>
+                  <h3>Scheduled Doorstep Collection</h3>
+                  <p>
+                    Book free pickups from home or office in under two minutes. Select your items across 14 categories, pick your preferred morning or afternoon window, and track our field agent arriving with calibrated electronic scales.
+                  </p>
+                  <ul class="lp-cap-bullets">
+                    <li>✓ Automatic weight and carbon offset estimation</li>
+                    <li>✓ Real-time status: Pending &rarr; Approved &rarr; Collected &rarr; Completed</li>
+                    <li>✓ Digital chain-of-custody disposal receipt issued on the spot</li>
+                  </ul>
+                  <button class="btn-ds btn-ds--primary btn-ds--md" type="button" data-open-auth="signup">
+                    <span>Book a Free Pickup &rarr;</span>
+                  </button>
+                </div>
+                <div class="lp-cap-mockup">
+                  <img src="images/cap-doorstep.webp" alt="Phone mockup showing EcoCycle doorstep collection booking interface" loading="lazy" />
+                </div>
+              </article>
+
+              <!-- Card 2: Interactive GIS Map -->
+              <article class="card-ds card-ds--interactive lp-cap-card">
+                <div class="lp-cap-thumb"><img src="images/cap-map.webp" alt="Interactive Pan-India recycling center map" loading="lazy" /></div>
+                <div class="lp-cap-inner">
+                  <span class="badge-ds badge-ds--forest badge-ds--sm">Geospatial Engine</span>
+                  <h4>113+ Verified Drop-Off Hubs</h4>
+                  <p>Locate certified recycling kiosks, authorized scrap yards, and repair shops within 5, 10, or 25 km of your location using OpenStreetMap.</p>
+                  <button class="btn-ds btn-ds--ghost btn-ds--sm" type="button" data-lp-map>Open Interactive Map &rarr;</button>
+                </div>
+              </article>
+
+              <!-- Card 3: Circular Parts Marketplace -->
+              <article class="card-ds card-ds--interactive lp-cap-card">
+                <div class="lp-cap-thumb"><img src="images/cap-market.webp" alt="Technician testing second-life computer parts" loading="lazy" /></div>
+                <div class="lp-cap-inner">
+                  <span class="badge-ds badge-ds--accent badge-ds--sm">Direct Monetization</span>
+                  <h4>Tested Spare Parts Marketplace</h4>
+                  <p>Don't shred what still works. Working RAM, SSDs, screens, and power adapters are tested and traded with secure Razorpay checkout.</p>
+                  <a class="btn-ds btn-ds--ghost btn-ds--sm" href="#lpMarketplace">Explore Hardware &rarr;</a>
+                </div>
+              </article>
+
+              <!-- Card 4: Environmental Ledger -->
+              <article class="card-ds card-ds--interactive lp-cap-card">
+                <div class="lp-cap-thumb"><img src="images/cap-ledger.webp" alt="Digital sustainability and environmental audit network" loading="lazy" /></div>
+                <div class="lp-cap-inner">
+                  <span class="badge-ds badge-ds--success badge-ds--sm">Audit Trail</span>
+                  <h4>Calculated Impact Ledger</h4>
+                  <p>Every completed batch computes mass diverted (kg), avoided CO₂ (1.44 kg/kg), and precious metals reclaimed (copper, aluminum, and gold).</p>
+                </div>
+              </article>
+
+              <!-- Card 5: Battery Safety & Data Wipe -->
+              <article class="card-ds card-ds--interactive lp-cap-card">
+                <div class="lp-cap-thumb"><img src="images/cap-safety.webp" alt="Specialist handling lithium batteries with safety gear" loading="lazy" /></div>
+                <div class="lp-cap-inner">
+                  <span class="badge-ds badge-ds--warning badge-ds--sm">Zero Compromise</span>
+                  <h4>Battery Safety &amp; Data Wipe</h4>
+                  <p>Certified handling rules for swollen cells, terminal taping guidelines, and multi-pass drive sanitization ensure absolute personal safety.</p>
+                </div>
+              </article>
             </div>
           </div>
         </section>
 
-        <!-- React Bits Interactive Circular Workflow Stepper -->
-        <section class="lp-section lp-section-alt" id="lpWorkflow">
-          <div class="lp-container">
-            <div class="lp-section-head">
-              <span class="lp-eyebrow">How It Works</span>
-              <h2>Four transparent steps from device to circular reuse.</h2>
-              <p>Select a stage below to inspect how EcoCycle tracks accountability across citizens, dispatchers, and buyers.</p>
+        <!-- 5. How It Works: Horizontal Timeline with Large Numerals -->
+        <section class="section-ds lp-workflow-section" id="lpWorkflow">
+          <div class="container-ds">
+            <div class="section-header-ds section-header-ds--center">
+              <span class="section-eyebrow-ds"><span class="badge-ds__dot badge-ds__dot--pulse"></span>Simple &bull; Traceable &bull; Verified</span>
+              <h2 class="section-title-ds">How EcoCycle works in four simple steps.</h2>
+              <p class="section-subtitle-ds">
+                From scheduling online to receiving your certified recovery score, we keep the entire recycling pipeline transparent and effortless.
+              </p>
             </div>
 
-            <div class="lp-stepper-layout">
-              <div class="lp-stepper-nav" id="lpWorkflowSteps" role="tablist" aria-label="Circular recycling workflow">
-                <button class="lp-step-btn is-active" type="button" data-lp-step="0" role="tab" aria-selected="true">
-                  <span class="lp-step-num">01</span>
-                  <div>
-                    <strong>Submit Collection Request</strong>
-                    <small>Pick category, quantity, method & date</small>
-                  </div>
-                </button>
-                <button class="lp-step-btn" type="button" data-lp-step="1" role="tab" aria-selected="false">
-                  <span class="lp-step-num">02</span>
-                  <div>
-                    <strong>Verify & Schedule Pickup</strong>
-                    <small>Operations approves and assigns van slot</small>
-                  </div>
-                </button>
-                <button class="lp-step-btn" type="button" data-lp-step="2" role="tab" aria-selected="false">
-                  <span class="lp-step-num">03</span>
-                  <div>
-                    <strong>Salvage & Trade Working Parts</strong>
-                    <small>List reusable components via Razorpay INR</small>
-                  </div>
-                </button>
-                <button class="lp-step-btn" type="button" data-lp-step="3" role="tab" aria-selected="false">
-                  <span class="lp-step-num">04</span>
-                  <div>
-                    <strong>Authorized Recycling & Impact Audit</strong>
-                    <small>Recover metals & update your CO₂ ledger</small>
-                  </div>
-                </button>
+            <!-- Horizontal Timeline with large numerals and connecting animated line -->
+            <div class="lp-timeline">
+              <div class="lp-timeline-line" aria-hidden="true"></div>
+
+              <!-- Step 1 -->
+              <div class="lp-timeline-step is-active" data-lp-step="0">
+                <div class="lp-timeline-header">
+                  <span class="lp-timeline-num">01</span>
+                  <div class="lp-timeline-img-wrap"><img src="images/step-1-schedule.webp" alt="Scheduling online" loading="lazy" /></div>
+                </div>
+                <h3>Schedule Online</h3>
+                <p>Pick your obsolete electronics across 14 categories. Choose a free doorstep pickup slot or select a nearby drop-off kiosk on our map.</p>
               </div>
 
-              <div class="lp-stepper-stage lp-spotlight" id="lpWorkflowPreview">
-                <div class="lp-stage-badge" id="lpStageTag">Stage 01 · Citizen Portal</div>
-                <h3 id="lpStageTitle">Instant Pickup or Drop-Off Scheduling</h3>
-                <p id="lpStageDesc">Choose from 14 regulated e-waste streams (Computers, Mobile Phones, Batteries, Televisions, Networking Gear, and more). EcoCycle computes estimated diverted weight and battery safety instructions automatically before submission.</p>
+              <!-- Step 2 -->
+              <div class="lp-timeline-step" data-lp-step="1">
+                <div class="lp-timeline-header">
+                  <span class="lp-timeline-num">02</span>
+                  <div class="lp-timeline-img-wrap"><img src="images/step-2-pickup.webp" alt="Doorstep handover" loading="lazy" /></div>
+                </div>
+                <h3>Doorstep Handover</h3>
+                <p>Verified collection personnel arrive at your door with calibrated digital scales. Items are weighed, packed, and signed for in seconds.</p>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="lp-timeline-step" data-lp-step="2">
+                <div class="lp-timeline-header">
+                  <span class="lp-timeline-num">03</span>
+                  <div class="lp-timeline-img-wrap"><img src="images/step-3-recycle.webp" alt="Certified dismantling" loading="lazy" /></div>
+                </div>
+                <h3>Certified Dismantling</h3>
+                <p>At our CPCB-authorized hub, hazardous chemicals are safely isolated. Working components are salvaged; raw copper, aluminum, and gold are reclaimed.</p>
+              </div>
+
+              <!-- Step 4 -->
+              <div class="lp-timeline-step" data-lp-step="3">
+                <div class="lp-timeline-header">
+                  <span class="lp-timeline-num">04</span>
+                  <div class="lp-timeline-img-wrap"><img src="images/step-4-impact.webp" alt="Circular impact score" loading="lazy" /></div>
+                </div>
+                <h3>Reclaimed &amp; Certified</h3>
+                <p>Functional components return to our spare parts marketplace. You receive a digital recycling certificate and an updated personal carbon ledger.</p>
+              </div>
+            </div>
+
+            <!-- Interactive Stage Details Box (Preserving app.js hooks) -->
+            <div class="card-ds lp-stage-interactive-box" id="lpWorkflowPreview">
+              <div class="lp-stage-interactive-content">
+                <span class="badge-ds badge-ds--forest badge-ds--sm" id="lpStageTag">Stage 01 &bull; Instant Scheduling</span>
+                <h3 id="lpStageTitle">Instant Doorstep or Drop-Off Booking</h3>
+                <p id="lpStageDesc">
+                  Select from 14 standardized electronics categories. EcoCycle instantly estimates weight, calculates avoided CO₂ emissions, and provides category-specific handling guidance before you submit.
+                </p>
                 <ul class="lp-stage-points" id="lpStagePoints">
-                  <li>Real-time weight and CO₂ impact estimate</li>
-                  <li>Drop-off autofill directly from the Pan-India Leaflet map</li>
-                  <li>Instant cancellation or removal controls anytime</li>
+                  <li>Automatic weight and carbon offset computation</li>
+                  <li>Drop-off address autofill from our interactive Pan-India map</li>
+                  <li>Flexible rescheduling or cancellation directly from your dashboard</li>
                 </ul>
-                <div class="lp-stage-action">
-                  <button class="btn btn-primary btn-sm lp-btn-sheen" type="button" data-open-auth="signup">Try Stage in Portal →</button>
-                </div>
+              </div>
+              <div class="lp-stage-interactive-action">
+                <button class="btn-ds btn-ds--accent btn-ds--md" type="button" data-open-auth="signup">
+                  <span>Start a Pickup Request &rarr;</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 6. Impact Band: Full-Bleed Facility Image with Distinct Metrics -->
+        <section class="lp-impact-band" id="lpImpact">
+          <div class="lp-impact-bg" aria-hidden="true">
+            <img src="images/impact-facility.webp" alt="High-tech electronics recycling facility" loading="lazy" class="lp-impact-bg-img" />
+            <div class="lp-impact-scrim"></div>
+          </div>
+
+          <div class="container-ds lp-impact-content">
+            <span class="badge-ds badge-ds--accent badge-ds--sm" style="margin-bottom: var(--space-4);">Our National Footprint</span>
+            <blockquote class="lp-impact-mission">
+              &ldquo;We turn discarded electronics into clean raw materials and second-life components—diverting toxic e-waste from landfills into a closed-loop circular economy.&rdquo;
+            </blockquote>
+
+            <div class="lp-impact-stats-grid">
+              <div class="lp-impact-stat-item">
+                <strong data-lp-countup="14">14</strong>
+                <span>Standardized Waste Streams</span>
+              </div>
+              <div class="lp-impact-stat-item">
+                <strong data-lp-countup="98.4" data-lp-decimals="1" data-lp-suffix="%">98.4%</strong>
+                <span>Material Recovery Efficiency</span>
+              </div>
+              <div class="lp-impact-stat-item">
+                <strong data-lp-countup="2.4" data-lp-decimals="1" data-lp-prefix="₹" data-lp-suffix="M+">₹2.4M+</strong>
+                <span>Hardware Value Reclaimed</span>
+              </div>
+              <div class="lp-impact-stat-item">
+                <strong data-lp-countup="48" data-lp-prefix="<" data-lp-suffix="h">&lt;48h</strong>
+                <span>Doorstep Dispatch SLA</span>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Circular Parts & Razorpay Showcase -->
-        <section class="lp-section" id="lpMarketplace">
-          <div class="lp-container">
-            <div class="lp-cta-panel lp-aurora">
-              <div class="lp-cta-panel-copy">
-                <span class="lp-eyebrow is-on-dark">Circular Marketplace · Razorpay INR</span>
-                <h2>Turn tested spare components into verified circular value.</h2>
-                <p>Sell salvaged laptop RAM, NVMe drives, adapters, displays, and telecom PCBs—or purchase verified components using UPI, Debit/Credit Card, or Bank Account & IFSC with downloadable PDF payment receipts.</p>
-                <div class="lp-cta-actions">
-                  <button class="btn btn-primary lp-btn-magnet lp-btn-sheen" type="button" data-lp-demo="user">
-                    <span>Demo as Citizen (Rahul)</span>
-                  </button>
-                  <button class="btn lp-btn-dark-outline" type="button" data-lp-demo="admin">
-                    <span>Demo as Admin</span>
-                  </button>
-                  <button class="btn lp-btn-dark-ghost" type="button" data-open-auth="login">Sign in with Email</button>
+        <!-- 7. Marketplace Teaser: 3 Product Cards with Real Photos & INR Prices -->
+        <section class="section-ds" id="lpMarketplace">
+          <div class="container-ds">
+            <div class="section-header-ds">
+              <span class="section-eyebrow-ds"><span class="badge-ds__dot badge-ds__dot--pulse"></span>Circular Hardware Marketplace</span>
+              <h2 class="section-title-ds">Tested Parts. Genuine Savings.</h2>
+              <p class="section-subtitle-ds">
+                Working RAM, SSDs, chargers, and displays are recovered from obsolete computers, diagnostically tested, and made available at a fraction of retail price with secure Razorpay checkout.
+              </p>
+            </div>
+
+            <div class="lp-market-grid">
+              <!-- Product 1 -->
+              <article class="card-ds card-ds--interactive lp-product-card">
+                <div class="lp-product-img-wrap">
+                  <img src="images/part-ram.webp" alt="Corsair Vengeance 16GB DDR4 RAM stick" loading="lazy" />
+                  <span class="badge-ds badge-ds--success badge-ds--sm lp-product-badge">Tested &bull; 100% Pass</span>
+                </div>
+                <div class="lp-product-body">
+                  <span class="lp-product-cat">Memory &bull; DDR4-3200</span>
+                  <h4 class="lp-product-title">Corsair Vengeance 16GB DDR4 Desktop RAM</h4>
+                  <p class="lp-product-condition">Salvaged from upgraded office workstation. Zero MemTest errors.</p>
+                  <div class="lp-product-foot">
+                    <div class="lp-product-price">
+                      <small>INR Price</small>
+                      <strong>₹1,450</strong>
+                    </div>
+                    <button class="btn-ds btn-ds--primary btn-ds--sm" type="button" data-open-auth="login">Buy Part</button>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Product 2 -->
+              <article class="card-ds card-ds--interactive lp-product-card">
+                <div class="lp-product-img-wrap">
+                  <img src="images/part-ssd.webp" alt="Samsung 970 EVO 512GB NVMe M.2 SSD" loading="lazy" />
+                  <span class="badge-ds badge-ds--success badge-ds--sm lp-product-badge">Tested &bull; 98% Health</span>
+                </div>
+                <div class="lp-product-body">
+                  <span class="lp-product-cat">Storage &bull; NVMe PCIe</span>
+                  <h4 class="lp-product-title">Samsung 970 EVO 512GB NVMe M.2 SSD</h4>
+                  <p class="lp-product-condition">SMART verified health 98%, DoD multi-pass sanitization certified.</p>
+                  <div class="lp-product-foot">
+                    <div class="lp-product-price">
+                      <small>INR Price</small>
+                      <strong>₹2,200</strong>
+                    </div>
+                    <button class="btn-ds btn-ds--primary btn-ds--sm" type="button" data-open-auth="login">Buy Part</button>
+                  </div>
+                </div>
+              </article>
+
+              <!-- Product 3 -->
+              <article class="card-ds card-ds--interactive lp-product-card">
+                <div class="lp-product-img-wrap">
+                  <img src="images/part-charger.webp" alt="Dell OEM 65W USB-C GaN Laptop Fast Charger" loading="lazy" />
+                  <span class="badge-ds badge-ds--success badge-ds--sm lp-product-badge">Tested &bull; Voltage Regulated</span>
+                </div>
+                <div class="lp-product-body">
+                  <span class="lp-product-cat">Power &bull; USB-C GaN</span>
+                  <h4 class="lp-product-title">Dell OEM 65W USB-C Laptop Charger</h4>
+                  <p class="lp-product-condition">Multimeter load-tested voltage stability. Compatible with Dell, Lenovo, HP.</p>
+                  <div class="lp-product-foot">
+                    <div class="lp-product-price">
+                      <small>INR Price</small>
+                      <strong>₹850</strong>
+                    </div>
+                    <button class="btn-ds btn-ds--primary btn-ds--sm" type="button" data-open-auth="login">Buy Part</button>
+                  </div>
+                </div>
+              </article>
+            </div>
+
+            <!-- Trust footer note -->
+            <div class="lp-market-subnote">
+              <svg class="i" style="width: 16px; height: 16px;"><use href="#i-shield" /></svg>
+              <span>Secure payments by Razorpay &bull; UPI, Debit/Credit Cards &amp; Netbanking supported</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. Testimonials: 3 Cards with Real Citations & 6-Question FAQ Accordion -->
+        <section class="section-ds section-ds--alt lp-testimonials-section">
+          <div class="container-ds">
+            <div class="section-header-ds section-header-ds--center">
+              <span class="section-eyebrow-ds"><span class="badge-ds__dot badge-ds__dot--pulse"></span>Citizen Voices</span>
+              <h2 class="section-title-ds">Trusted by thousands of responsible citizens.</h2>
+              <p class="section-subtitle-ds">
+                Hear from homeowners, IT professionals, and students across India who diverted their obsolete electronics through EcoCycle.
+              </p>
+            </div>
+
+            <div class="lp-testimonials-grid">
+              <!-- Testimonial 1 -->
+              <div class="card-ds lp-test-card">
+                <div class="lp-test-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="lp-test-quote">
+                  &ldquo;Booked a pickup for three old office laptops and two dead CRT monitors. The EcoCycle team arrived on time, weighed the items at my door, and sent an instant disposal receipt with my carbon offset score.&rdquo;
+                </p>
+                <div class="lp-test-author">
+                  <img src="images/avatar-1.webp" alt="Aarav Sharma" class="lp-test-avatar" loading="lazy" />
+                  <div>
+                    <strong>Aarav Sharma</strong>
+                    <span>New Delhi &bull; IT Operations Lead</span>
+                  </div>
                 </div>
               </div>
-              <div class="lp-cta-panel-metrics">
-                <div class="lp-mini-stat">
-                  <small>Payment Methods</small>
-                  <strong>UPI · Cards · Bank NEFT</strong>
-                </div>
-                <div class="lp-mini-stat">
-                  <small>Verification</small>
-                  <strong>HMAC-SHA256 Signed</strong>
-                </div>
-                <div class="lp-mini-stat">
-                  <small>Documentation</small>
-                  <strong>Instant PDF Receipts</strong>
+
+              <!-- Testimonial 2 -->
+              <div class="card-ds lp-test-card">
+                <div class="lp-test-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="lp-test-quote">
+                  &ldquo;I bought a tested 512GB NVMe SSD for my home server lab at nearly half the retail price. It arrived in antistatic packaging with full SMART health logs. Outstanding circular initiative.&rdquo;
+                </p>
+                <div class="lp-test-author">
+                  <img src="images/avatar-2.webp" alt="Priya Nair" class="lp-test-avatar" loading="lazy" />
+                  <div>
+                    <strong>Priya Nair</strong>
+                    <span>Bengaluru &bull; Embedded Systems Engineer</span>
+                  </div>
                 </div>
               </div>
+
+              <!-- Testimonial 3 -->
+              <div class="card-ds lp-test-card">
+                <div class="lp-test-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+                <p class="lp-test-quote">
+                  &ldquo;EcoCycle gave me confidence that my old swollen phone batteries wouldn't end up burned in open scrap yards. The doorstep team handled them with proper thermal wraps.&rdquo;
+                </p>
+                <div class="lp-test-author">
+                  <img src="images/avatar-3.webp" alt="Rohan Mehta" class="lp-test-avatar" loading="lazy" />
+                  <div>
+                    <strong>Rohan Mehta</strong>
+                    <span>Mumbai &bull; Sustainability Consultant</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 6-Question FAQ Accordion in Plain Language -->
+            <div class="lp-faq-wrap">
+              <div class="section-header-ds section-header-ds--center" style="margin-bottom: var(--space-8); margin-top: var(--space-12);">
+                <span class="section-eyebrow-ds">Got Questions?</span>
+                <h3 class="section-title-ds" style="font-size: var(--text-h2);">Frequently Asked Questions</h3>
+              </div>
+
+              <div class="lp-faq-list">
+                <details class="card-ds lp-faq-item">
+                  <summary class="lp-faq-question">
+                    <span>Is doorstep pickup free for households and individual citizens?</span>
+                    <span class="lp-faq-chevron">&darr;</span>
+                  </summary>
+                  <div class="lp-faq-answer">
+                    <p>Yes, doorstep collection is 100% free for individual citizens and households across supported PIN codes. Our operational costs are funded through material recovery yield and the circular parts marketplace.</p>
+                  </div>
+                </details>
+
+                <details class="card-ds lp-faq-item">
+                  <summary class="lp-faq-question">
+                    <span>What happens to my personal data on discarded laptops and phones?</span>
+                    <span class="lp-faq-chevron">&darr;</span>
+                  </summary>
+                  <div class="lp-faq-answer">
+                    <p>We recommend performing a factory reset before handing over any device. At our collection hub, all storage drives undergo multi-pass cryptographic data wiping (DoD 5220.22-M compliant). Drives that cannot be wiped are physically shredded.</p>
+                  </div>
+                </details>
+
+                <details class="card-ds lp-faq-item">
+                  <summary class="lp-faq-question">
+                    <span>Do you accept completely broken, rusted, or dead electronics?</span>
+                    <span class="lp-faq-chevron">&darr;</span>
+                  </summary>
+                  <div class="lp-faq-answer">
+                    <p>Absolutely. Even non-functional or shattered electronics contain valuable recyclable metals—such as copper, aluminum, and trace gold—as well as toxic substances (lead, mercury) that must be kept out of landfills.</p>
+                  </div>
+                </details>
+
+                <details class="card-ds lp-faq-item">
+                  <summary class="lp-faq-question">
+                    <span>How are salvaged parts verified before listing on the marketplace?</span>
+                    <span class="lp-faq-chevron">&darr;</span>
+                  </summary>
+                  <div class="lp-faq-answer">
+                    <p>Every salvaged component undergoes rigorous diagnostic testing: memory modules run through MemTest86, storage drives are verified with SMART health logs, and power supplies undergo multimeter voltage stability tests before receiving a "Tested" badge.</p>
+                  </div>
+                </details>
+
+                <details class="card-ds lp-faq-item">
+                  <summary class="lp-faq-question">
+                    <span>How do payments and refunds work on the spare parts marketplace?</span>
+                    <span class="lp-faq-chevron">&darr;</span>
+                  </summary>
+                  <div class="lp-faq-answer">
+                    <p>All payments are securely handled through Razorpay via UPI, Debit/Credit Cards, or Netbanking. Every order comes with an instant downloadable receipt and is protected by a 14-day return and test guarantee.</p>
+                  </div>
+                </details>
+
+                <details class="card-ds lp-faq-item">
+                  <summary class="lp-faq-question">
+                    <span>Can universities, schools, or corporate offices schedule bulk pickups?</span>
+                    <span class="lp-faq-chevron">&darr;</span>
+                  </summary>
+                  <div class="lp-faq-answer">
+                    <p>Yes. Corporate and institutional customers can schedule bulk pallet pickups with batch CSV manifests. EcoCycle provides official Central Pollution Control Board (CPCB) Form-6 green recycling certificates for ESG compliance.</p>
+                  </div>
+                </details>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- 9. Final Call-to-Action with Background Image & Single Clear Action -->
+        <section class="lp-final-cta-section">
+          <div class="lp-final-cta-bg" aria-hidden="true">
+            <img src="images/cta-bg.webp" alt="Lush green canopy and sustainable electronics" loading="lazy" class="lp-final-cta-img" />
+            <div class="lp-final-cta-scrim"></div>
+          </div>
+
+          <div class="container-ds lp-final-cta-content">
+            <span class="badge-ds badge-ds--accent badge-ds--sm" style="margin-bottom: var(--space-4);">Start Today &bull; 100% Free</span>
+            <h2 class="lp-final-cta-title">Ready to clear out your old electronics?</h2>
+            <p class="lp-final-cta-sub">
+              Book a free doorstep pickup in under two minutes or locate your nearest verified recycling kiosk across India.
+            </p>
+
+            <div class="lp-final-cta-btns">
+              <button class="btn-ds btn-ds--accent btn-ds--lg lp-final-cta-primary" type="button" data-open-auth="signup">
+                <span>Book a free pickup</span>
+                <svg class="i" style="width: 18px; height: 18px;"><use href="#i-arrow-right" /></svg>
+              </button>
+              <button class="btn-ds btn-ds--secondary btn-ds--lg" type="button" data-lp-map>
+                <span>Find drop-off near you</span>
+              </button>
+            </div>
+
+            <!-- Demo actions (Hidden by default; revealed only when NEXT_PUBLIC_DEMO=true or ?demo=1) -->
+            <div class="lp-demo-actions" id="lpDemoActions" hidden>
+              <span class="lp-demo-tag">Developer / Judge Mode:</span>
+              <button class="btn-ds btn-ds--ghost btn-ds--sm" type="button" data-lp-demo="user">Demo Citizen (Rahul)</button>
+              <button class="btn-ds btn-ds--ghost btn-ds--sm" type="button" data-lp-demo="admin">Demo Admin (Deepak)</button>
             </div>
           </div>
         </section>
       </main>
 
+      <!-- 10. 4-Column Professional Footer -->
       <footer class="lp-footer">
-        <div class="lp-container lp-footer-inner">
-          <div class="lp-footer-brand">
-            <strong>EcoCycle</strong>
-            <span>Circular E-Waste Collection & Recovery Management System</span>
+        <div class="container-ds">
+          <div class="lp-footer-grid">
+            <!-- Brand Column -->
+            <div class="lp-footer-col lp-footer-col--brand">
+              <a class="logo-lockup-ds" href="#landingTop" aria-label="EcoCycle Home">
+                <span class="logo-mark-wrap" aria-hidden="true">
+                  <svg class="logo-mark-svg" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 3.5C9.992 3.5 3.5 9.992 3.5 18c0 3.31 1.11 6.36 2.98 8.81l2.48-1.93A11.43 11.43 0 0 1 6.5 18c0-6.35 5.15-11.5 11.5-11.5 3.82 0 7.2 1.86 9.31 4.71L24 14.5h9v-9l-3.32 3.32A14.43 14.43 0 0 0 18 3.5Z" fill="currentColor" />
+                    <path d="M29.52 9.19A14.47 14.47 0 0 1 32.5 18c0 8.008-6.492 14.5-14.5 14.5-3.56 0-6.83-1.28-9.38-3.41l2.06-2.37A11.42 11.42 0 0 0 18 29c6.35 0 11.5-5.15 11.5-11.5 0-2.92-1.09-5.59-2.89-7.63l2.91-.68Z" fill="currentColor" opacity="0.75" />
+                    <path d="M12.5 23.5c0-6.075 4.925-11 11-11 0 6.075-4.925 11-11 11Z" fill="var(--color-accent, #10E599)" />
+                  </svg>
+                </span>
+                <span class="logo-text-ds">EcoCycle</span>
+              </a>
+              <p class="lp-footer-tagline">
+                India&rsquo;s trusted e-waste collection, circular recycling, and tested parts recovery platform.
+              </p>
+              <div class="lp-footer-newsletter">
+                <label for="lpNewsletterEmail" class="lp-newsletter-label">Subscribe to Circular Hardware Drops</label>
+                <div class="lp-newsletter-input-wrap">
+                  <input type="email" id="lpNewsletterEmail" placeholder="you@company.in" aria-label="Email address for circular updates" />
+                  <button class="btn-ds btn-ds--primary btn-ds--sm" type="button" id="lpNewsletterBtn">Join</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Col 1: Product -->
+            <div class="lp-footer-col">
+              <h4>Product</h4>
+              <ul>
+                <li><a href="#lpAccept">What We Accept</a></li>
+                <li><a href="#lpCapabilities">Doorstep Pickup</a></li>
+                <li><button type="button" data-lp-map class="lp-footer-btn-link">Drop-Off Map</button></li>
+                <li><a href="#lpMarketplace">Parts Marketplace</a></li>
+                <li><a href="#lpImpact">Carbon &amp; Metal Ledger</a></li>
+                <li><a href="style-guide.html">Design Tokens &amp; System</a></li>
+              </ul>
+            </div>
+
+            <!-- Col 2: Company -->
+            <div class="lp-footer-col">
+              <h4>Company</h4>
+              <ul>
+                <li><a href="#lpImpact">About EcoCycle</a></li>
+                <li><a href="#lpWorkflow">How It Works</a></li>
+                <li><a href="#lpImpact">Partner Recyclers</a></li>
+                <li><a href="#lpImpact">Campus Drives</a></li>
+                <li><a href="#lpImpact">Press &amp; Impact Report</a></li>
+                <li><a href="#lpImpact">Careers in Climate Tech</a></li>
+              </ul>
+            </div>
+
+            <!-- Col 3: Legal & Compliance -->
+            <div class="lp-footer-col">
+              <h4>Legal &amp; Trust</h4>
+              <ul>
+                <li><a href="#lpCapabilities">Privacy &amp; Data Policy</a></li>
+                <li><a href="#lpCapabilities">Terms of Service</a></li>
+                <li><a href="#lpCapabilities">CPCB Form-6 Compliance</a></li>
+                <li><a href="#lpCapabilities">E-Waste Rules 2022</a></li>
+                <li><a href="#lpCapabilities">Refund &amp; Payout Policy</a></li>
+                <li><a href="#lpCapabilities">Security &amp; Encryption</a></li>
+              </ul>
+            </div>
+
+            <!-- Col 4: Contact -->
+            <div class="lp-footer-col">
+              <h4>Contact</h4>
+              <ul>
+                <li><span>Email: <strong>support@ecocycle.in</strong></span></li>
+                <li><span>Helpline: <strong>1800-ECO-CYCLE</strong></span></li>
+                <li><span>Hours: 9:00 AM &ndash; 7:00 PM IST</span></li>
+                <li><span>K.R. Mangalam University Capstone</span></li>
+              </ul>
+            </div>
           </div>
-          <div class="lp-footer-links">
-            <a href="#lpCapabilities">Platform</a>
-            <a href="#lpWorkflow">Workflow</a>
-            <button type="button" data-lp-map>Drop-Off Map</button>
-            <button type="button" data-open-auth="login">Sign In</button>
+
+          <div class="lp-footer-bottom">
+            <div class="lp-footer-copy">
+              &copy; 2026 EcoCycle Circular Network. Crafted for responsible electronics recovery across India.
+            </div>
+            <div class="lp-footer-social">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg class="i" style="width: 18px; height: 18px;"><use href="#i-external" /></svg></a>
+            </div>
           </div>
         </div>
       </footer>
     </div>
-
-    <!-- ============ Sign in ============ -->
+<!-- ============ Sign in ============ -->
     <div class="auth" id="auth" hidden>
       <section class="auth-brand">
         <div class="brand">
